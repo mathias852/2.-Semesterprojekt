@@ -1,1 +1,1 @@
-# 2.-Semesterprojekt
+# 2. Semesterprojekt
