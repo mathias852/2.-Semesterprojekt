@@ -1,6 +1,4 @@
-package domain;
-
-import java.util.ArrayList;
+package domain.credit;
 
 public class Credit {
 
@@ -12,7 +10,7 @@ public class Credit {
         this.function = function;
     }
 
-    enum Function {
+    public enum Function {
         VISUALARTIST("Billedkunstnere"),
         PICTUREANDSOUND("Billed- og lydredigering"),
         CASTING("Casting"),

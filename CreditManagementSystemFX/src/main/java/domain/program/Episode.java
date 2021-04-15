@@ -1,6 +1,7 @@
-package domain;
+package domain.program;
 
 import java.util.Date;
+import java.util.UUID;
 
 public class Episode extends Program {
 
@@ -13,8 +14,8 @@ public class Episode extends Program {
         this.episodeNo = episodeNo;
     }
 
-    public Episode(String name, String description, Date periodStart, Date periodEnd, int eventID, int createdBy, int episodeNo, int seasonNo) {
-        super(name, description, periodStart, periodEnd, eventID, createdBy);
+    public Episode(UUID uuid, String name, String description, int eventID, int createdBy, int episodeNo, int seasonNo, int duration) {
+        super(uuid, name, description, eventID, createdBy, duration);
         this.seasonNo = seasonNo;
         this.episodeNo = episodeNo;
     }
@@ -34,8 +35,6 @@ public class Episode extends Program {
     public void setSeasonNo(int seasonNo) {
         this.seasonNo = seasonNo;
     }
-
-
 
 
 }
