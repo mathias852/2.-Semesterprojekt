@@ -1,4 +1,4 @@
-package domain;
+package domain.accesscontrol;
 
 import java.util.ArrayList;
 

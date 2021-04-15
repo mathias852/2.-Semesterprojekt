@@ -1,4 +1,4 @@
-package domain;
+package domain.program;
 
 import java.util.*;
 
@@ -6,10 +6,10 @@ public class TVSeries {
 
     private Map<Integer, ArrayList<Episode>> seasonMap;
     private String name;
+    private UUID uuid;
 
-
-
-    public TVSeries(String name) {
+    public TVSeries(String name, UUID uuid) {
+        this.uuid = uuid;
         this.name = name;
     }
 
@@ -22,5 +22,9 @@ public class TVSeries {
         }
         seasonMap.get(e.getSeasonNo()).add(e);
         System.out.println("added episode: " + e.getEpisodeNo() + ", " + e.getName() + " to season: " + e.getSeasonNo());
+    }
+
+    public UUID getUuid() {
+        return uuid;
     }
 }
