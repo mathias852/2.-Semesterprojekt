@@ -9,7 +9,7 @@ public abstract class Program {
 
     private UUID uuid;
     private String name, description;
-    private int eventID, createdBy;
+    private int createdBy;
     private int duration;
     private ArrayList<Credit> credits;
 
@@ -18,11 +18,10 @@ public abstract class Program {
         this.name = name;
     }
 
-    public Program(UUID uuid, String name, String description, int eventID, int createdBy, int duration) { // createdBy tager userID fra creator
+    public Program(UUID uuid, String name, String description, int createdBy, int duration) { // createdBy tager userID fra creator
         this.uuid = uuid;
         this.name = name;
         this.description = description;
-        this.eventID = eventID;
         this.createdBy = createdBy;
         this.duration = duration;
     }
@@ -45,43 +44,27 @@ public abstract class Program {
     public UUID getUuid() {
         return uuid;
     }
-
     public String getDescription() {
         return description;
     }
-
-    public int getEventID() {
-        return eventID;
-    }
-
     public int getCreatedBy() {
         return createdBy;
     }
-
     public int getDuration() {
         return duration;
     }
-
     public ArrayList<Credit> getCredits() {
         return credits;
     }
-
     public void setName(String name) {
         this.name = name;
     }
-
     public void setDescription(String description) {
         this.description = description;
     }
-
-    public void setEventID(int eventID) {
-        this.eventID = eventID;
-    }
-
     public void setCreatedBy(int createdBy) {
         this.createdBy = createdBy;
     }
-
     public void setDuration(int duration) {
         this.duration = duration;
     }

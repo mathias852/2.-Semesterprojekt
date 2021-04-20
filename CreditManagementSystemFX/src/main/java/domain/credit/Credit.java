@@ -14,14 +14,15 @@ public class Credit {
         VISUALARTIST("Billedkunstnere"),
         PICTUREANDSOUND("Billed- og lydredigering"),
         CASTING("Casting"),
+        CAST("Cast"),
         COLOURGRADING("Colourgrading"),
+        CLOSEDCAPTIONS("Danske undertekster"),
         CHOIRDIRECTOR("Dirigenter"),
         DRONE("Dronefører"),
         PUPPETMASTER("Dukkefører"),
-        PUPPETCREATOR("Produktion af dukker"),
+        PUBLISHER("Efter ide af"),
         NARRATOR("Fortæller"),
         PHOTOGRAPHER("Fotografer"),
-        PUBLISHER("Efter ide af"),
         GRAPHICALDESIGNER("Grafiske designere"),
         VOICEACTOR("Indtalere"),
         ORCHESTRADIRECTOR("Kapelmester"),
@@ -30,17 +31,16 @@ public class Credit {
         CONSULTANT("Konsulent"),
         CHOIR("Kor"),
         CHOREOGRAPHY("Koreografi"),
-        SOUNDENGINEER("Lyd eller tonemester"),
         SOUNDEDITOR("Lydredigering"),
+        SOUNDENGINEER("Lyd eller tonemester"),
         LIGHT("Lys"),
-        CAST("Cast"),
         MUSICALARRANGEMENT("Musikalsk arrangement"),
         ORCHESTRA("Orkester"),
         TRANSLATOR("Oversætter"),
         EXTERNALPRODUCER("Producent"),
         PRODUCER("Producer"),
         PRODUCTIONCOORDINATOR("Produktionskoordinator"),
-        ORGANIZER("Tilrettelæggelse"),
+        PUPPETCREATOR("Produktion af dukker"),
         EDITOR("Redaktøren"),
         PROPS("Rekvisitør"),
         SETDESIGNER("Scenograf"),
@@ -48,31 +48,23 @@ public class Credit {
         SFX("Speciel effects"),
         SPONSOR("Sponsorer"),
         CARTOON("Tegnefilm eller animation"),
-        CLOSEDCAPTIONS("Danske undertekster"),
         TEXTANDMUSIC("Tekst og musik"),
+        ORGANIZER("Tilrettelæggelse"),
         EXTRAORDINARYEFFORT("Uhonoreret og ekstraordinær indsats");
-
-
         public final String role;
-
         Function(String role) {
             this.role = role;
         }
     }
-
-
     public CreditedPerson getCreditedPerson() {
         return creditedPerson;
     }
-
     public void setCreditedPerson(CreditedPerson creditedPerson) {
         this.creditedPerson = creditedPerson;
     }
-
     public Function getFunction() {
         return function;
     }
-
     public void setFunction(Function function) {
         this.function = function;
     }
