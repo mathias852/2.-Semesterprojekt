@@ -9,28 +9,65 @@ import domain.program.TVSeries;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.UUID;
 
 public class SystemAdminController implements Initializable {
 
     @FXML
-    private ComboBox<String> programTypeSelection;
+    private TextField durationText;
+
     @FXML
-    private Label nameLabel;
+    private ComboBox<String> tvSeriesSelection;
+
     @FXML
-    private TextField nameText;
+    private Label creditedPersonLabel;
+
     @FXML
-    private Label descriptionLabel;
+    private Label tvSLabel;
+
     @FXML
     private TextField descriptionText;
+
+    @FXML
+    private ComboBox<String> searchSeriesCombo;
+
+    @FXML
+    private Label durationLabel;
+
+    @FXML
+    private TableView<String> searchTableView;
+
+    @FXML
+    private Button createProgramBtn;
+
+    @FXML
+    private ListView<String> searchListView;
+
+    @FXML
+    private ComboBox<String> functionSelection;
+
+    @FXML
+    private ComboBox<String> searchProgramCombo;
+
+    @FXML
+    private ComboBox<String> searchSeasonCombo;
+
+    @FXML
+    private ComboBox<String> creditedPersonSelection;
+
+    @FXML
+    private Label nameLabel;
+
+    @FXML
+    private Label seasonNoLabel;
+
     @FXML
     private TextField seasonNumberText;
 
@@ -38,45 +75,34 @@ public class SystemAdminController implements Initializable {
     private TextField episodeNumberText;
 
     @FXML
-    private TextField durationText;
+    private Button createCreditBtn;
 
     @FXML
-    private Label seasonNoLabel;
+    private TextField nameText;
 
     @FXML
-    private Label episodeNoLabel;
+    private Button createPersonBtn;
 
     @FXML
-    private Label durationLabel;
-
-    @FXML
-    private ComboBox<String> tvSeriesSelection;
-
-    @FXML
-    private Label tvSLabel;
-
-    @FXML
-    private Button createProgramBtn;
-
-    @FXML
-    private ComboBox<String> programSelection;
-
-    @FXML
-    private ComboBox<String> functionSelection;
-
-    @FXML
-    private ComboBox<String> creditedPersonSelection;
+    private Label messageLabel;
 
     @FXML
     private TextField creditedPersonNameText;
 
     @FXML
-    private Label creditedPersonLabel;
+    private Button exportButton;
 
     @FXML
-    private Button createPersonBtn;
+    private ComboBox<String> programSelection;
+
     @FXML
-    private Button createCreditBtn;
+    private ComboBox<String> programTypeSelection;
+
+    @FXML
+    private Label episodeNoLabel;
+
+    @FXML
+    private Label descriptionLabel;
 
     private final String transmission = "Transmission";
     private final String tvSeries = "TV-Series";
@@ -122,30 +148,38 @@ public class SystemAdminController implements Initializable {
 
     @FXML
     void createProgram(ActionEvent event) {
+
+        String name = nameText.getText();
+        String description = nameText.getText();
+
         if (programTypeSelection.getValue().equals(transmission)) {
-            String name = nameText.getText();
-            String description = descriptionText.getText();
-            if (!name.isEmpty() && !description.isEmpty()) {
-                facade.createTransmission(name, description, 1, 60);
+            int duration = durationText.getText().isEmpty() ? -1 : Integer.parseInt(durationText.getText());
+            if(!name.isEmpty()){
+                facade.createTransmission(name, description, 1, duration);
+            } else{
+                messageLabel.setText("Cannot create " + transmission + " without a name");
             }
         } else if (programTypeSelection.getValue().equals(tvSeries)) {
-            String name = nameText.getText();
-            String description = nameText.getText();
-            if (!name.isEmpty() && !description.isEmpty()) {
+            if (!name.isEmpty()) {
                 facade.createTvSeries(name, description, 1);
+            }else{
+                messageLabel.setText("Cannot create " + tvSeries + " without a name");
             }
         } else if (programTypeSelection.getValue().equals(episode)) {
             try {
-                TVSeries tvSeries = facade.getTvSeriesList().get(tvSeriesSelection.getSelectionModel().getSelectedIndex());
-                String name = nameText.getText();
-                String description = descriptionText.getText();
+                TVSeries tvSeries = tvSeriesSelection.getSelectionModel().getSelectedIndex() == -1 ? null : facade.getTvSeriesList().get(tvSeriesSelection.getSelectionModel().getSelectedIndex());
                 int episodeNumber = episodeNumberText.getText().isEmpty() ? -1 : Integer.parseInt(episodeNumberText.getText());
                 int seasonNumber = seasonNumberText.getText().isEmpty() ? -1 : Integer.parseInt(seasonNumberText.getText());
-                if (!tvSeriesSelection.getSelectionModel().isEmpty() && !name.isEmpty() && !description.isEmpty() && episodeNumber > 0 && seasonNumber > 0) {
-                    facade.createEpisode(tvSeries, name, description, 1, episodeNumber, seasonNumber, 60);
+                int duration = durationText.getText().isEmpty() ? -1 : Integer.parseInt(durationText.getText());
+
+                if (!name.isEmpty() && tvSeries != null) {
+                    facade.createEpisode(tvSeries, name, description, 1, episodeNumber, seasonNumber, duration);
+                } else {
+                    messageLabel.setText("Cannot create " + episode + " without a name & a TV-series");
                 }
+
             } catch (NumberFormatException e) {
-                System.out.println("Invalid input (only numbers in episode and seasons fields)");
+                messageLabel.setText("Invalid input (only numbers in episode and seasons fields)");
             }
         }
         updateUI();
@@ -155,14 +189,36 @@ public class SystemAdminController implements Initializable {
         programSelection.getItems().clear();
         tvSeriesSelection.getItems().clear();
         creditedPersonSelection.getItems().clear();
+        searchSeriesCombo.getItems().clear();
+        searchSeasonCombo.getItems().clear();
+
         for (Program program: facade.getPrograms()) {
             programSelection.getItems().add(program.getName());
         }
         for (TVSeries tvSeries: facade.getTvSeriesList()) {
             tvSeriesSelection.getItems().add(tvSeries.getName());
+            searchSeriesCombo.getItems().add(tvSeries.getName());
         }
         for (CreditedPerson creditedPerson: facade.getCreditedPeople()) {
             creditedPersonSelection.getItems().add(creditedPerson.getName() + ": " + creditedPerson.getUuid());
+        }
+
+        nameText.clear();
+        descriptionText.clear();
+        episodeNumberText.clear();
+        seasonNumberText.clear();
+        durationText.clear();
+
+        /*
+        Updating comboBoxes for Search/view tab
+         */
+
+        for(TVSeries series : facade.getTvSeriesList()){
+            if(series.getSeasonMap() != null){
+                for(Integer i : series.getSeasonMap().keySet()){
+                    searchSeasonCombo.getItems().add(String.valueOf(i));
+                }
+            }
         }
     }
 
@@ -203,8 +259,33 @@ public class SystemAdminController implements Initializable {
         }
     }
 
+    @FXML
+    void searchProgramComboAction(ActionEvent event) {
+        searchSeriesCombo.setVisible(true);
+    }
+
+    @FXML
+    void searchSeriesComboAction(ActionEvent event) {
+        searchSeasonCombo.setVisible(true);
+    }
+
+    @FXML
+    void searchSeasonComboAction(ActionEvent event) {
+
+    }
+
+    @FXML
+    void exportButtonOnAction(ActionEvent event) {
+
+    }
+
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+
+        searchProgramCombo.getItems().add(transmission);
+        searchProgramCombo.getItems().add(tvSeries);
+
         programTypeSelection.getItems().add(transmission);
         programTypeSelection.getItems().add(tvSeries);
         programTypeSelection.getItems().add(episode);
@@ -212,6 +293,8 @@ public class SystemAdminController implements Initializable {
             functionSelection.getItems().add(function.role);
         }
         facade.createStuff();
+
+
         updateUI();
     }
 }
