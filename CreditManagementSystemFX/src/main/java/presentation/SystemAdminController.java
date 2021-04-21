@@ -6,10 +6,14 @@ import domain.credit.CreditedPerson;
 import domain.program.Episode;
 import domain.program.Program;
 import domain.program.TVSeries;
+import domain.program.Transmission;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.input.ContextMenuEvent;
+import javafx.scene.input.MouseEvent;
 
 import java.io.IOException;
 import java.net.URL;
@@ -49,6 +53,9 @@ public class SystemAdminController implements Initializable {
 
     @FXML
     private ListView<String> searchListView;
+
+    @FXML
+    private ListView<String> searchListViewCredits;
 
     @FXML
     private ComboBox<String> functionSelection;
@@ -118,6 +125,7 @@ public class SystemAdminController implements Initializable {
             creditedPersonNameText.setText("");
         }
     }
+
     @FXML
     void createCredit(ActionEvent event) {
         try {
@@ -131,7 +139,7 @@ public class SystemAdminController implements Initializable {
                 facade.createCredit(program, creditedPerson, function);
             } else {
                 boolean exists = false;
-                for (Credit credit: program.getCredits()) {
+                for (Credit credit : program.getCredits()) {
                     if (credit.getCreditedPerson().equals(creditedPerson) && credit.getFunction().equals(function)) {
                         exists = true;
                         break;
@@ -154,15 +162,15 @@ public class SystemAdminController implements Initializable {
 
         if (programTypeSelection.getValue().equals(transmission)) {
             int duration = durationText.getText().isEmpty() ? -1 : Integer.parseInt(durationText.getText());
-            if(!name.isEmpty()){
+            if (!name.isEmpty()) {
                 facade.createTransmission(name, description, 1, duration);
-            } else{
+            } else {
                 messageLabel.setText("Cannot create " + transmission + " without a name");
             }
         } else if (programTypeSelection.getValue().equals(tvSeries)) {
             if (!name.isEmpty()) {
                 facade.createTvSeries(name, description, 1);
-            }else{
+            } else {
                 messageLabel.setText("Cannot create " + tvSeries + " without a name");
             }
         } else if (programTypeSelection.getValue().equals(episode)) {
@@ -189,17 +197,14 @@ public class SystemAdminController implements Initializable {
         programSelection.getItems().clear();
         tvSeriesSelection.getItems().clear();
         creditedPersonSelection.getItems().clear();
-        searchSeriesCombo.getItems().clear();
-        searchSeasonCombo.getItems().clear();
 
-        for (Program program: facade.getPrograms()) {
+        for (Program program : facade.getPrograms()) {
             programSelection.getItems().add(program.getName());
         }
-        for (TVSeries tvSeries: facade.getTvSeriesList()) {
+        for (TVSeries tvSeries : facade.getTvSeriesList()) {
             tvSeriesSelection.getItems().add(tvSeries.getName());
-            searchSeriesCombo.getItems().add(tvSeries.getName());
         }
-        for (CreditedPerson creditedPerson: facade.getCreditedPeople()) {
+        for (CreditedPerson creditedPerson : facade.getCreditedPeople()) {
             creditedPersonSelection.getItems().add(creditedPerson.getName() + ": " + creditedPerson.getUuid());
         }
 
@@ -209,17 +214,6 @@ public class SystemAdminController implements Initializable {
         seasonNumberText.clear();
         durationText.clear();
 
-        /*
-        Updating comboBoxes for Search/view tab
-         */
-
-        for(TVSeries series : facade.getTvSeriesList()){
-            if(series.getSeasonMap() != null){
-                for(Integer i : series.getSeasonMap().keySet()){
-                    searchSeasonCombo.getItems().add(String.valueOf(i));
-                }
-            }
-        }
     }
 
     @FXML
@@ -261,17 +255,64 @@ public class SystemAdminController implements Initializable {
 
     @FXML
     void searchProgramComboAction(ActionEvent event) {
-        searchSeriesCombo.setVisible(true);
+        searchSeriesCombo.getItems().clear();
+        if (searchProgramCombo.getSelectionModel().getSelectedItem() == transmission){
+            searchSeriesCombo.setVisible(false);
+            searchSeasonCombo.setVisible(false);
+
+            searchListView.getItems().clear();
+            for (Program program : facade.getPrograms()) {
+                if (program instanceof Transmission) {
+                    searchListView.getItems().add(program.getName() +  ": " + program.getUuid());
+                }
+            }
+
+        } else if (searchProgramCombo.getSelectionModel().getSelectedItem() == tvSeries){
+            searchSeriesCombo.setVisible(true);
+            searchSeasonCombo.setVisible(true);
+
+            for (TVSeries tvSeries : facade.getTvSeriesList()) {
+                searchSeriesCombo.getItems().add(tvSeries.getName());
+            }
+        }
     }
 
     @FXML
     void searchSeriesComboAction(ActionEvent event) {
-        searchSeasonCombo.setVisible(true);
+        searchSeasonCombo.getItems().clear();
+        try {
+            TVSeries series = facade.getTvSeriesList().get(searchSeriesCombo.getSelectionModel().getSelectedIndex());
+            if (series.getSeasonMap() != null) {
+                for (Integer i : series.getSeasonMap().keySet()) {
+                    searchSeasonCombo.getItems().add(String.valueOf(i));
+                }
+            }
+        } catch (IndexOutOfBoundsException e){}
     }
 
     @FXML
     void searchSeasonComboAction(ActionEvent event) {
+        searchListView.getItems().clear();
 
+        if(searchSeriesCombo.getSelectionModel().getSelectedIndex() != -1) {
+            TVSeries series = facade.getTvSeriesList().get(searchSeriesCombo.getSelectionModel().getSelectedIndex());
+            for (Episode episode : series.getSeasonMap().get(Integer.parseInt(searchSeasonCombo.getSelectionModel().getSelectedItem()))){
+                searchListView.getItems().add(episode.getName() + ": " + episode.getUuid());
+            }
+        }
+    }
+
+    @FXML
+    void selectedProgramFromListView(MouseEvent event) {
+        searchListViewCredits.getItems().clear();
+        Program selectedProgram = facade.getPrograms().get(searchListView.getSelectionModel().getSelectedIndex());
+
+        if(selectedProgram.getCredits() != null) {
+            ArrayList<Credit> credits = selectedProgram.getCredits();
+            for (Credit credit : credits) {
+                searchListViewCredits.getItems().add(credit.getCreditedPerson().getName() + ": " + credit.getFunction().role);
+            }
+        }
     }
 
     @FXML
@@ -289,7 +330,7 @@ public class SystemAdminController implements Initializable {
         programTypeSelection.getItems().add(transmission);
         programTypeSelection.getItems().add(tvSeries);
         programTypeSelection.getItems().add(episode);
-        for (Credit.Function function: facade.getFunctions()) {
+        for (Credit.Function function : facade.getFunctions()) {
             functionSelection.getItems().add(function.role);
         }
         facade.createStuff();

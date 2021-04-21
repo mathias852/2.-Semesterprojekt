@@ -23,19 +23,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="af1934c7-bd45-494e-92a5-5f4f1c7bd155" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CreditManagementSystemFX/src/main/java/presentation/SystemAdminController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CreditManagementSystemFX/src/main/resources/presentation/test.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_4_6_2021_3_01_PM_[Default_Changelist]/shelved.patch" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_4_6_2021_3_01_PM__Default_Changelist_.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CreditManagementSystemFX/src/main/java/domain/Facade.java" beforeDir="false" afterPath="$PROJECT_DIR$/CreditManagementSystemFX/src/main/java/domain/Facade.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CreditManagementSystemFX/src/main/java/domain/credit/Credit.java" beforeDir="false" afterPath="$PROJECT_DIR$/CreditManagementSystemFX/src/main/java/domain/credit/Credit.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CreditManagementSystemFX/src/main/java/domain/program/Episode.java" beforeDir="false" afterPath="$PROJECT_DIR$/CreditManagementSystemFX/src/main/java/domain/program/Episode.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CreditManagementSystemFX/src/main/java/domain/program/Program.java" beforeDir="false" afterPath="$PROJECT_DIR$/CreditManagementSystemFX/src/main/java/domain/program/Program.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CreditManagementSystemFX/src/main/java/domain/program/TVSeries.java" beforeDir="false" afterPath="$PROJECT_DIR$/CreditManagementSystemFX/src/main/java/domain/program/TVSeries.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CreditManagementSystemFX/src/main/java/domain/program/Transmission.java" beforeDir="false" afterPath="$PROJECT_DIR$/CreditManagementSystemFX/src/main/java/domain/program/Transmission.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CreditManagementSystemFX/src/main/java/presentation/SecondaryController.java" beforeDir="false" afterPath="$PROJECT_DIR$/CreditManagementSystemFX/src/main/java/presentation/SecondaryController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CreditManagementSystemFX/src/main/java/presentation/SystemAdminController.java" beforeDir="false" afterPath="$PROJECT_DIR$/CreditManagementSystemFX/src/main/java/presentation/SystemAdminController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CreditManagementSystemFX/src/main/resources/presentation/test.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/CreditManagementSystemFX/src/main/resources/presentation/test.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CreditManagementSystemFX/target/classes/presentation/test.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/CreditManagementSystemFX/target/classes/presentation/test.fxml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -71,6 +62,7 @@
     <property name="project.structure.proportion" value="0.0" />
     <property name="project.structure.side.proportion" value="0.0" />
     <property name="restartRequiresConfirmation" value="false" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -81,6 +73,19 @@
     </key>
   </component>
   <component name="RunManager" selected="Application.App (1)">
+    <configuration name="App (1)" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="presentation.App" />
+      <module name="creditmsfx" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="presentation.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="App" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="org.openjfx.App" />
       <module name="creditmsfx" />
@@ -134,8 +139,8 @@
     <recent_temporary>
       <list>
         <item itemvalue="Application.App (1)" />
-        <item itemvalue="Application.Facade" />
         <item itemvalue="Application.App" />
+        <item itemvalue="Application.Facade" />
       </list>
     </recent_temporary>
   </component>
@@ -153,6 +158,10 @@
       <workItem from="1617713580867" duration="234000" />
       <workItem from="1617713833042" duration="334000" />
       <workItem from="1618902498706" duration="19874000" />
+      <workItem from="1618923450725" duration="663000" />
+      <workItem from="1618990146894" duration="178000" />
+      <workItem from="1618992520293" duration="367000" />
+      <workItem from="1618992904371" duration="9430000" />
     </task>
     <servers />
   </component>
@@ -170,5 +179,43 @@
       </map>
     </option>
     <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state width="1877" height="246" key="GridCell.Tab.0.bottom" timestamp="1619002451242">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="246" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1619002451242" />
+    <state width="1877" height="246" key="GridCell.Tab.0.center" timestamp="1619002451242">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="246" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1619002451242" />
+    <state width="1877" height="246" key="GridCell.Tab.0.left" timestamp="1619002451242">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="246" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1619002451242" />
+    <state width="1877" height="246" key="GridCell.Tab.0.right" timestamp="1619002451242">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="246" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1619002451242" />
+    <state width="1877" height="179" key="GridCell.Tab.1.bottom" timestamp="1618995249041">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="179" key="GridCell.Tab.1.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1618995249041" />
+    <state width="1877" height="179" key="GridCell.Tab.1.center" timestamp="1618995249040">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="179" key="GridCell.Tab.1.center/0.0.1920.1040@0.0.1920.1040" timestamp="1618995249040" />
+    <state width="1877" height="179" key="GridCell.Tab.1.left" timestamp="1618995249040">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="179" key="GridCell.Tab.1.left/0.0.1920.1040@0.0.1920.1040" timestamp="1618995249040" />
+    <state width="1877" height="179" key="GridCell.Tab.1.right" timestamp="1618995249040">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="179" key="GridCell.Tab.1.right/0.0.1920.1040@0.0.1920.1040" timestamp="1618995249040" />
+    <state x="83" y="135" key="SettingsEditor" timestamp="1618992890851">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="83" y="135" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1618992890851" />
   </component>
 </project>
