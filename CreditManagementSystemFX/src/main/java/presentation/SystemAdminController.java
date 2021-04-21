@@ -294,7 +294,6 @@ public class SystemAdminController implements Initializable {
         }
         facade.createStuff();
 
-
         updateUI();
     }
 }
