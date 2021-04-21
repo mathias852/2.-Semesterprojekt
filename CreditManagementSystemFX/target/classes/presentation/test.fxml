@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
@@ -9,7 +13,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="572.0" prefWidth="764.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="presentation.SystemAdminController">
+<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="572.0" prefWidth="764.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="presentation.SystemAdminController">
   <tabs>
     <Tab text="Create">
       <content>
@@ -54,12 +58,26 @@
                   </Label>
                   <Button fx:id="createPersonBtn" layoutX="318.0" layoutY="99.0" mnemonicParsing="false" onAction="#createPerson" prefHeight="25.0" prefWidth="219.0" text="Create person" />
                   <Button fx:id="createCreditBtn" layoutX="321.0" layoutY="358.0" mnemonicParsing="false" onAction="#createCredit" prefHeight="25.0" prefWidth="238.0" text="Create credit" />
+                  <Label fx:id="messageLabel" layoutX="21.0" layoutY="408.0" prefHeight="17.0" prefWidth="571.0" />
                </children></AnchorPane>
       </content>
     </Tab>
-    <Tab text="Untitled Tab 2">
+    <Tab text="Search/view">
       <content>
-        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+               <children>
+                  <ListView fx:id="searchListView" layoutX="215.0" layoutY="21.0" prefHeight="291.0" prefWidth="300.0" />
+                  <ComboBox fx:id="searchProgramCombo" layoutX="14.0" layoutY="21.0" onAction="#searchProgramComboAction" prefHeight="25.0" prefWidth="189.0" promptText="Choose program type" />
+                  <TableView fx:id="searchTableView" layoutX="215.0" layoutY="326.0" prefHeight="203.0" prefWidth="302.0">
+                    <columns>
+                      <TableColumn prefWidth="149.0" text="Name" />
+                      <TableColumn prefWidth="154.0" text="Function" />
+                    </columns>
+                  </TableView>
+                  <ComboBox fx:id="searchSeriesCombo" layoutX="14.0" layoutY="67.0" onAction="#searchSeriesComboAction" prefHeight="25.0" prefWidth="189.0" promptText="Choose TV-series" visible="false" />
+                  <ComboBox fx:id="searchSeasonCombo" layoutX="14.0" layoutY="111.0" onAction="#searchSeasonComboAction" prefHeight="25.0" prefWidth="189.0" promptText="Choose season" visible="false" />
+                  <Button fx:id="exportButton" disable="true" layoutX="532.0" layoutY="21.0" mnemonicParsing="false" onAction="#exportButtonOnAction" text="Eksportér til .txt" />
+               </children></AnchorPane>
       </content>
     </Tab>
   </tabs>
