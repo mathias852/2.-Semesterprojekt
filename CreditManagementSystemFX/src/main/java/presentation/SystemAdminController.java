@@ -158,7 +158,7 @@ public class SystemAdminController implements Initializable {
     void createProgram(ActionEvent event) {
 
         String name = nameText.getText();
-        String description = nameText.getText();
+        String description = descriptionText.getText();
 
         if (programTypeSelection.getValue().equals(transmission)) {
             int duration = durationText.getText().isEmpty() ? -1 : Integer.parseInt(durationText.getText());
@@ -280,6 +280,7 @@ public class SystemAdminController implements Initializable {
     @FXML
     void searchSeriesComboAction(ActionEvent event) {
         searchSeasonCombo.getItems().clear();
+        //To find the episodes based on a season from a TV-series
         try {
             TVSeries series = facade.getTvSeriesList().get(searchSeriesCombo.getSelectionModel().getSelectedIndex());
             if (series.getSeasonMap() != null) {
@@ -317,12 +318,13 @@ public class SystemAdminController implements Initializable {
 
     @FXML
     void exportButtonOnAction(ActionEvent event) {
-
+        facade.exportToTxt();
     }
 
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        facade.importFromTxt();
 
         searchProgramCombo.getItems().add(transmission);
         searchProgramCombo.getItems().add(tvSeries);
@@ -333,7 +335,7 @@ public class SystemAdminController implements Initializable {
         for (Credit.Function function : facade.getFunctions()) {
             functionSelection.getItems().add(function.role);
         }
-        facade.createStuff();
+//        facade.createStuff();
 
         updateUI();
     }
