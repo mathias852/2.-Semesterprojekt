@@ -10,7 +10,7 @@ public class TVSeries {
     private int createdBy;
     private UUID uuid;
 
-    public TVSeries(String name, String description, int createdBy, UUID uuid) {
+    public TVSeries(UUID uuid, String name, String description, int createdBy) {
         this.name = name;
         this.description = description;
         this.createdBy = createdBy;
