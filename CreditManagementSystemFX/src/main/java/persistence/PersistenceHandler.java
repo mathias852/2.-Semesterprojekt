@@ -1,6 +1,8 @@
 package persistence;
 
 import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Scanner;
 import java.util.ArrayList;
 
@@ -8,11 +10,14 @@ import java.util.ArrayList;
 
 public class PersistenceHandler {
 
-    private File credit = new File("src/main/resources/credits.txt");
-    private File episode = new File("src/main/resources/episode.txt");
-    private File tvSeries = new File("src/main/resources/TvSeries.txt");
-    private File person = new File("src/main/resources/person.txt");
-    private File transmission = new File("src/main/resources/transmission.txt");
+    private File credit = new File("CreditManagementSystemFX/src/main/resources/credits.txt");
+    private File episode = new File("CreditManagementSystemFX/src/main/resources/episode.txt");
+    private File tvSeries = new File("CreditManagementSystemFX/src/main/resources/TvSeries.txt");
+    private File person = new File("CreditManagementSystemFX/src/main/resources/person.txt");
+    private File transmission = new File("CreditManagementSystemFX/src/main/resources/transmission.txt");
+
+    Path relativePath = Paths.get("CreditManagementSystemFX/src/main/resources/credits.txt");
+    Path absolutePath = relativePath.toAbsolutePath();
 
 
     public PersistenceHandler() {

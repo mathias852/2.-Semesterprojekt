@@ -24,9 +24,19 @@
   <component name="ChangeListManager">
     <list default="true" id="af1934c7-bd45-494e-92a5-5f4f1c7bd155" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CreditManagementSystemFX/src/main/java/domain/Facade.java" beforeDir="false" afterPath="$PROJECT_DIR$/CreditManagementSystemFX/src/main/java/domain/Facade.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CreditManagementSystemFX/src/main/java/domain/credit/Credit.java" beforeDir="false" afterPath="$PROJECT_DIR$/CreditManagementSystemFX/src/main/java/domain/credit/Credit.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CreditManagementSystemFX/src/main/java/domain/credit/CreditedPerson.java" beforeDir="false" afterPath="$PROJECT_DIR$/CreditManagementSystemFX/src/main/java/domain/credit/CreditedPerson.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CreditManagementSystemFX/src/main/java/domain/program/Episode.java" beforeDir="false" afterPath="$PROJECT_DIR$/CreditManagementSystemFX/src/main/java/domain/program/Episode.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CreditManagementSystemFX/src/main/java/domain/program/TVSeries.java" beforeDir="false" afterPath="$PROJECT_DIR$/CreditManagementSystemFX/src/main/java/domain/program/TVSeries.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CreditManagementSystemFX/src/main/java/persistence/PersistenceHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/CreditManagementSystemFX/src/main/java/persistence/PersistenceHandler.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CreditManagementSystemFX/src/main/java/presentation/SystemAdminController.java" beforeDir="false" afterPath="$PROJECT_DIR$/CreditManagementSystemFX/src/main/java/presentation/SystemAdminController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CreditManagementSystemFX/src/main/resources/presentation/test.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/CreditManagementSystemFX/src/main/resources/presentation/test.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CreditManagementSystemFX/target/classes/presentation/test.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/CreditManagementSystemFX/target/classes/presentation/test.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CreditManagementSystemFX/src/main/resources/TvSeries.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CreditManagementSystemFX/src/main/resources/credits.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CreditManagementSystemFX/src/main/resources/episode.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CreditManagementSystemFX/src/main/resources/person.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CreditManagementSystemFX/src/main/resources/transmission.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CreditManagementSystemFX/target/classes/transmission.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CreditManagementSystemFX/target/classes/transmission.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -139,8 +149,8 @@
     <recent_temporary>
       <list>
         <item itemvalue="Application.App (1)" />
-        <item itemvalue="Application.App" />
         <item itemvalue="Application.Facade" />
+        <item itemvalue="Application.App" />
       </list>
     </recent_temporary>
   </component>
@@ -162,6 +172,8 @@
       <workItem from="1618990146894" duration="178000" />
       <workItem from="1618992520293" duration="367000" />
       <workItem from="1618992904371" duration="9430000" />
+      <workItem from="1619263423183" duration="7204000" />
+      <workItem from="1619274858889" duration="8307000" />
     </task>
     <servers />
   </component>
@@ -181,41 +193,49 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
-    <state width="1877" height="246" key="GridCell.Tab.0.bottom" timestamp="1619002451242">
+    <state x="765" y="204" key="#com.intellij.ide.util.MemberChooser" timestamp="1619269477294">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="246" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1619002451242" />
-    <state width="1877" height="246" key="GridCell.Tab.0.center" timestamp="1619002451242">
+    <state x="765" y="204" key="#com.intellij.ide.util.MemberChooser/0.0.1920.1040@0.0.1920.1040" timestamp="1619269477294" />
+    <state width="1877" height="317" key="GridCell.Tab.0.bottom" timestamp="1619291446938">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="246" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1619002451242" />
-    <state width="1877" height="246" key="GridCell.Tab.0.left" timestamp="1619002451242">
+    <state width="1877" height="317" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1619291446938" />
+    <state width="1877" height="317" key="GridCell.Tab.0.center" timestamp="1619291446938">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="246" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1619002451242" />
-    <state width="1877" height="246" key="GridCell.Tab.0.right" timestamp="1619002451242">
+    <state width="1877" height="317" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1619291446938" />
+    <state width="1877" height="317" key="GridCell.Tab.0.left" timestamp="1619291446938">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="246" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1619002451242" />
-    <state width="1877" height="179" key="GridCell.Tab.1.bottom" timestamp="1618995249041">
+    <state width="1877" height="317" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1619291446938" />
+    <state width="1877" height="317" key="GridCell.Tab.0.right" timestamp="1619291446938">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="179" key="GridCell.Tab.1.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1618995249041" />
-    <state width="1877" height="179" key="GridCell.Tab.1.center" timestamp="1618995249040">
+    <state width="1877" height="317" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1619291446938" />
+    <state width="1877" height="191" key="GridCell.Tab.1.bottom" timestamp="1619291446935">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="179" key="GridCell.Tab.1.center/0.0.1920.1040@0.0.1920.1040" timestamp="1618995249040" />
-    <state width="1877" height="179" key="GridCell.Tab.1.left" timestamp="1618995249040">
+    <state width="1877" height="191" key="GridCell.Tab.1.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1619291446935" />
+    <state width="1877" height="191" key="GridCell.Tab.1.center" timestamp="1619291446935">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="179" key="GridCell.Tab.1.left/0.0.1920.1040@0.0.1920.1040" timestamp="1618995249040" />
-    <state width="1877" height="179" key="GridCell.Tab.1.right" timestamp="1618995249040">
+    <state width="1877" height="191" key="GridCell.Tab.1.center/0.0.1920.1040@0.0.1920.1040" timestamp="1619291446935" />
+    <state width="1877" height="191" key="GridCell.Tab.1.left" timestamp="1619291446935">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="179" key="GridCell.Tab.1.right/0.0.1920.1040@0.0.1920.1040" timestamp="1618995249040" />
+    <state width="1877" height="191" key="GridCell.Tab.1.left/0.0.1920.1040@0.0.1920.1040" timestamp="1619291446935" />
+    <state width="1877" height="191" key="GridCell.Tab.1.right" timestamp="1619291446935">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="191" key="GridCell.Tab.1.right/0.0.1920.1040@0.0.1920.1040" timestamp="1619291446935" />
     <state x="83" y="135" key="SettingsEditor" timestamp="1618992890851">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="83" y="135" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1618992890851" />
+    <state x="623" y="225" key="search.everywhere.popup" timestamp="1619269471269">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="623" y="225" key="search.everywhere.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1619269471269" />
   </component>
 </project>

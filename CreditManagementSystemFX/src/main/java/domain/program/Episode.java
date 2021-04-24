@@ -6,9 +6,11 @@ public class Episode extends Program {
 
     private int episodeNo;
     private int seasonNo;
+    private TVSeries tvSeries;
 
-    public Episode(UUID uuid, String name, String description, int createdBy, int episodeNo, int seasonNo, int duration) {
+    public Episode(UUID uuid, TVSeries tvSeries, String name, String description, int createdBy, int episodeNo, int seasonNo, int duration) {
         super(uuid, name, description, createdBy, duration);
+        this.tvSeries = tvSeries;
         this.seasonNo = seasonNo;
         this.episodeNo = episodeNo;
     }
@@ -23,5 +25,11 @@ public class Episode extends Program {
     }
     public void setSeasonNo(int seasonNo) {
         this.seasonNo = seasonNo;
+    }
+    public TVSeries getTvSeries() {
+        return tvSeries;
+    }
+    public void setTvSeries(TVSeries tvSeries) {
+        this.tvSeries = tvSeries;
     }
 }

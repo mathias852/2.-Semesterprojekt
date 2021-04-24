@@ -25,97 +25,33 @@ import java.util.UUID;
 public class SystemAdminController implements Initializable {
 
     @FXML
-    private TextField durationText;
+    private TextField durationText, descriptionText, seasonNumberText, episodeNumberText, nameText,
+            creditedPersonNameText;
 
     @FXML
-    private ComboBox<String> tvSeriesSelection;
+    private ComboBox<String> tvSeriesSelection, searchSeriesCombo, functionSelection, searchProgramCombo,
+            searchSeasonCombo, creditedPersonSelection, programSelection, programTypeSelection;
 
     @FXML
-    private Label creditedPersonLabel;
+    private Label creditedPersonLabel, tvSLabel, durationLabel, nameLabel, seasonNoLabel, messageLabel,
+            episodeNoLabel, descriptionLabel;
 
     @FXML
-    private Label tvSLabel;
+    private Button createProgramBtn, createCreditBtn, createPersonBtn, exportButton;
 
     @FXML
-    private TextField descriptionText;
-
-    @FXML
-    private ComboBox<String> searchSeriesCombo;
-
-    @FXML
-    private Label durationLabel;
+    private ListView<String> searchListView, searchListViewCredits;
 
     @FXML
     private TableView<String> searchTableView;
 
-    @FXML
-    private Button createProgramBtn;
-
-    @FXML
-    private ListView<String> searchListView;
-
-    @FXML
-    private ListView<String> searchListViewCredits;
-
-    @FXML
-    private ComboBox<String> functionSelection;
-
-    @FXML
-    private ComboBox<String> searchProgramCombo;
-
-    @FXML
-    private ComboBox<String> searchSeasonCombo;
-
-    @FXML
-    private ComboBox<String> creditedPersonSelection;
-
-    @FXML
-    private Label nameLabel;
-
-    @FXML
-    private Label seasonNoLabel;
-
-    @FXML
-    private TextField seasonNumberText;
-
-    @FXML
-    private TextField episodeNumberText;
-
-    @FXML
-    private Button createCreditBtn;
-
-    @FXML
-    private TextField nameText;
-
-    @FXML
-    private Button createPersonBtn;
-
-    @FXML
-    private Label messageLabel;
-
-    @FXML
-    private TextField creditedPersonNameText;
-
-    @FXML
-    private Button exportButton;
-
-    @FXML
-    private ComboBox<String> programSelection;
-
-    @FXML
-    private ComboBox<String> programTypeSelection;
-
-    @FXML
-    private Label episodeNoLabel;
-
-    @FXML
-    private Label descriptionLabel;
 
     private final String transmission = "Transmission";
     private final String tvSeries = "TV-Series";
     private final String episode = "Episode";
 
     private Facade facade = new Facade();
+
 
     @FXML
     void createPerson(ActionEvent event) {
@@ -136,7 +72,7 @@ public class SystemAdminController implements Initializable {
 
             //Tjekker om credit allerede eksisterer
             if (program.getCredits() == null) {
-                facade.createCredit(program, creditedPerson, function);
+                facade.createCredit(creditedPerson, function, program);
             } else {
                 boolean exists = false;
                 for (Credit credit : program.getCredits()) {
@@ -146,7 +82,7 @@ public class SystemAdminController implements Initializable {
                     }
                 }
                 if (!exists) {
-                    facade.createCredit(program, creditedPerson, function);
+                    facade.createCredit(creditedPerson, function, program);
                 }
             }
         } catch (IndexOutOfBoundsException e) {
@@ -256,7 +192,7 @@ public class SystemAdminController implements Initializable {
     @FXML
     void searchProgramComboAction(ActionEvent event) {
         searchSeriesCombo.getItems().clear();
-        if (searchProgramCombo.getSelectionModel().getSelectedItem() == transmission){
+        if (searchProgramCombo.getSelectionModel().getSelectedItem().equals(transmission)){
             searchSeriesCombo.setVisible(false);
             searchSeasonCombo.setVisible(false);
 
@@ -267,7 +203,7 @@ public class SystemAdminController implements Initializable {
                 }
             }
 
-        } else if (searchProgramCombo.getSelectionModel().getSelectedItem() == tvSeries){
+        } else if (searchProgramCombo.getSelectionModel().getSelectedItem().equals(tvSeries)){
             searchSeriesCombo.setVisible(true);
             searchSeasonCombo.setVisible(true);
 
@@ -288,26 +224,41 @@ public class SystemAdminController implements Initializable {
                     searchSeasonCombo.getItems().add(String.valueOf(i));
                 }
             }
-        } catch (IndexOutOfBoundsException e){}
+        } catch (IndexOutOfBoundsException e){
+            System.out.println("Not yet implemented && Not sure why this is happening??? Yikes - " +
+                    "Think it has something to do with the change in combo-box you just made");
+        }
     }
 
     @FXML
     void searchSeasonComboAction(ActionEvent event) {
-        searchListView.getItems().clear();
+        try {
+            searchListView.getItems().clear();
 
-        if(searchSeriesCombo.getSelectionModel().getSelectedIndex() != -1) {
-            TVSeries series = facade.getTvSeriesList().get(searchSeriesCombo.getSelectionModel().getSelectedIndex());
-            for (Episode episode : series.getSeasonMap().get(Integer.parseInt(searchSeasonCombo.getSelectionModel().getSelectedItem()))){
-                searchListView.getItems().add(episode.getName() + ": " + episode.getUuid());
+            if (searchSeriesCombo.getSelectionModel().getSelectedIndex() != -1) {
+                TVSeries series = facade.getTvSeriesList().get(searchSeriesCombo.getSelectionModel().getSelectedIndex());
+                for (Episode episode : series.getSeasonMap().get(Integer.parseInt(searchSeasonCombo.getSelectionModel().getSelectedItem()))) {
+                    searchListView.getItems().add(episode.getName() + ": " + episode.getUuid());
+                }
             }
+        } catch (NumberFormatException e) {
+            System.out.println("This is just happening because we parse the value 'null' as an integer. And we do that because" +
+                    " we clear the season-combobox");
         }
     }
 
     @FXML
     void selectedProgramFromListView(MouseEvent event) {
         searchListViewCredits.getItems().clear();
-        Program selectedProgram = facade.getPrograms().get(searchListView.getSelectionModel().getSelectedIndex());
+        //Choose the String-item from the listview instead of the index
+        String viewString = searchListView.getSelectionModel().getSelectedItem();
+        //Split the string to get the UUID
+        String[] viewStringArray = viewString.split(":");
 
+        //Use the getProgramFromUuid method from the facade to get the program from the string. The trim after the string is to get rid of whitespace
+        Program selectedProgram = facade.getProgramFromUuid(UUID.fromString(viewStringArray[1].trim()));
+
+        //Get the credits from the selected program IF the program contains credits
         if(selectedProgram.getCredits() != null) {
             ArrayList<Credit> credits = selectedProgram.getCredits();
             for (Credit credit : credits) {
@@ -326,6 +277,7 @@ public class SystemAdminController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         facade.importFromTxt();
 
+
         searchProgramCombo.getItems().add(transmission);
         searchProgramCombo.getItems().add(tvSeries);
 
@@ -335,7 +287,6 @@ public class SystemAdminController implements Initializable {
         for (Credit.Function function : facade.getFunctions()) {
             functionSelection.getItems().add(function.role);
         }
-//        facade.createStuff();
 
         updateUI();
     }
