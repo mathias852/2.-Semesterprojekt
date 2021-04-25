@@ -7,16 +7,14 @@ import domain.program.Episode;
 import domain.program.Program;
 import domain.program.TVSeries;
 import domain.program.Transmission;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.MouseEvent;
 
-import java.io.IOException;
+import java.lang.reflect.Array;
 import java.net.URL;
 import java.util.*;
 
@@ -30,16 +28,17 @@ public class SystemAdminController implements Initializable {
     @FXML
     private ComboBox<String> tvSeriesSelection, searchSeriesCombo, functionSelection, searchProgramCombo,
             searchSeasonCombo, creditedPersonSelection, programSelection, programTypeSelection, tvSeriesUpdateSelection,
-            programUpdateSelection, functionUpdateSelection, creditedPersonUpdateSelection;
+            functionUpdateSelection;
 
     @FXML
     private Label creditedPersonLabel, tvSLabel, durationLabel, nameLabel, seasonNoLabel, messageLabel,
             episodeNoLabel, descriptionLabel, nameUpdateLabel, descriptionUpdateLabel, seasonNoUpdateLabel,
-            episodeNoUpdateLabel, durationUpdateLabel, tvSUpdateLabel, currentlyUpdatingLabel;
+            episodeNoUpdateLabel, durationUpdateLabel, tvSUpdateLabel, currentlyUpdatingLabel, currentlyUpdatingUUID,
+            programUpdateSelection, creditedPersonUpdateLabel;
 
     @FXML
     private Button createProgramBtn, createCreditBtn, createPersonBtn, exportButton, updateProgramButton, updateCreditButton,
-            updateProgramBtn, updatePersonBtn, updateCreditBtn, updateTvSeriesButton;
+            updateProgramBtn, updatePersonBtn, updateCreditBtn, updateTvSeriesButton, updateTvSeriesBtn;
 
     @FXML
     private ListView<String> searchListView, searchListViewCredits;
@@ -63,7 +62,7 @@ public class SystemAdminController implements Initializable {
     void createPerson(ActionEvent event) {
         if (!creditedPersonNameText.getText().isEmpty()) {
             facade.createPerson(creditedPersonNameText.getText());
-            updateUI();
+            updateCreateUI();
             creditedPersonNameText.setText("");
         }
     }
@@ -132,10 +131,10 @@ public class SystemAdminController implements Initializable {
                 messageLabel.setText("Invalid input (only numbers in episode and seasons fields)");
             }
         }
-        updateUI();
+        updateCreateUI();
     }
 
-    public void updateUI() {
+    public void updateCreateUI() {
         programSelection.getItems().clear();
         tvSeriesSelection.getItems().clear();
         creditedPersonSelection.getItems().clear();
@@ -155,7 +154,17 @@ public class SystemAdminController implements Initializable {
         episodeNumberText.clear();
         seasonNumberText.clear();
         durationText.clear();
+    }
 
+    public void updateUpdateUI() {
+        ArrayList<TextField> textFields = new ArrayList<>(Arrays.asList(nameUpdateText, descriptionUpdateText, durationUpdateText, seasonNumberUpdateText, episodeNumberUpdateText, creditedPersonNameUpdateText));
+        textFields.forEach(node -> node.clear());
+        ArrayList<ComboBox> comboBoxes = new ArrayList<>(Arrays.asList(tvSeriesUpdateSelection, functionUpdateSelection));
+        comboBoxes.forEach(node -> node.getItems().clear());
+        currentlyUpdatingLabel.setText("Choose program in \"Search/view\" tab");
+        currentlyUpdatingUUID.setText("");
+
+        facade.getTvSeriesList().forEach(tvSeries -> tvSeriesUpdateSelection.getItems().add(tvSeries.getName()));
     }
 
     @FXML
@@ -285,6 +294,8 @@ public class SystemAdminController implements Initializable {
             descriptionUpdateText.setText(program.getDescription());
             durationUpdateText.setText(String.valueOf(program.getDuration()));
             mainTabPane.getSelectionModel().select(updateTab);
+            updateTvSeriesBtn.setVisible(false);
+            updateProgramBtn.setVisible(true);
 
             if (searchProgramCombo.getSelectionModel().getSelectedItem().equals(tvSeries)) {
                 Episode episode = (Episode) program;
@@ -302,6 +313,7 @@ public class SystemAdminController implements Initializable {
                 }
                 tvSeriesUpdateSelection.getSelectionModel().select(facade.getTvSeriesFromEpisode(episode).getName());
 
+
             } else if (searchProgramCombo.getSelectionModel().getSelectedItem().equals(transmission)) {
                 seasonNoUpdateLabel.setVisible(false);
                 episodeNoUpdateLabel.setVisible(false);
@@ -311,11 +323,36 @@ public class SystemAdminController implements Initializable {
                 tvSeriesUpdateSelection.setVisible(false);
             }
             currentlyUpdatingLabel.setText("Currently editing: " + getSelectedProgramFromListView().getName());
+            currentlyUpdatingUUID.setText(String.valueOf(getSelectedProgramFromListView().getUuid()));
         }
     }
 
     @FXML
     void updateUpdateTabCreditOnAction(ActionEvent event) {
+        mainTabPane.getSelectionModel().select(updateTab);
+        Program program = getSelectedProgramFromListView();
+        Credit credit = program.getCredits().get(searchListViewCredits.getSelectionModel().getSelectedIndex());
+        creditedPersonUpdateLabel.setText(credit.getCreditedPerson().getName() + ": " + credit.getCreditedPerson().getUuid());
+        programUpdateSelection.setText(program.getName());
+
+        functionUpdateSelection.getSelectionModel().select(credit.getFunction().role);
+    }
+
+    @FXML
+    void updateCredit(ActionEvent event) {
+        try {
+            //Programmet hentes igennem index for vores program drop-down menu
+            Credit credit = getSelectedCreditFromListView();
+            Credit.Function function = facade.getFunctions().get(functionUpdateSelection.getSelectionModel().getSelectedIndex());
+
+            facade.updateCredit(credit, function);
+        } catch (IndexOutOfBoundsException e) {
+            System.out.println("Ikke implementeret endnu");
+        }
+    }
+
+    @FXML
+    void updateUpdateTabPersonOnAction(ActionEvent event) {
 
     }
 
@@ -336,17 +373,44 @@ public class SystemAdminController implements Initializable {
             episodeNumberUpdateText.setVisible(false);
             tvSeriesUpdateSelection.setVisible(false);
             currentlyUpdatingLabel.setText("Currently editing: " + tvSeries.getName());
+            currentlyUpdatingUUID.setText(String.valueOf(tvSeries.getUuid()));
             mainTabPane.getSelectionModel().select(updateTab);
 
             nameUpdateText.setText(tvSeries.getName());
             descriptionUpdateText.setText(tvSeries.getDescription());
+
+            updateTvSeriesBtn.setVisible(true);
+            updateProgramBtn.setVisible(false);
         }
     }
 
     @FXML
     void updateProgram(ActionEvent event) {
+        Program program = facade.getProgramFromUuid(UUID.fromString(currentlyUpdatingUUID.getText()));
+        String name = nameUpdateText.getText();
+        String description = descriptionUpdateText.getText();
+        int duration = durationUpdateText.getText().isEmpty() ? -1 : Integer.parseInt(durationUpdateText.getText());
+        int seasonNo = seasonNumberUpdateText.getText().isEmpty() ? -1 : Integer.parseInt(seasonNumberUpdateText.getText());
+        int episodeNo = episodeNumberUpdateText.getText().isEmpty() ? -1 : Integer.parseInt(episodeNumberUpdateText.getText());
+        TVSeries tvSeries = tvSeriesUpdateSelection.getSelectionModel().getSelectedIndex() == -1 ? null : facade.getTvSeriesList().get(tvSeriesUpdateSelection.getSelectionModel().getSelectedIndex());
 
+        if (program instanceof Transmission) {
+            facade.updateTransmission(program, name, description, 1, duration);
+        }
+        else if (program instanceof Episode) {
+            facade.updateEpisode(program, name, description, 1, duration, seasonNo, episodeNo, tvSeries);
+        }
+        updateUpdateUI();
+    }
 
+    @FXML
+    void updateTvSeries(ActionEvent event) {
+        TVSeries tvSeries = facade.getTvSeriesFromUuid(UUID.fromString(currentlyUpdatingUUID.getText()));
+        String name = nameUpdateText.getText();
+        String description = descriptionUpdateText.getText();
+
+        facade.updateTvSeries(tvSeries, name, description);
+        updateUpdateUI();
     }
 
     private TVSeries getSelectedTvSeriesFromComboBox() {
@@ -363,6 +427,11 @@ public class SystemAdminController implements Initializable {
         return facade.getProgramFromUuid(UUID.fromString(viewStringArray[1].trim()));
     }
 
+    private Credit getSelectedCreditFromListView() {
+        Credit credit = getSelectedProgramFromListView().getCredits().get(searchListViewCredits.getSelectionModel().getSelectedIndex());
+        return credit;
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         facade.importFromTxt();
@@ -375,9 +444,10 @@ public class SystemAdminController implements Initializable {
         programTypeSelection.getItems().add(episode);
         for (Credit.Function function : facade.getFunctions()) {
             functionSelection.getItems().add(function.role);
+            functionUpdateSelection.getItems().add(function.role);
         }
 
-        updateUI();
+        updateCreateUI();
     }
 
 

@@ -225,7 +225,8 @@ public class Facade {
 
 
 
-    public void updateProgram(Program p, String name, String description, int createdBy, int duration) {
+    public void updateTransmission(Program program, String name, String description, int createdBy, int duration) {
+        Transmission p = (Transmission) program;
         if (name != null) {
             p.setName(name);
         }
@@ -237,6 +238,47 @@ public class Facade {
         }
         if (duration != -1) {
             p.setDuration(duration);
+        }
+    }
+
+    public void updateEpisode(Program program, String name, String description, int createdBy, int duration, int seasonNo, int episodeNo, TVSeries tvSeries) {
+        Episode p = (Episode) program;
+        int oldSeasonNo = p.getSeasonNo();
+        int oldEpisodeNo = p.getEpisodeNo();
+        if (name != null) {
+            p.setName(name);
+        }
+        if (description != null) {
+            p.setDescription(description);
+        }
+        if (createdBy != -1) {
+            p.setCreatedBy(createdBy);
+        }
+        if (duration != -1) {
+            p.setDuration(duration);
+        }
+        if (episodeNo != -1) {
+            p.setEpisodeNo(episodeNo);
+        }
+        if (seasonNo != -1) {
+            tvSeries.getSeasonMap().get(oldSeasonNo).remove(p);
+            if (tvSeries.getSeasonMap().get(oldSeasonNo).size() < 1) {
+                tvSeries.getSeasonMap().remove(oldSeasonNo);
+            }
+            p.setSeasonNo(seasonNo);
+            tvSeries.addEpisode(p);
+        }
+        if (tvSeries != null) {
+            p.setTvSeries(tvSeries);
+        }
+    }
+
+    public void updateTvSeries(TVSeries tvSeries, String name, String description) {
+        if (name != null) {
+            tvSeries.setName(name);
+        }
+        if (description != null) {
+            tvSeries.setDescription(description);
         }
     }
 

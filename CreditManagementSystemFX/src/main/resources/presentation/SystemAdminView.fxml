@@ -72,6 +72,7 @@
                   <Button fx:id="updateProgramButton" disable="true" layoutX="532.0" layoutY="21.0" mnemonicParsing="false" onAction="#updateUpdateTabProgramOnAction" text="Update program" />
                   <Button fx:id="updateCreditButton" layoutX="532.0" layoutY="251.0" mnemonicParsing="false" onAction="#updateUpdateTabCreditOnAction" text="Update credit" />
                   <Button fx:id="updateTvSeriesButton" disable="true" layoutX="14.0" layoutY="152.0" mnemonicParsing="false" onAction="#updateUpdateTabTVSeriesOnAction" text="Update TV-series" />
+                  <Button fx:id="updatePersonButton" layoutX="532.0" layoutY="287.0" mnemonicParsing="false" onAction="#updateUpdateTabPersonOnAction" text="Update person" />
                </children></AnchorPane>
       </content>
     </Tab>
@@ -91,15 +92,13 @@
                   <Label fx:id="durationUpdateLabel" layoutX="26.0" layoutY="197.0" text="Duration" />
                   <ComboBox fx:id="tvSeriesUpdateSelection" layoutX="96.0" layoutY="318.0" prefWidth="150.0" />
                   <Label fx:id="tvSUpdateLabel" layoutX="26.0" layoutY="322.0" text="TV-Series" />
-                  <Button fx:id="updateProgramBtn" layoutX="26.0" layoutY="369.0" mnemonicParsing="false" onAction="#createProgram" prefHeight="25.0" prefWidth="224.0" text="Update program" />
-                  <ComboBox fx:id="programUpdateSelection" layoutX="458.0" layoutY="238.0" prefHeight="25.0" prefWidth="139.0" promptText="Programs" />
+                  <Button fx:id="updateProgramBtn" layoutX="26.0" layoutY="369.0" mnemonicParsing="false" onAction="#updateProgram" prefHeight="25.0" prefWidth="224.0" text="Update program" visible="false" />
                   <ComboBox fx:id="functionUpdateSelection" layoutX="458.0" layoutY="327.0" prefHeight="25.0" prefWidth="139.0" promptText="Function" />
-                  <Label layoutX="364.0" layoutY="286.0" text="Credited person" />
+                  <Label layoutX="364.0" layoutY="285.0" text="Credited person" />
                   <Label layoutX="365.0" layoutY="328.0" text="Function" />
-                  <ComboBox fx:id="creditedPersonUpdateSelection" layoutX="458.0" layoutY="282.0" prefHeight="25.0" prefWidth="139.0" promptText="Credited person" />
-                  <TextField fx:id="creditedPersonNameUpdateText" layoutX="430.0" layoutY="65.0" prefHeight="25.0" prefWidth="154.0" />
-                  <Label fx:id="creditedPersonLabel1" layoutX="365.0" layoutY="68.0" text="Name" />
-                  <Label layoutX="365.0" layoutY="34.0" text="Update person">
+                  <TextField fx:id="creditedPersonNameUpdateText" disable="true" layoutX="430.0" layoutY="65.0" prefHeight="25.0" prefWidth="154.0" />
+                  <Label fx:id="creditedPersonLabel1" disable="true" layoutX="365.0" layoutY="68.0" text="Name" />
+                  <Label disable="true" layoutX="365.0" layoutY="34.0" text="Update person">
                      <font>
                         <Font name="System Bold" size="13.0" />
                      </font>
@@ -115,10 +114,15 @@
                         <Font name="System Bold" size="13.0" />
                      </font>
                   </Label>
-                  <Button fx:id="updatePersonBtn" layoutX="365.0" layoutY="103.0" mnemonicParsing="false" onAction="#createPerson" prefHeight="25.0" prefWidth="219.0" text="Update person" />
-                  <Button fx:id="updateCreditBtn" layoutX="364.0" layoutY="369.0" mnemonicParsing="false" onAction="#createCredit" prefHeight="25.0" prefWidth="238.0" text="Update credit" />
+                  <Button fx:id="updatePersonBtn" disable="true" layoutX="365.0" layoutY="103.0" mnemonicParsing="false" onAction="#createPerson" prefHeight="25.0" prefWidth="219.0" text="Update person" />
+                  <Button fx:id="updateCreditBtn" layoutX="364.0" layoutY="369.0" mnemonicParsing="false" onAction="#updateCredit" prefHeight="25.0" prefWidth="238.0" text="Update credit" />
                   <Label fx:id="messageLabel1" layoutX="21.0" layoutY="441.0" prefHeight="17.0" prefWidth="571.0" />
-                  <Label fx:id="currentlyUpdatingLabel" layoutX="28.0" layoutY="69.0" prefHeight="17.0" prefWidth="222.0" text="Choose program in &quot;Search/view&quot; tab" />
+                  <Label fx:id="currentlyUpdatingLabel" layoutX="27.0" layoutY="60.0" prefHeight="17.0" prefWidth="222.0" text="Choose program in &quot;Search/view&quot; tab" />
+                  <Button fx:id="updateTvSeriesBtn" layoutX="26.0" layoutY="369.0" mnemonicParsing="false" onAction="#updateTvSeries" prefHeight="25.0" prefWidth="224.0" text="Update TV Series" visible="false" />
+                  <Label layoutX="28.0" layoutY="82.0" prefHeight="17.0" prefWidth="35.0" text="UUID:" />
+                  <Label fx:id="currentlyUpdatingUUID" layoutX="70.0" layoutY="82.0" prefHeight="17.0" prefWidth="220.0" />
+                  <Label fx:id="programUpdateSelection" layoutX="458.0" layoutY="240.0" text="Program" />
+                  <Label fx:id="creditedPersonUpdateLabel" layoutX="458.0" layoutY="286.0" text="Credited person" />
                </children>
             </AnchorPane>
          </content>
