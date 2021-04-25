@@ -11,33 +11,35 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.MouseEvent;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.UUID;
+import java.util.*;
 
 public class SystemAdminController implements Initializable {
 
     @FXML
     private TextField durationText, descriptionText, seasonNumberText, episodeNumberText, nameText,
-            creditedPersonNameText;
+            creditedPersonNameText, nameUpdateText, descriptionUpdateText, episodeNumberUpdateText, durationUpdateText,
+            creditedPersonNameUpdateText, seasonNumberUpdateText;
 
     @FXML
     private ComboBox<String> tvSeriesSelection, searchSeriesCombo, functionSelection, searchProgramCombo,
-            searchSeasonCombo, creditedPersonSelection, programSelection, programTypeSelection;
+            searchSeasonCombo, creditedPersonSelection, programSelection, programTypeSelection, tvSeriesUpdateSelection,
+            programUpdateSelection, functionUpdateSelection, creditedPersonUpdateSelection;
 
     @FXML
     private Label creditedPersonLabel, tvSLabel, durationLabel, nameLabel, seasonNoLabel, messageLabel,
-            episodeNoLabel, descriptionLabel;
+            episodeNoLabel, descriptionLabel, nameUpdateLabel, descriptionUpdateLabel, seasonNoUpdateLabel,
+            episodeNoUpdateLabel, durationUpdateLabel, tvSUpdateLabel, currentlyUpdatingLabel;
 
     @FXML
-    private Button createProgramBtn, createCreditBtn, createPersonBtn, exportButton;
+    private Button createProgramBtn, createCreditBtn, createPersonBtn, exportButton, updateProgramButton, updateCreditButton,
+            updateProgramBtn, updatePersonBtn, updateCreditBtn, updateTvSeriesButton;
 
     @FXML
     private ListView<String> searchListView, searchListViewCredits;
@@ -45,13 +47,17 @@ public class SystemAdminController implements Initializable {
     @FXML
     private TableView<String> searchTableView;
 
+    @FXML
+    private TabPane mainTabPane;
+
+    @FXML
+    private Tab updateTab;
 
     private final String transmission = "Transmission";
     private final String tvSeries = "TV-Series";
     private final String episode = "Episode";
 
     private Facade facade = new Facade();
-
 
     @FXML
     void createPerson(ActionEvent event) {
@@ -154,38 +160,28 @@ public class SystemAdminController implements Initializable {
 
     @FXML
     void dropDownSelection(ActionEvent event) {
+        ArrayList<Node> durationNodes = new ArrayList<>(Arrays.asList(durationLabel, durationText));
+        ArrayList<Node> episodeNodes = new ArrayList<>(Arrays.asList(tvSeriesSelection, seasonNumberText, episodeNumberText, tvSLabel, seasonNoLabel, episodeNoLabel));
         if (programTypeSelection.getValue().equals(transmission)) {
             System.out.println(programTypeSelection.getValue());
-            //Text fields
-            seasonNumberText.setVisible(false);
-            episodeNumberText.setVisible(false);
-            tvSeriesSelection.setVisible(false);
-            durationText.setVisible(true);
-            //Labels
-            tvSLabel.setVisible(false);
-            seasonNoLabel.setVisible(false);
-            episodeNoLabel.setVisible(false);
-            durationLabel.setVisible(true);
+            //Episode nodes
+            episodeNodes.forEach(node -> node.setVisible(false));
+            //Duration nodes
+            durationNodes.forEach(node -> node.setVisible(true));
+
         } else if (programTypeSelection.getValue().equals(tvSeries)) {
             System.out.println(programTypeSelection.getValue());
-            seasonNumberText.setVisible(false);
-            episodeNumberText.setVisible(false);
-            tvSeriesSelection.setVisible(false);
-            tvSLabel.setVisible(false);
-            seasonNoLabel.setVisible(false);
-            episodeNoLabel.setVisible(false);
-            durationLabel.setVisible(false);
-            durationText.setVisible(false);
+            //Episode nodes
+            episodeNodes.forEach(node -> node.setVisible(false));
+            //Duration nodes
+            durationNodes.forEach(node -> node.setVisible(false));
+
         } else if (programTypeSelection.getValue().equals(episode)) {
             System.out.println(programTypeSelection.getValue());
-            seasonNumberText.setVisible(true);
-            episodeNumberText.setVisible(true);
-            tvSeriesSelection.setVisible(true);
-            tvSLabel.setVisible(true);
-            seasonNoLabel.setVisible(true);
-            episodeNoLabel.setVisible(true);
-            durationLabel.setVisible(true);
-            durationText.setVisible(true);
+            //Episode nodes
+            episodeNodes.forEach(node -> node.setVisible(true));
+            //Duration nodes
+            durationNodes.forEach(node -> node.setVisible(true));
         }
     }
 
@@ -193,8 +189,14 @@ public class SystemAdminController implements Initializable {
     void searchProgramComboAction(ActionEvent event) {
         searchSeriesCombo.getItems().clear();
         if (searchProgramCombo.getSelectionModel().getSelectedItem().equals(transmission)){
-            searchSeriesCombo.setVisible(false);
-            searchSeasonCombo.setVisible(false);
+            searchSeriesCombo.setDisable(true);
+            searchSeasonCombo.setDisable(true);
+            updateTvSeriesButton.setDisable(true);
+            searchSeriesCombo.getSelectionModel().clearSelection();
+            searchSeasonCombo.getSelectionModel().clearSelection();
+            searchSeriesCombo.setPromptText("Choose TV-series");
+            searchSeasonCombo.setPromptText("Choose season");
+
 
             searchListView.getItems().clear();
             for (Program program : facade.getPrograms()) {
@@ -204,8 +206,8 @@ public class SystemAdminController implements Initializable {
             }
 
         } else if (searchProgramCombo.getSelectionModel().getSelectedItem().equals(tvSeries)){
-            searchSeriesCombo.setVisible(true);
-            searchSeasonCombo.setVisible(true);
+            searchSeriesCombo.setDisable(false);
+            searchSeasonCombo.setDisable(false);
 
             for (TVSeries tvSeries : facade.getTvSeriesList()) {
                 searchSeriesCombo.getItems().add(tvSeries.getName());
@@ -224,6 +226,7 @@ public class SystemAdminController implements Initializable {
                     searchSeasonCombo.getItems().add(String.valueOf(i));
                 }
             }
+            updateTvSeriesButton.setDisable(false);
         } catch (IndexOutOfBoundsException e){
             System.out.println("Not yet implemented && Not sure why this is happening??? Yikes - " +
                     "Think it has something to do with the change in combo-box you just made");
@@ -236,7 +239,7 @@ public class SystemAdminController implements Initializable {
             searchListView.getItems().clear();
 
             if (searchSeriesCombo.getSelectionModel().getSelectedIndex() != -1) {
-                TVSeries series = facade.getTvSeriesList().get(searchSeriesCombo.getSelectionModel().getSelectedIndex());
+                TVSeries series = getSelectedTvSeriesFromComboBox();
                 for (Episode episode : series.getSeasonMap().get(Integer.parseInt(searchSeasonCombo.getSelectionModel().getSelectedItem()))) {
                     searchListView.getItems().add(episode.getName() + ": " + episode.getUuid());
                 }
@@ -250,13 +253,9 @@ public class SystemAdminController implements Initializable {
     @FXML
     void selectedProgramFromListView(MouseEvent event) {
         searchListViewCredits.getItems().clear();
-        //Choose the String-item from the listview instead of the index
-        String viewString = searchListView.getSelectionModel().getSelectedItem();
-        //Split the string to get the UUID
-        String[] viewStringArray = viewString.split(":");
+        updateProgramButton.setDisable(false);
 
-        //Use the getProgramFromUuid method from the facade to get the program from the string. The trim after the string is to get rid of whitespace
-        Program selectedProgram = facade.getProgramFromUuid(UUID.fromString(viewStringArray[1].trim()));
+        Program selectedProgram = getSelectedProgramFromListView();
 
         //Get the credits from the selected program IF the program contains credits
         if(selectedProgram.getCredits() != null) {
@@ -272,11 +271,101 @@ public class SystemAdminController implements Initializable {
         facade.exportToTxt();
     }
 
+    @FXML
+    void updateUpdateTabProgramOnAction(ActionEvent event) {
+        if (searchListView.getSelectionModel().getSelectedItem() != null) {
+            Program program = getSelectedProgramFromListView();
+            nameUpdateLabel.setVisible(true);
+            descriptionUpdateLabel.setVisible(true);
+            durationUpdateLabel.setVisible(true);
+            nameUpdateText.setVisible(true);
+            descriptionUpdateText.setVisible(true);
+            durationUpdateText.setVisible(true);
+            nameUpdateText.setText(program.getName());
+            descriptionUpdateText.setText(program.getDescription());
+            durationUpdateText.setText(String.valueOf(program.getDuration()));
+            mainTabPane.getSelectionModel().select(updateTab);
+
+            if (searchProgramCombo.getSelectionModel().getSelectedItem().equals(tvSeries)) {
+                Episode episode = (Episode) program;
+                seasonNoUpdateLabel.setVisible(true);
+                episodeNoUpdateLabel.setVisible(true);
+                tvSUpdateLabel.setVisible(true);
+                seasonNumberUpdateText.setVisible(true);
+                episodeNumberUpdateText.setVisible(true);
+                tvSeriesUpdateSelection.setVisible(true);
+                seasonNumberUpdateText.setText(String.valueOf(episode.getSeasonNo()));
+                episodeNumberUpdateText.setText(String.valueOf(episode.getEpisodeNo()));
+                tvSeriesUpdateSelection.getItems().clear();
+                for (TVSeries tvSeries : facade.getTvSeriesList()) {
+                    tvSeriesUpdateSelection.getItems().add(tvSeries.getName());
+                }
+                tvSeriesUpdateSelection.getSelectionModel().select(facade.getTvSeriesFromEpisode(episode).getName());
+
+            } else if (searchProgramCombo.getSelectionModel().getSelectedItem().equals(transmission)) {
+                seasonNoUpdateLabel.setVisible(false);
+                episodeNoUpdateLabel.setVisible(false);
+                tvSUpdateLabel.setVisible(false);
+                seasonNumberUpdateText.setVisible(false);
+                episodeNumberUpdateText.setVisible(false);
+                tvSeriesUpdateSelection.setVisible(false);
+            }
+            currentlyUpdatingLabel.setText("Currently editing: " + getSelectedProgramFromListView().getName());
+        }
+    }
+
+    @FXML
+    void updateUpdateTabCreditOnAction(ActionEvent event) {
+
+    }
+
+    @FXML
+    void updateUpdateTabTVSeriesOnAction(ActionEvent event) {
+        if (searchSeriesCombo.getSelectionModel().getSelectedItem() != null) {
+            TVSeries tvSeries = getSelectedTvSeriesFromComboBox();
+            nameUpdateLabel.setVisible(true);
+            descriptionUpdateLabel.setVisible(true);
+            durationUpdateLabel.setVisible(false);
+            seasonNoUpdateLabel.setVisible(false);
+            episodeNoUpdateLabel.setVisible(false);
+            tvSUpdateLabel.setVisible(false);
+            nameUpdateText.setVisible(true);
+            descriptionUpdateText.setVisible(true);
+            durationUpdateText.setVisible(false);
+            seasonNumberUpdateText.setVisible(false);
+            episodeNumberUpdateText.setVisible(false);
+            tvSeriesUpdateSelection.setVisible(false);
+            currentlyUpdatingLabel.setText("Currently editing: " + tvSeries.getName());
+            mainTabPane.getSelectionModel().select(updateTab);
+
+            nameUpdateText.setText(tvSeries.getName());
+            descriptionUpdateText.setText(tvSeries.getDescription());
+        }
+    }
+
+    @FXML
+    void updateProgram(ActionEvent event) {
+
+
+    }
+
+    private TVSeries getSelectedTvSeriesFromComboBox() {
+        TVSeries series = facade.getTvSeriesList().get(searchSeriesCombo.getSelectionModel().getSelectedIndex());
+        return series;
+    }
+
+    private Program getSelectedProgramFromListView() {
+        //Choose the String-item from the listview instead of the index
+        String viewString = searchListView.getSelectionModel().getSelectedItem();
+        //Split the string to get the UUID
+        String[] viewStringArray = viewString.split(":");
+        //Use the getProgramFromUuid method from the facade to get the program from the string. The trim after the string is to get rid of whitespace
+        return facade.getProgramFromUuid(UUID.fromString(viewStringArray[1].trim()));
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         facade.importFromTxt();
-
 
         searchProgramCombo.getItems().add(transmission);
         searchProgramCombo.getItems().add(tvSeries);
@@ -290,4 +379,6 @@ public class SystemAdminController implements Initializable {
 
         updateUI();
     }
+
+
 }
