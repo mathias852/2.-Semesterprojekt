@@ -282,29 +282,25 @@ public class SystemAdminController implements Initializable {
 
     @FXML
     void updateUpdateTabProgramOnAction(ActionEvent event) {
+        ArrayList<Node> updateNodes = new ArrayList<>(Arrays.asList(
+                nameUpdateLabel, descriptionUpdateLabel, durationUpdateLabel,
+                nameUpdateText, descriptionUpdateText, durationUpdateText));
+        ArrayList<Node> episodeNodes = new ArrayList<>(Arrays.asList(
+                seasonNoUpdateLabel, seasonNumberUpdateText, episodeNoUpdateLabel,
+                episodeNumberUpdateText, tvSUpdateLabel, tvSeriesUpdateSelection));
         if (searchListView.getSelectionModel().getSelectedItem() != null) {
             Program program = getSelectedProgramFromListView();
-            nameUpdateLabel.setVisible(true);
-            descriptionUpdateLabel.setVisible(true);
-            durationUpdateLabel.setVisible(true);
-            nameUpdateText.setVisible(true);
-            descriptionUpdateText.setVisible(true);
-            durationUpdateText.setVisible(true);
+            updateNodes.forEach(node -> node.setVisible(true));
+            updateProgramBtn.setVisible(true);
+            updateTvSeriesBtn.setVisible(false);
             nameUpdateText.setText(program.getName());
             descriptionUpdateText.setText(program.getDescription());
             durationUpdateText.setText(String.valueOf(program.getDuration()));
             mainTabPane.getSelectionModel().select(updateTab);
-            updateTvSeriesBtn.setVisible(false);
-            updateProgramBtn.setVisible(true);
 
             if (searchProgramCombo.getSelectionModel().getSelectedItem().equals(tvSeries)) {
                 Episode episode = (Episode) program;
-                seasonNoUpdateLabel.setVisible(true);
-                episodeNoUpdateLabel.setVisible(true);
-                tvSUpdateLabel.setVisible(true);
-                seasonNumberUpdateText.setVisible(true);
-                episodeNumberUpdateText.setVisible(true);
-                tvSeriesUpdateSelection.setVisible(true);
+                episodeNodes.forEach(node -> node.setVisible(true));
                 seasonNumberUpdateText.setText(String.valueOf(episode.getSeasonNo()));
                 episodeNumberUpdateText.setText(String.valueOf(episode.getEpisodeNo()));
                 tvSeriesUpdateSelection.getItems().clear();
@@ -313,14 +309,8 @@ public class SystemAdminController implements Initializable {
                 }
                 tvSeriesUpdateSelection.getSelectionModel().select(facade.getTvSeriesFromEpisode(episode).getName());
 
-
             } else if (searchProgramCombo.getSelectionModel().getSelectedItem().equals(transmission)) {
-                seasonNoUpdateLabel.setVisible(false);
-                episodeNoUpdateLabel.setVisible(false);
-                tvSUpdateLabel.setVisible(false);
-                seasonNumberUpdateText.setVisible(false);
-                episodeNumberUpdateText.setVisible(false);
-                tvSeriesUpdateSelection.setVisible(false);
+                episodeNodes.forEach(node -> node.setVisible(false));
             }
             currentlyUpdatingLabel.setText("Currently editing: " + getSelectedProgramFromListView().getName());
             currentlyUpdatingUUID.setText(String.valueOf(getSelectedProgramFromListView().getUuid()));
@@ -358,24 +348,22 @@ public class SystemAdminController implements Initializable {
 
     @FXML
     void updateUpdateTabTVSeriesOnAction(ActionEvent event) {
+        ArrayList<Node> tvSeriesNodes = new ArrayList<>(Arrays.asList(
+                nameUpdateLabel, nameUpdateText, descriptionUpdateText, descriptionUpdateLabel));
+        ArrayList<Node> programNodes = new ArrayList<>(Arrays.asList(
+                durationUpdateLabel, durationUpdateText, seasonNoUpdateLabel, seasonNumberUpdateText,
+                episodeNoUpdateLabel, episodeNumberUpdateText, tvSUpdateLabel, tvSeriesUpdateSelection));
+
         if (searchSeriesCombo.getSelectionModel().getSelectedItem() != null) {
             TVSeries tvSeries = getSelectedTvSeriesFromComboBox();
-            nameUpdateLabel.setVisible(true);
-            descriptionUpdateLabel.setVisible(true);
-            durationUpdateLabel.setVisible(false);
-            seasonNoUpdateLabel.setVisible(false);
-            episodeNoUpdateLabel.setVisible(false);
-            tvSUpdateLabel.setVisible(false);
-            nameUpdateText.setVisible(true);
-            descriptionUpdateText.setVisible(true);
-            durationUpdateText.setVisible(false);
-            seasonNumberUpdateText.setVisible(false);
-            episodeNumberUpdateText.setVisible(false);
-            tvSeriesUpdateSelection.setVisible(false);
+
+            tvSeriesNodes.forEach(node -> node.setVisible(true));
+            programNodes.forEach(node -> node.setVisible(false));
+
             currentlyUpdatingLabel.setText("Currently editing: " + tvSeries.getName());
-            currentlyUpdatingUUID.setText(String.valueOf(tvSeries.getUuid()));
             mainTabPane.getSelectionModel().select(updateTab);
 
+            currentlyUpdatingUUID.setText(String.valueOf(tvSeries.getUuid()));
             nameUpdateText.setText(tvSeries.getName());
             descriptionUpdateText.setText(tvSeries.getDescription());
 
