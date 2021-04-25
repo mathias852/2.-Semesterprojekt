@@ -8,9 +8,9 @@ public class CreditedPerson {
     private UUID uuid;
 
 
-    public CreditedPerson(String name, UUID uuid) {
-        this.name = name;
+    public CreditedPerson(UUID uuid, String name) {
         this.uuid = uuid;
+        this.name = name;
     }
 
     public String getName() {

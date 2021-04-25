@@ -18,19 +18,10 @@ public class Facade {
     PersistenceHandler persistenceHandler = new PersistenceHandler();
 
     public static void main(String[] args) {
-//        TVSeries badehotellet = new TVSeries("Badehotellet", "En serie", 1, UUID.randomUUID());
-//        Facade facade = new Facade();
-//        Episode ep1 = facade.createEpisode(badehotellet,"Badehotellet 1","Badehotellet the sequel", 1, 1, 1, 60);
-//        Episode ep2 = facade.createEpisode(badehotellet, "Badehotellet 2", "Badehotellet the sequel", 1, 2, 1, 60);
-//        CreditedPerson cp = facade.createPerson("Jens Jensen");
-//        CreditedPerson cp2 = facade.createPerson("Hans Hansen");
-//        Credit c = facade.createCredit(ep1, cp, Credit.Function.VISUALARTIST);
-//        Credit c2 = facade.createCredit(ep1, cp2, Credit.Function.EDITOR);
-
     }
 
 
-    public void createStuff() {
+/*    public void createStuff() {
         TVSeries badehotellet = createTvSeries("Badehotellet", "En serie", 1);
         Episode ep1 = createEpisode(badehotellet, "Badehotellet 1", "Badehotellet the sequel", 1, 1, 1, 60);
         Episode ep2 = createEpisode(badehotellet, "Badehotellet 2", "Badehotellet the sequel", 1, 2, 1, 60);
@@ -38,14 +29,14 @@ public class Facade {
         CreditedPerson cp2 = createPerson("Hans Hansen");
         Credit c = createCredit(ep1, cp, Credit.Function.VISUALARTIST);
         Credit c2 = createCredit(ep1, cp2, Credit.Function.EDITOR);
-    }
+    }*/
 
     public Episode createEpisode(TVSeries tv, String name, String description, int createdBy, int episodeNo, int seasonNo, int duration) {
         return createEpisode(UUID.randomUUID(), tv, name, description, createdBy, episodeNo, seasonNo, duration);
     }
 
     public Episode createEpisode(UUID uuid, TVSeries tv, String name, String description, int createdBy, int episodeNo, int seasonNo, int duration) {
-        Program program = new Episode(UUID.randomUUID(), name, description, createdBy, episodeNo, seasonNo, duration);
+        Program program = new Episode(uuid, tv, name, description, createdBy, episodeNo, seasonNo, duration);
         tv.addEpisode((Episode) program);
         programs.add(program);
         return (Episode) program;
@@ -71,11 +62,15 @@ public class Facade {
         return tvSeries;
     }
 
-    public Credit createCredit(Program creditedProgram, CreditedPerson creditedPerson, Credit.Function function) {
-        return createCredit(UUID.randomUUID(), creditedProgram, creditedPerson, function);
+    /**
+     *
+     * We never use this method. Do we need it?
+     */
+    public Credit createCredit(CreditedPerson creditedPerson, Credit.Function function) {
+        return createCredit(creditedPerson, function);
     }
 
-    public Credit createCredit(UUID uuid, Program creditedProgram, CreditedPerson creditedPerson, Credit.Function function) {
+    public Credit createCredit(CreditedPerson creditedPerson, Credit.Function function, Program creditedProgram) {
         Credit c = new Credit(creditedPerson, function);
         creditedProgram.addCredit(c);
         return c;
@@ -86,24 +81,9 @@ public class Facade {
     }
 
     public CreditedPerson createPerson(UUID uuid, String name) {
-        CreditedPerson creditedPerson = new CreditedPerson(name, UUID.randomUUID());
+        CreditedPerson creditedPerson = new CreditedPerson(uuid, name);
         creditedPeople.add(creditedPerson);
         return creditedPerson;
-    }
-
-    public void updateProgram(Program p, String name, String description, int createdBy, int duration) {
-        if (name != null) {
-            p.setName(name);
-        }
-        if (description != null) {
-            p.setDescription(description);
-        }
-        if (createdBy != -1) {
-            p.setCreatedBy(createdBy);
-        }
-        if (duration != -1) {
-            p.setDuration(duration);
-        }
     }
 
     public void exportToTxt() {
@@ -152,20 +132,24 @@ public class Facade {
     }
 
     //Here we import the text-files and create a new instance of every line from each file
+
     public void importFromTxt() {
         ArrayList<String[]> transmissions = persistenceHandler.readTransmission();
         for (String[] transmissionLine : transmissions) {
-            createTransmission(UUID.fromString(transmissionLine[0]), transmissionLine[1], transmissionLine[2], Integer.parseInt(transmissionLine[3]), Integer.parseInt(transmissionLine[4]));
-        }
-
-        ArrayList<String[]> episodes = persistenceHandler.readEpisode();
-        for (String[] episodeLine : episodes) {
-            createEpisode(UUID.fromString(episodeLine[0]), getTvSeriesFromUuid(UUID.fromString(episodeLine[1])), episodeLine[2], episodeLine[3], Integer.parseInt(episodeLine[4]), Integer.parseInt(episodeLine[5]), Integer.parseInt(episodeLine[6]), Integer.parseInt(episodeLine[7]));
+            createTransmission(UUID.fromString(transmissionLine[0]), transmissionLine[1], transmissionLine[2],
+                    Integer.parseInt(transmissionLine[3]), Integer.parseInt(transmissionLine[4]));
         }
 
         ArrayList<String[]> tvSeries = persistenceHandler.readTvSeries();
         for (String[] tvLine : tvSeries) {
             createTvSeries(UUID.fromString(tvLine[0]), tvLine[1], tvLine[2], Integer.parseInt(tvLine[3]));
+        }
+
+        ArrayList<String[]> episodes = persistenceHandler.readEpisode();
+        for (String[] episodeLine : episodes) {
+            createEpisode(UUID.fromString(episodeLine[0]), getTvSeriesFromUuid(UUID.fromString(episodeLine[1])),
+                    episodeLine[2], episodeLine[3], Integer.parseInt(episodeLine[4]), Integer.parseInt(episodeLine[5]),
+                    Integer.parseInt(episodeLine[6]), Integer.parseInt(episodeLine[7]));
         }
 
         ArrayList<String[]> people = persistenceHandler.readPerson();
@@ -175,11 +159,23 @@ public class Facade {
 
         ArrayList<String[]> credit = persistenceHandler.readCredit();
         for (String[] creditLine : credit) {
-            createCredit(UUID.fromString(creditLine[0]), getProgramFromUuid(UUID.fromString(creditLine[1])), getPersonFromUuid(UUID.fromString(creditLine[2])), Credit.Function.valueOf(creditLine[3]));
+            createCredit(getPersonFromUuid(UUID.fromString(creditLine[0])), getFunction(creditLine[1]),
+                    getProgramFromUuid(UUID.fromString(creditLine[2])));
         }
     }
 
-    //iterates through the tv series in facade and returns the tv series that the episode parameter is in
+
+    //To receive the function(Enum) when the string-value is provided
+    public Credit.Function getFunction(String string) {
+        for (Credit.Function function : Credit.Function.values()) {
+            if (function.role.equalsIgnoreCase(string)) {
+                return function;
+            }
+        }
+        return null;
+    }
+
+    //Iterates through the tv series in facade and returns the tv series that the episode parameter is in
     public TVSeries getTvSeriesFromEpisode(Episode episode) {
         for (TVSeries tvSeries : getTvSeriesList()) {
             for (Integer i : tvSeries.getSeasonMap().keySet()) {
@@ -203,6 +199,7 @@ public class Facade {
         return null;
     }
 
+    //To get the creditedPerson instance when you have the uuid
     public CreditedPerson getPersonFromUuid(UUID uuid) {
         for (CreditedPerson person : getCreditedPeople()) {
             if (person.getUuid().equals(uuid)) {
@@ -224,6 +221,65 @@ public class Facade {
 
     public List<Credit.Function> getFunctions() {
         return Arrays.asList(Credit.Function.values());
+    }
+
+
+
+    public void updateTransmission(Program program, String name, String description, int createdBy, int duration) {
+        Transmission p = (Transmission) program;
+        if (name != null) {
+            p.setName(name);
+        }
+        if (description != null) {
+            p.setDescription(description);
+        }
+        if (createdBy != -1) {
+            p.setCreatedBy(createdBy);
+        }
+        if (duration != -1) {
+            p.setDuration(duration);
+        }
+    }
+
+    public void updateEpisode(Program program, String name, String description, int createdBy, int duration, int seasonNo, int episodeNo, TVSeries tvSeries) {
+        Episode p = (Episode) program;
+        int oldSeasonNo = p.getSeasonNo();
+        int oldEpisodeNo = p.getEpisodeNo();
+        if (name != null) {
+            p.setName(name);
+        }
+        if (description != null) {
+            p.setDescription(description);
+        }
+        if (createdBy != -1) {
+            p.setCreatedBy(createdBy);
+        }
+        if (duration != -1) {
+            p.setDuration(duration);
+        }
+        if (episodeNo != -1) {
+            p.setEpisodeNo(episodeNo);
+        }
+        if (seasonNo != -1) {
+            tvSeries.getSeasonMap().get(oldSeasonNo).remove(p);
+            if (tvSeries.getSeasonMap().get(oldSeasonNo).size() < 1) {
+                tvSeries.getSeasonMap().remove(oldSeasonNo);
+            }
+            p.setSeasonNo(seasonNo);
+            tvSeries.addEpisode(p);
+        }
+        if (tvSeries != null) {
+            p.setTvSeries(tvSeries);
+        }
+    }
+
+    public void updateTvSeries(TVSeries tvSeries, String name, String description) {
+        if (name != null) {
+            tvSeries.setName(name);
+        }
+        if (description != null) {
+            tvSeries.setDescription(description);
+        }
     }
 
     public void updateCredit(Credit credit, Credit.Function function) {

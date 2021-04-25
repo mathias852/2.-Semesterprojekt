@@ -21,7 +21,7 @@ public class TVSeries {
         if(seasonMap == null){
             seasonMap = new TreeMap<>();
         }
-        if(seasonMap.get(e.getSeasonNo()) == null){
+        if(!seasonMap.containsKey(e.getSeasonNo())){
             seasonMap.put(e.getSeasonNo(), new ArrayList<Episode>());
         }
         seasonMap.get(e.getSeasonNo()).add(e);

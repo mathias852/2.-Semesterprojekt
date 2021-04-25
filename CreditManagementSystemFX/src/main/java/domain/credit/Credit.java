@@ -51,7 +51,9 @@ public class Credit {
         TEXTANDMUSIC("Tekst og musik"),
         ORGANIZER("Tilrettelæggelse"),
         EXTRAORDINARYEFFORT("Uhonoreret og ekstraordinær indsats");
+
         public final String role;
+
         Function(String role) {
             this.role = role;
         }
