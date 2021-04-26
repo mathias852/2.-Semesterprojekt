@@ -67,7 +67,7 @@
                   <ComboBox fx:id="searchProgramCombo" layoutX="14.0" layoutY="21.0" onAction="#searchProgramComboAction" prefHeight="25.0" prefWidth="189.0" promptText="Choose program type" />
                   <ComboBox fx:id="searchSeriesCombo" disable="true" editable="true" layoutX="14.0" layoutY="67.0" onAction="#searchSeriesComboAction" prefHeight="25.0" prefWidth="189.0" promptText="Choose TV-series" />
                   <ComboBox fx:id="searchSeasonCombo" disable="true" editable="true" layoutX="14.0" layoutY="111.0" onAction="#searchSeasonComboAction" prefHeight="25.0" prefWidth="189.0" promptText="Choose season" />
-                  <Button fx:id="exportButton" layoutX="14.0" layoutY="458.0" mnemonicParsing="false" onAction="#exportButtonOnAction" text="Eksportér til .txt" />
+                  <Button fx:id="exportButton" layoutX="14.0" layoutY="458.0" mnemonicParsing="false" onAction="#exportButtonOnAction" text="Gem til .txt" />
                   <ListView fx:id="searchListViewCredits" layoutX="215.0" layoutY="250.0" prefHeight="233.0" prefWidth="300.0" />
                   <Button fx:id="updateProgramButton" disable="true" layoutX="532.0" layoutY="21.0" mnemonicParsing="false" onAction="#updateUpdateTabProgramOnAction" text="Update program" />
                   <Button fx:id="updateCreditButton" layoutX="532.0" layoutY="251.0" mnemonicParsing="false" onAction="#updateUpdateTabCreditOnAction" text="Update credit" />

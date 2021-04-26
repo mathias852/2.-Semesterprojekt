@@ -9,6 +9,7 @@ import java.util.ArrayList;
 
 
 public class PersistenceHandler {
+    //Files representing a temporary DB
 
     private File credit = new File("src/main/resources/credits.txt");
     private File episode = new File("src/main/resources/episode.txt");
@@ -16,13 +17,10 @@ public class PersistenceHandler {
     private File person = new File("src/main/resources/person.txt");
     private File transmission = new File("src/main/resources/transmission.txt");
 
-    Path relativePath = Paths.get("src/main/resources/credits.txt");
-    Path absolutePath = relativePath.toAbsolutePath();
-
-
     public PersistenceHandler() {
     }
 
+    //Contains the general write functionality that is used to write the files
     private void write(File file, String s) {
         if (!file.exists()) {
             try {
@@ -41,6 +39,35 @@ public class PersistenceHandler {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    //Contains the general read functionality that is used to read the files
+    public ArrayList<String[]> read(File file) {
+        //
+        ArrayList<String[]> list = new ArrayList<>();
+
+        try {
+            Scanner scanner = new Scanner(file);
+            while(scanner.hasNextLine()){
+                String string = scanner.nextLine();
+                String[] data = string.split(";");
+                list.add(data);
+            }
+        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+        }
+        return list;
+    }
+
+
+    public void deleteFiles() {
+
+        credit.delete();
+        person.delete();
+        tvSeries.delete();
+        transmission.delete();
+        episode.delete();
+
     }
 
     public void writeCredit(String s) {
@@ -63,16 +90,6 @@ public class PersistenceHandler {
         write(episode, s);
     }
 
-    public void deleteFiles() {
-
-        credit.delete();
-        person.delete();
-        tvSeries.delete();
-        transmission.delete();
-        episode.delete();
-
-    }
-
 
     public ArrayList<String[]> readCredit() {
         return read(credit);
@@ -92,21 +109,5 @@ public class PersistenceHandler {
 
     public ArrayList<String[]> readTransmission() {
         return read(transmission);
-    }
-
-    public ArrayList<String[]> read(File file) {
-        ArrayList<String[]> list = new ArrayList<>();
-
-        try {
-            Scanner scanner = new Scanner(file);
-            while(scanner.hasNextLine()){
-                String string = scanner.nextLine();
-                String[] data = string.split(";");
-                list.add(data);
-            }
-        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-        }
-        return list;
     }
 }
