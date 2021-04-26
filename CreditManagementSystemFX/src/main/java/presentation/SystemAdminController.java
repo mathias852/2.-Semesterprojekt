@@ -58,8 +58,10 @@ public class SystemAdminController implements Initializable {
 
     private Facade facade = new Facade();
 
+    //Method for the createPerson-button
     @FXML
     void createPerson(ActionEvent event) {
+        //Uses the createPerson-method from the facade
         if (!creditedPersonNameText.getText().isEmpty()) {
             facade.createPerson(creditedPersonNameText.getText());
             updateCreateUI();
@@ -134,43 +136,18 @@ public class SystemAdminController implements Initializable {
         updateCreateUI();
     }
 
-    public void updateCreateUI() {
-        programSelection.getItems().clear();
-        tvSeriesSelection.getItems().clear();
-        creditedPersonSelection.getItems().clear();
-
-        for (Program program : facade.getPrograms()) {
-            programSelection.getItems().add(program.getName());
-        }
-        for (TVSeries tvSeries : facade.getTvSeriesList()) {
-            tvSeriesSelection.getItems().add(tvSeries.getName());
-        }
-        for (CreditedPerson creditedPerson : facade.getCreditedPeople()) {
-            creditedPersonSelection.getItems().add(creditedPerson.getName() + ": " + creditedPerson.getUuid());
-        }
-
-        nameText.clear();
-        descriptionText.clear();
-        episodeNumberText.clear();
-        seasonNumberText.clear();
-        durationText.clear();
+    @FXML
+    void exportButtonOnAction(ActionEvent event) {
+        facade.exportToTxt();
     }
 
-    public void updateUpdateUI() {
-        ArrayList<TextField> textFields = new ArrayList<>(Arrays.asList(nameUpdateText, descriptionUpdateText, durationUpdateText, seasonNumberUpdateText, episodeNumberUpdateText, creditedPersonNameUpdateText));
-        textFields.forEach(node -> node.clear());
-        ArrayList<ComboBox> comboBoxes = new ArrayList<>(Arrays.asList(tvSeriesUpdateSelection, functionUpdateSelection));
-        comboBoxes.forEach(node -> node.getItems().clear());
-        currentlyUpdatingLabel.setText("Choose program in \"Search/view\" tab");
-        currentlyUpdatingUUID.setText("");
-
-        facade.getTvSeriesList().forEach(tvSeries -> tvSeriesUpdateSelection.getItems().add(tvSeries.getName()));
-    }
 
     @FXML
     void dropDownSelection(ActionEvent event) {
         ArrayList<Node> durationNodes = new ArrayList<>(Arrays.asList(durationLabel, durationText));
-        ArrayList<Node> episodeNodes = new ArrayList<>(Arrays.asList(tvSeriesSelection, seasonNumberText, episodeNumberText, tvSLabel, seasonNoLabel, episodeNoLabel));
+        ArrayList<Node> episodeNodes = new ArrayList<>(Arrays.asList(tvSeriesSelection, seasonNumberText,
+                episodeNumberText, tvSLabel, seasonNoLabel, episodeNoLabel));
+
         if (programTypeSelection.getValue().equals(transmission)) {
             System.out.println(programTypeSelection.getValue());
             //Episode nodes
@@ -275,10 +252,6 @@ public class SystemAdminController implements Initializable {
         }
     }
 
-    @FXML
-    void exportButtonOnAction(ActionEvent event) {
-        facade.exportToTxt();
-    }
 
     @FXML
     void updateUpdateTabProgramOnAction(ActionEvent event) {
@@ -329,19 +302,6 @@ public class SystemAdminController implements Initializable {
     }
 
     @FXML
-    void updateCredit(ActionEvent event) {
-        try {
-            //Programmet hentes igennem index for vores program drop-down menu
-            Credit credit = getSelectedCreditFromListView();
-            Credit.Function function = facade.getFunctions().get(functionUpdateSelection.getSelectionModel().getSelectedIndex());
-
-            facade.updateCredit(credit, function);
-        } catch (IndexOutOfBoundsException e) {
-            System.out.println("Ikke implementeret endnu");
-        }
-    }
-
-    @FXML
     void updateUpdateTabPersonOnAction(ActionEvent event) {
 
     }
@@ -372,6 +332,20 @@ public class SystemAdminController implements Initializable {
         }
     }
 
+
+    @FXML
+    void updateCredit(ActionEvent event) {
+        try {
+            //Programmet hentes igennem index for vores program drop-down menu
+            Credit credit = getSelectedCreditFromListView();
+            Credit.Function function = facade.getFunctions().get(functionUpdateSelection.getSelectionModel().getSelectedIndex());
+
+            facade.updateCredit(credit, function);
+        } catch (IndexOutOfBoundsException e) {
+            System.out.println("Ikke implementeret endnu");
+        }
+    }
+
     @FXML
     void updateProgram(ActionEvent event) {
         Program program = facade.getProgramFromUuid(UUID.fromString(currentlyUpdatingUUID.getText()));
@@ -380,7 +354,9 @@ public class SystemAdminController implements Initializable {
         int duration = durationUpdateText.getText().isEmpty() ? -1 : Integer.parseInt(durationUpdateText.getText());
         int seasonNo = seasonNumberUpdateText.getText().isEmpty() ? -1 : Integer.parseInt(seasonNumberUpdateText.getText());
         int episodeNo = episodeNumberUpdateText.getText().isEmpty() ? -1 : Integer.parseInt(episodeNumberUpdateText.getText());
-        TVSeries tvSeries = tvSeriesUpdateSelection.getSelectionModel().getSelectedIndex() == -1 ? null : facade.getTvSeriesList().get(tvSeriesUpdateSelection.getSelectionModel().getSelectedIndex());
+
+        TVSeries tvSeries = tvSeriesUpdateSelection.getSelectionModel().getSelectedIndex() == -1 ? null :
+                facade.getTvSeriesList().get(tvSeriesUpdateSelection.getSelectionModel().getSelectedIndex());
 
         if (program instanceof Transmission) {
             facade.updateTransmission(program, name, description, 1, duration);
@@ -401,9 +377,9 @@ public class SystemAdminController implements Initializable {
         updateUpdateUI();
     }
 
+
     private TVSeries getSelectedTvSeriesFromComboBox() {
-        TVSeries series = facade.getTvSeriesList().get(searchSeriesCombo.getSelectionModel().getSelectedIndex());
-        return series;
+        return facade.getTvSeriesList().get(searchSeriesCombo.getSelectionModel().getSelectedIndex());
     }
 
     private Program getSelectedProgramFromListView() {
@@ -416,8 +392,41 @@ public class SystemAdminController implements Initializable {
     }
 
     private Credit getSelectedCreditFromListView() {
-        Credit credit = getSelectedProgramFromListView().getCredits().get(searchListViewCredits.getSelectionModel().getSelectedIndex());
-        return credit;
+        return getSelectedProgramFromListView().getCredits().get(searchListViewCredits.getSelectionModel().getSelectedIndex());
+    }
+
+    public void updateCreateUI() {
+        programSelection.getItems().clear();
+        tvSeriesSelection.getItems().clear();
+        creditedPersonSelection.getItems().clear();
+
+        for (Program program : facade.getPrograms()) {
+            programSelection.getItems().add(program.getName());
+        }
+        for (TVSeries tvSeries : facade.getTvSeriesList()) {
+            tvSeriesSelection.getItems().add(tvSeries.getName());
+        }
+        for (CreditedPerson creditedPerson : facade.getCreditedPeople()) {
+            creditedPersonSelection.getItems().add(creditedPerson.getName() + ": " + creditedPerson.getUuid());
+        }
+
+        nameText.clear();
+        descriptionText.clear();
+        episodeNumberText.clear();
+        seasonNumberText.clear();
+        durationText.clear();
+    }
+
+    public void updateUpdateUI() {
+        ArrayList<TextField> textFields = new ArrayList<>(Arrays.asList(nameUpdateText, descriptionUpdateText,
+                durationUpdateText, seasonNumberUpdateText, episodeNumberUpdateText, creditedPersonNameUpdateText));
+        textFields.forEach(node -> node.clear());
+        ArrayList<ComboBox> comboBoxes = new ArrayList<>(Arrays.asList(tvSeriesUpdateSelection, functionUpdateSelection));
+        comboBoxes.forEach(node -> node.getItems().clear());
+        currentlyUpdatingLabel.setText("Choose program in \"Search/view\" tab");
+        currentlyUpdatingUUID.setText("");
+
+        facade.getTvSeriesList().forEach(tvSeries -> tvSeriesUpdateSelection.getItems().add(tvSeries.getName()));
     }
 
     @Override

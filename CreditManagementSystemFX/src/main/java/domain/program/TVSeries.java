@@ -17,6 +17,7 @@ public class TVSeries {
         this.uuid = uuid;
     }
 
+    //Add episodes to the map for the respective series and the respective season - Each season is representing a key in the map
     public void addEpisode(Episode e){
         if(seasonMap == null){
             seasonMap = new TreeMap<>();
