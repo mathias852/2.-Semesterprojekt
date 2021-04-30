@@ -289,7 +289,14 @@ public class SystemAdminController implements Initializable {
     void selectedProgramFromListView(MouseEvent event) {
         searchListViewCredits.getItems().clear();
         updateProgramButton.setDisable(false);
+        deleteSelectedButton.setDisable(false);
 
+        if(getSelectedProgramFromListView() instanceof Transmission){
+            deleteSelectedButton.setText("Delete transmission");
+        }
+        else if (getSelectedProgramFromListView() instanceof Episode){
+            deleteSelectedButton.setText("Delete Episode");
+        }
         Program selectedProgram = getSelectedProgramFromListView();
 
         //Get the credits from the selected program IF the program contains credits
@@ -298,6 +305,13 @@ public class SystemAdminController implements Initializable {
             for (Credit credit : credits) {
                 searchListViewCredits.getItems().add(credit.getCreditedPerson().getName() + ": " + credit.getFunction().role);
             }
+        }
+    }
+
+    @FXML
+    void selectCreditFromListView(MouseEvent event){
+        if( !searchListViewCredits.getSelectionModel().isEmpty() && !searchListViewCredits.getSelectionModel().getSelectedItem().isEmpty()){
+            deleteSelectedButton.setText("Delete credit");
         }
     }
 
@@ -464,6 +478,7 @@ public class SystemAdminController implements Initializable {
         // Deletes selected program
         if (!searchListViewCredits.getSelectionModel().isEmpty() && !searchListViewCredits.getSelectionModel().getSelectedItem().isEmpty()) {
             facade.deleteCredit(getSelectedProgramFromListView(), getSelectedCreditFromListView());
+            deleteSelectedButton.setDisable(true);
         } else if (getSelectedProgramFromListView() != null) {
             facade.deleteProgram(getSelectedProgramFromListView());
             deleteSelectedButton.setDisable(true);
