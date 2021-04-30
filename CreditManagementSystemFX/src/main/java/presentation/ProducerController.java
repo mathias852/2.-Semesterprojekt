@@ -1,7 +1,13 @@
 package presentation;
 
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.ResourceBundle;
+import java.util.UUID;
+
 import domain.Facade;
-import domain.accesscontrol.LoginHandler;
 import domain.credit.Credit;
 import domain.credit.CreditedPerson;
 import domain.program.Episode;
@@ -15,58 +21,106 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 
-import javax.security.auth.spi.LoginModule;
-import java.lang.reflect.Array;
-import java.net.URL;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+public class ProducerController implements Initializable {
+    @FXML
+    private TextField durationText, descriptionText, seasonNumberText, episodeNumberText, nameText,
+            creditedPersonNameText, nameUpdateText, descriptionUpdateText, episodeNumberUpdateText, durationUpdateText,
+            creditedPersonNameUpdateText, seasonNumberUpdateText;
 
-public class SystemAdminController implements Initializable {
-  
+    @FXML
+    private ComboBox<String> tvSeriesSelection, searchSeriesCombo, functionSelection, searchProgramCombo,
+            searchSeasonCombo, creditedPersonSelection, programSelection, programTypeSelection, tvSeriesUpdateSelection,
+            functionUpdateSelection;
+
+    @FXML
+    private Label creditedPersonLabel, tvSLabel, durationLabel, nameLabel, seasonNoLabel, messageLabel,
+            episodeNoLabel, descriptionLabel, nameUpdateLabel, descriptionUpdateLabel, seasonNoUpdateLabel,
+            episodeNoUpdateLabel, durationUpdateLabel, tvSUpdateLabel, currentlyUpdatingLabel, currentlyUpdatingUUID,
+            programUpdateSelection, creditedPersonUpdateLabel;
+
     @FXML
     private Button createProgramBtn, createCreditBtn, createPersonBtn, exportButton, updateProgramButton, updateCreditButton,
-            updateProgramBtn, updatePersonBtn, updateCreditBtn, updateTvSeriesButton, updateTvSeriesBtn, deleteSelectedButton,
-            confirmDeleteButton, regretDeleteButton;
+            updateProgramBtn, updatePersonBtn, updateCreditBtn, updateTvSeriesButton, updateTvSeriesBtn;
 
     @FXML
-    private DialogPane deletePopUp;
-  
-    @FXML
-    private TextField usernameText;
-
+    private ListView<String> searchListView, searchListViewCredits;
 
     @FXML
-    private PasswordField passwordText;
+    private TableView<String> searchTableView;
 
     @FXML
-    private ComboBox<String> usertypeCombo;
+    private TabPane mainTabPane;
 
     @FXML
-    private Button createUserButton;
+    private Tab updateTab;
+
+    private final String transmission = "Transmission";
+    private final String tvSeries = "TV-Series";
+    private final String episode = "Episode";
+
+    private Facade facade = new Facade();
 
     @FXML
-    private Label createUserLabel;
+    void logOutAction(ActionEvent e) throws IOException{
+        App.setRoot("primary");
+    }
+
+    //Method for the createPerson-button
+    @FXML
+    void createPerson(ActionEvent event) {
+        //Uses the createPerson-method from the facade
+        if (!creditedPersonNameText.getText().isEmpty()) {
+            facade.createPerson(creditedPersonNameText.getText());
+            updateCreateUI();
+            creditedPersonNameText.setText("");
+        }
+    }
 
     @FXML
-    private void createUserAction(ActionEvent e){
+    void createCredit(ActionEvent event) {
+        try {
+            //Programmet hentes igennem index for vores program drop-down menu
+            Program program = facade.getPrograms().get(programSelection.getSelectionModel().getSelectedIndex());
+            CreditedPerson creditedPerson = facade.getCreditedPeople().get(creditedPersonSelection.getSelectionModel().getSelectedIndex());
+            Credit.Function function = facade.getFunctions().get(functionSelection.getSelectionModel().getSelectedIndex());
 
-        Pattern pattern = Pattern.compile("^(?=.{2,20}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$");
-        Matcher matcher = pattern.matcher(usernameText.getText());
-        boolean matchFound = matcher.find();
-
-        if (matchFound && !passwordText.getText().isBlank()) {
-            boolean success = false;
-            if (usertypeCombo.getSelectionModel().getSelectedItem().equals("Producer")) {
-                success = LoginController.loginHandler.createProducer(usernameText.getText(), passwordText.getText().hashCode());
-            } else if (usertypeCombo.getSelectionModel().getSelectedItem().equals("System Administrator")) {
-                success = LoginController.loginHandler.createSystemAdmin(usernameText.getText(), passwordText.getText().hashCode());
-            }
-
-            if (success) {
-                createUserLabel.setText("Created a User");
+            //Tjekker om credit allerede eksisterer
+            if (program.getCredits() == null) {
+                facade.createCredit(creditedPerson, function, program);
             } else {
+                boolean exists = false;
+                for (Credit credit : program.getCredits()) {
+                    if (credit.getCreditedPerson().equals(creditedPerson) && credit.getFunction().equals(function)) {
+                        exists = true;
+                        break;
+                    }
+                }
+                if (!exists) {
+                    facade.createCredit(creditedPerson, function, program);
+                }
+            }
+        } catch (IndexOutOfBoundsException e) {
+            System.out.println("Ikke implementeret endnu");
+        }
+    }
 
+    @FXML
+    void createProgram(ActionEvent event) {
+
+        String name = nameText.getText();
+        String description = descriptionText.getText();
+
+        if (programTypeSelection.getValue().equals(transmission)) {
+            int duration = durationText.getText().isEmpty() ? -1 : Integer.parseInt(durationText.getText());
+            if (!name.isEmpty()) {
+                facade.createTransmission(name, description, 1, duration);
+            } else {
+                messageLabel.setText("Cannot create " + transmission + " without a name");
+            }
+        } else if (programTypeSelection.getValue().equals(tvSeries)) {
+            if (!name.isEmpty()) {
+                facade.createTvSeries(name, description, 1);
+            } else {
                 messageLabel.setText("Cannot create " + tvSeries + " without a name");
             }
         } else if (programTypeSelection.getValue().equals(episode)) {
@@ -88,12 +142,6 @@ public class SystemAdminController implements Initializable {
         }
         updateCreateUI();
     }
-
-    @FXML
-    void exportButtonOnAction(ActionEvent event) {
-        facade.exportToTxt();
-    }
-
 
     @FXML
     void dropDownSelection(ActionEvent event) {
@@ -122,6 +170,11 @@ public class SystemAdminController implements Initializable {
             //Duration nodes
             durationNodes.forEach(node -> node.setVisible(true));
         }
+    }
+
+    @FXML
+    void exportButtonOnAction(ActionEvent event) {
+        facade.exportToTxt();
     }
 
     @FXML
@@ -193,15 +246,7 @@ public class SystemAdminController implements Initializable {
     void selectedProgramFromListView(MouseEvent event) {
         searchListViewCredits.getItems().clear();
         updateProgramButton.setDisable(false);
-        deleteSelectedButton.setDisable(false);
 
-        //Edits button label according to selected program type
-        if(getSelectedProgramFromListView() instanceof Transmission){
-            deleteSelectedButton.setText("Delete transmission");
-        }
-        else if (getSelectedProgramFromListView() instanceof Episode) {
-            deleteSelectedButton.setText("Delete episode");
-        }
         Program selectedProgram = getSelectedProgramFromListView();
 
         //Get the credits from the selected program IF the program contains credits
@@ -212,14 +257,6 @@ public class SystemAdminController implements Initializable {
             }
         }
     }
-
-    @FXML
-    void selectedCreditFromListView(MouseEvent event){
-        if(!searchListViewCredits.getSelectionModel().isEmpty() && !searchListViewCredits.getSelectionModel().getSelectedItem().isEmpty()){
-            deleteSelectedButton.setText("Delete credit");
-        }
-    }
-
 
     @FXML
     void updateUpdateTabProgramOnAction(ActionEvent event) {
@@ -323,12 +360,14 @@ public class SystemAdminController implements Initializable {
         int seasonNo = seasonNumberUpdateText.getText().isEmpty() ? -1 : Integer.parseInt(seasonNumberUpdateText.getText());
         int episodeNo = episodeNumberUpdateText.getText().isEmpty() ? -1 : Integer.parseInt(episodeNumberUpdateText.getText());
 
-                createUserLabel.setText("Could not create user");
-            }
+        TVSeries tvSeries = tvSeriesUpdateSelection.getSelectionModel().getSelectedIndex() == -1 ? null :
+                facade.getTvSeriesList().get(tvSeriesUpdateSelection.getSelectionModel().getSelectedIndex());
 
-
-        } else {
-            createUserLabel.setText("Could not create user");
+        if (program instanceof Transmission) {
+            facade.updateTransmission(program, name, description, 1, duration);
+        }
+        else if (program instanceof Episode) {
+            facade.updateEpisode(program, name, description, 1, duration, seasonNo, episodeNo, tvSeries);
         }
         updateUpdateUI();
     }
@@ -341,44 +380,6 @@ public class SystemAdminController implements Initializable {
 
         facade.updateTvSeries(tvSeries, name, description);
         updateUpdateUI();
-    }
-
-    @FXML
-    void deleteSelected(ActionEvent event){
-        // Deletes selected program
-        if (!searchListViewCredits.getSelectionModel().isEmpty() && !searchListViewCredits.getSelectionModel().getSelectedItem().isEmpty()) {
-            facade.deleteCredit(getSelectedProgramFromListView(), getSelectedCreditFromListView());
-        } else if (getSelectedProgramFromListView() != null) {
-            facade.deleteProgram(getSelectedProgramFromListView());
-            deleteSelectedButton.setDisable(true);
-        }
-    }
-
-    @FXML
-    void showDialogBox(ActionEvent event){
-        deletePopUp.setVisible(true);
-    }
-
-    @FXML
-    void hideDialogBox(ActionEvent event){
-
-    }
-
-    private TVSeries getSelectedTvSeriesFromComboBox() {
-        return facade.getTvSeriesList().get(searchSeriesCombo.getSelectionModel().getSelectedIndex());
-    }
-
-    private Program getSelectedProgramFromListView() {
-        //Choose the String-item from the listview instead of the index
-        String viewString = searchListView.getSelectionModel().getSelectedItem();
-        //Split the string to get the UUID
-        String[] viewStringArray = viewString.split(":");
-        //Use the getProgramFromUuid method from the facade to get the program from the string. The trim after the string is to get rid of whitespace
-        return facade.getProgramFromUuid(UUID.fromString(viewStringArray[1].trim()));
-    }
-
-    private Credit getSelectedCreditFromListView() {
-        return getSelectedProgramFromListView().getCredits().get(searchListViewCredits.getSelectionModel().getSelectedIndex());
     }
 
     public void updateCreateUI() {
@@ -415,11 +416,25 @@ public class SystemAdminController implements Initializable {
         facade.getTvSeriesList().forEach(tvSeries -> tvSeriesUpdateSelection.getItems().add(tvSeries.getName()));
     }
 
+    private TVSeries getSelectedTvSeriesFromComboBox() {
+        return facade.getTvSeriesList().get(searchSeriesCombo.getSelectionModel().getSelectedIndex());
+    }
+
+    private Program getSelectedProgramFromListView() {
+        //Choose the String-item from the listview instead of the index
+        String viewString = searchListView.getSelectionModel().getSelectedItem();
+        //Split the string to get the UUID
+        String[] viewStringArray = viewString.split(":");
+        //Use the getProgramFromUuid method from the facade to get the program from the string. The trim after the string is to get rid of whitespace
+        return facade.getProgramFromUuid(UUID.fromString(viewStringArray[1].trim()));
+    }
+
+    private Credit getSelectedCreditFromListView() {
+        return getSelectedProgramFromListView().getCredits().get(searchListViewCredits.getSelectionModel().getSelectedIndex());
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        usertypeCombo.getItems().add("Producer");
-        usertypeCombo.getItems().add("System Administrator");
-      
         facade.importFromTxt();
 
         searchProgramCombo.getItems().add(transmission);
@@ -435,6 +450,4 @@ public class SystemAdminController implements Initializable {
 
         updateCreateUI();
     }
-
-
 }
