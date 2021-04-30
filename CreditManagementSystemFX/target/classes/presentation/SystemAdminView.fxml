@@ -2,6 +2,7 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DialogPane?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Tab?>
@@ -10,7 +11,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<TabPane fx:id="mainTabPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="531.0" prefWidth="653.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="presentation.SystemAdminController">
+<TabPane fx:id="mainTabPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="531.0" prefWidth="653.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="presentation.SystemAdminController">
   <tabs>
     <Tab text="Create">
       <content>
@@ -68,11 +69,19 @@
                   <ComboBox fx:id="searchSeriesCombo" disable="true" editable="true" layoutX="14.0" layoutY="67.0" onAction="#searchSeriesComboAction" prefHeight="25.0" prefWidth="189.0" promptText="Choose TV-series" />
                   <ComboBox fx:id="searchSeasonCombo" disable="true" editable="true" layoutX="14.0" layoutY="111.0" onAction="#searchSeasonComboAction" prefHeight="25.0" prefWidth="189.0" promptText="Choose season" />
                   <Button fx:id="exportButton" layoutX="14.0" layoutY="458.0" mnemonicParsing="false" onAction="#exportButtonOnAction" text="Gem til .txt" />
-                  <ListView fx:id="searchListViewCredits" layoutX="215.0" layoutY="250.0" prefHeight="233.0" prefWidth="300.0" />
+                  <ListView fx:id="searchListViewCredits" layoutX="215.0" layoutY="250.0" onMouseClicked="#selectedCreditFromListView" prefHeight="233.0" prefWidth="300.0" />
                   <Button fx:id="updateProgramButton" disable="true" layoutX="532.0" layoutY="21.0" mnemonicParsing="false" onAction="#updateUpdateTabProgramOnAction" text="Update program" />
                   <Button fx:id="updateCreditButton" layoutX="532.0" layoutY="251.0" mnemonicParsing="false" onAction="#updateUpdateTabCreditOnAction" text="Update credit" />
                   <Button fx:id="updateTvSeriesButton" disable="true" layoutX="14.0" layoutY="152.0" mnemonicParsing="false" onAction="#updateUpdateTabTVSeriesOnAction" text="Update TV-series" />
                   <Button fx:id="updatePersonButton" layoutX="532.0" layoutY="287.0" mnemonicParsing="false" onAction="#updateUpdateTabPersonOnAction" text="Update person" />
+                  <Button fx:id="deleteSelectedButton" disable="true" layoutX="536.0" layoutY="458.0" mnemonicParsing="false" onAction="#showDialogBox" text="Delete selected" />
+                  <AnchorPane layoutX="172.0" layoutY="198.0">
+                     <children>
+                        <DialogPane fx:id="deletePopUp" headerText="Are you sure you want to delete selected: " prefHeight="107.0" prefWidth="360.0" />
+                        <Button fx:id="regretDeleteButton" layoutX="305.0" layoutY="62.0" mnemonicParsing="false" onAction="#hideDialogBox" prefHeight="31.0" prefWidth="47.0" text="No" />
+                        <Button fx:id="confirmDeleteButton" layoutX="243.0" layoutY="62.0" mnemonicParsing="false" onAction="#deleteSelected" prefHeight="31.0" prefWidth="45.0" text="Yes" />
+                     </children>
+                  </AnchorPane>
                </children></AnchorPane>
       </content>
     </Tab>

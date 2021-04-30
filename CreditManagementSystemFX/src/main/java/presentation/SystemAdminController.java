@@ -38,7 +38,12 @@ public class SystemAdminController implements Initializable {
 
     @FXML
     private Button createProgramBtn, createCreditBtn, createPersonBtn, exportButton, updateProgramButton, updateCreditButton,
-            updateProgramBtn, updatePersonBtn, updateCreditBtn, updateTvSeriesButton, updateTvSeriesBtn;
+            updateProgramBtn, updatePersonBtn, updateCreditBtn, updateTvSeriesButton, updateTvSeriesBtn, deleteSelectedButton,
+            confirmDeleteButton, regretDeleteButton;
+
+    @FXML
+    private DialogPane deletePopUp;
+
 
     @FXML
     private ListView<String> searchListView, searchListViewCredits;
@@ -240,7 +245,15 @@ public class SystemAdminController implements Initializable {
     void selectedProgramFromListView(MouseEvent event) {
         searchListViewCredits.getItems().clear();
         updateProgramButton.setDisable(false);
+        deleteSelectedButton.setDisable(false);
 
+        //Edits button label according to selected program type
+        if(getSelectedProgramFromListView() instanceof Transmission){
+            deleteSelectedButton.setText("Delete transmission");
+        }
+        else if (getSelectedProgramFromListView() instanceof Episode) {
+            deleteSelectedButton.setText("Delete episode");
+        }
         Program selectedProgram = getSelectedProgramFromListView();
 
         //Get the credits from the selected program IF the program contains credits
@@ -249,6 +262,13 @@ public class SystemAdminController implements Initializable {
             for (Credit credit : credits) {
                 searchListViewCredits.getItems().add(credit.getCreditedPerson().getName() + ": " + credit.getFunction().role);
             }
+        }
+    }
+
+    @FXML
+    void selectedCreditFromListView(MouseEvent event){
+        if(!searchListViewCredits.getSelectionModel().isEmpty() && !searchListViewCredits.getSelectionModel().getSelectedItem().isEmpty()){
+            deleteSelectedButton.setText("Delete credit");
         }
     }
 
@@ -377,6 +397,26 @@ public class SystemAdminController implements Initializable {
         updateUpdateUI();
     }
 
+    @FXML
+    void deleteSelected(ActionEvent event){
+        // Deletes selected program
+        if (!searchListViewCredits.getSelectionModel().isEmpty() && !searchListViewCredits.getSelectionModel().getSelectedItem().isEmpty()) {
+            facade.deleteCredit(getSelectedProgramFromListView(), getSelectedCreditFromListView());
+        } else if (getSelectedProgramFromListView() != null) {
+            facade.deleteProgram(getSelectedProgramFromListView());
+            deleteSelectedButton.setDisable(true);
+        }
+    }
+
+    @FXML
+    void showDialogBox(ActionEvent event){
+        deletePopUp.setVisible(true);
+    }
+
+    @FXML
+    void hideDialogBox(ActionEvent event){
+
+    }
 
     private TVSeries getSelectedTvSeriesFromComboBox() {
         return facade.getTvSeriesList().get(searchSeriesCombo.getSelectionModel().getSelectedIndex());
