@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<TabPane fx:id="mainTabPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="531.0" prefWidth="653.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="presentation.GuestController">
+    <tabs>
+        <Tab text="Search/view">
+            <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefWidth="646.0">
+                    <children>
+                        <ListView fx:id="searchListView" layoutX="215.0" layoutY="21.0" onMouseClicked="#selectedProgramFromListView" prefHeight="203.0" prefWidth="300.0" />
+                        <ComboBox fx:id="searchProgramCombo" layoutX="14.0" layoutY="21.0" onAction="#searchProgramComboAction" prefHeight="25.0" prefWidth="189.0" promptText="Choose program type" />
+                        <ComboBox fx:id="searchSeriesCombo" disable="true" editable="true" layoutX="14.0" layoutY="67.0" onAction="#searchSeriesComboAction" prefHeight="25.0" prefWidth="189.0" promptText="Choose TV-series" />
+                        <ComboBox fx:id="searchSeasonCombo" disable="true" editable="true" layoutX="14.0" layoutY="111.0" onAction="#searchSeasonComboAction" prefHeight="25.0" prefWidth="189.0" promptText="Choose season" />
+                        <Button fx:id="exportButton" layoutX="14.0" layoutY="458.0" mnemonicParsing="false" onAction="#exportButtonOnAction" text="Gem til .txt" />
+                        <ListView fx:id="searchListViewCredits" layoutX="215.0" layoutY="250.0" prefHeight="233.0" prefWidth="300.0" />
+                    </children></AnchorPane>
+            </content>
+        </Tab>
+      <Tab text="Settings">
+        <content>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+               <children>
+                  <Button fx:id="logOutButton" layoutX="233.0" layoutY="213.0" mnemonicParsing="false" onAction="#logOutAction" prefHeight="63.0" prefWidth="187.0" text="Log out">
+                     <font>
+                        <Font size="36.0" />
+                     </font>
+                  </Button>
+               </children>
+            </AnchorPane>
+        </content>
+      </Tab>
+    </tabs>
+</TabPane>
