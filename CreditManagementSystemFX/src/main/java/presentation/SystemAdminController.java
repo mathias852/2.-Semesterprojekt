@@ -57,7 +57,7 @@ public class SystemAdminController implements Initializable {
 
     @FXML
     private Button createProgramBtn, createCreditBtn, createPersonBtn, exportButton, updateProgramButton, updateCreditButton,
-            updateProgramBtn, updatePersonBtn, updateCreditBtn, updateTvSeriesButton, updateTvSeriesBtn;
+            updateProgramBtn, updatePersonBtn, updateCreditBtn, updateTvSeriesButton, updateTvSeriesBtn, deleteSelectedButton;
 
     @FXML
     private ListView<String> searchListView, searchListViewCredits;
@@ -457,6 +457,17 @@ public class SystemAdminController implements Initializable {
         currentlyUpdatingUUID.setText("");
 
         facade.getTvSeriesList().forEach(tvSeries -> tvSeriesUpdateSelection.getItems().add(tvSeries.getName()));
+    }
+
+    @FXML
+    void deleteSelected(ActionEvent event){
+        // Deletes selected program
+        if (!searchListViewCredits.getSelectionModel().isEmpty() && !searchListViewCredits.getSelectionModel().getSelectedItem().isEmpty()) {
+            facade.deleteCredit(getSelectedProgramFromListView(), getSelectedCreditFromListView());
+        } else if (getSelectedProgramFromListView() != null) {
+            facade.deleteProgram(getSelectedProgramFromListView());
+            deleteSelectedButton.setDisable(true);
+        }
     }
 
     private TVSeries getSelectedTvSeriesFromComboBox() {
