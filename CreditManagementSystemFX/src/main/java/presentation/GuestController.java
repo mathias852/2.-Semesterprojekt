@@ -27,7 +27,7 @@ public class GuestController implements Initializable {
     private ComboBox<String> searchSeriesCombo, searchProgramCombo, searchSeasonCombo;
 
     @FXML
-    private ListView<String> searchListView, searchListViewCredits;
+    private ListView<String> searchListView, searchListViewCredits, searchForTVSLV;
 
     private final String transmission = "Transmission";
     private final String tvSeries = "TV-Series";
@@ -120,6 +120,33 @@ public class GuestController implements Initializable {
                 searchListViewCredits.getItems().add(credit.getCreditedPerson().getName() + ": " + credit.getFunction().role);
             }
         }
+    }
+
+    @FXML
+    void showMatchingTVS() {
+        searchForTVSLV.setVisible(true);
+        String input = searchSeriesCombo.getEditor().getText();
+        searchForTVSLV.getItems().clear();
+        if (input.length() >= 1) {
+            for (TVSeries tvSeries : facade.getTvSeriesList()) {
+                if (tvSeries.getName().length() >= input.length()
+                        && !searchForTVSLV.getItems().contains(input)
+                        && tvSeries.getName().substring(0,input.length()).equalsIgnoreCase(input)) {
+                    searchForTVSLV.getItems().add(tvSeries.getName() + ";" + tvSeries.getUuid());
+                }
+            }
+        }
+    }
+    @FXML
+    void selectAndHideMatchingTVS() {
+        searchSeasonCombo.getItems().clear();
+        String[] tvSeries = searchForTVSLV.getSelectionModel().getSelectedItem().split(";");
+        searchSeriesCombo.setValue(tvSeries[0]);
+        searchForTVSLV.setVisible(false);
+    }
+    @FXML
+    void hideMatchingTVS() {
+        searchForTVSLV.setVisible(false);
     }
 
     private TVSeries getSelectedTvSeriesFromComboBox() {
