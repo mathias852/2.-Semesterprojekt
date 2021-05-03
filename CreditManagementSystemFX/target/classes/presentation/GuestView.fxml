@@ -8,19 +8,25 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<TabPane fx:id="mainTabPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="531.0" prefWidth="653.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="presentation.GuestController">
+<TabPane fx:id="mainTabPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="528.0" prefWidth="719.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="presentation.GuestController">
     <tabs>
         <Tab text="Search/view">
             <content>
-                <AnchorPane minHeight="0.0" minWidth="0.0" onMouseClicked="#hideMatchingTVS" prefWidth="646.0">
+                <AnchorPane minHeight="0.0" minWidth="0.0" onMouseClicked="#hideMatchingSearchResults" prefHeight="499.0" prefWidth="753.0">
                     <children>
                         <ListView fx:id="searchListView" layoutX="215.0" layoutY="21.0" onMouseClicked="#selectedProgramFromListView" prefHeight="203.0" prefWidth="300.0" />
                         <ComboBox fx:id="searchProgramCombo" layoutX="14.0" layoutY="21.0" onAction="#searchProgramComboAction" prefHeight="25.0" prefWidth="189.0" promptText="Choose program type" />
-                        <ComboBox fx:id="searchSeriesCombo" disable="true" editable="true" layoutX="14.0" layoutY="67.0" onAction="#searchSeriesComboAction" onKeyReleased="#showMatchingTVS" onMouseClicked="#hideMatchingTVS" prefHeight="25.0" prefWidth="189.0" promptText="Choose TV-series" />
+                        <ComboBox fx:id="searchSeriesCombo" disable="true" editable="true" layoutX="14.0" layoutY="67.0" onAction="#searchSeriesComboAction" onKeyReleased="#showMatchingTVS" onMouseClicked="#hideMatchingSearchResults" prefHeight="25.0" prefWidth="189.0" promptText="Choose TV-series" />
                         <ComboBox fx:id="searchSeasonCombo" disable="true" editable="true" layoutX="14.0" layoutY="111.0" onAction="#searchSeasonComboAction" prefHeight="25.0" prefWidth="189.0" promptText="Choose season" />
                         <Button fx:id="exportButton" layoutX="14.0" layoutY="458.0" mnemonicParsing="false" onAction="#exportButtonOnAction" text="Gem til .txt" />
                         <ListView fx:id="searchListViewCredits" layoutX="215.0" layoutY="250.0" prefHeight="233.0" prefWidth="300.0" />
-                  <ListView fx:id="searchForTVSLV" layoutX="14.0" layoutY="91.0" onMouseClicked="#selectAndHideMatchingTVS" onMouseExited="#hideMatchingTVS" prefHeight="337.0" prefWidth="617.0" visible="false" />
+                  <ComboBox fx:id="searchForProgramCB" editable="true" layoutX="523.0" layoutY="21.0" onKeyReleased="#showMatchingPrograms" prefHeight="25.0" prefWidth="185.0" promptText="Search for program" />
+                  <ComboBox fx:id="searchForCreditCB" editable="true" layoutX="523.0" layoutY="250.0" onKeyReleased="#showMatchingCredits" prefHeight="25.0" prefWidth="185.0" promptText="Search for credit" />
+                  <ComboBox fx:id="searchForFunctionCB" editable="true" layoutX="523.0" layoutY="282.0" onKeyReleased="#showMatchingFunctions" prefHeight="25.0" prefWidth="186.0" promptText="Select function filter" />
+                  <ListView fx:id="searchForFunctionLV" layoutX="524.0" layoutY="307.0" onMouseClicked="#selectAndHideMatchingFunction" onMouseExited="#hideMatchingSearchResults" prefHeight="176.0" prefWidth="191.0" visible="false" />
+                  <ListView fx:id="searchForProgramLV" layoutX="215.0" layoutY="224.0" onMouseClicked="#selectAndHideMatchingProgram" onMouseExited="#hideMatchingSearchResults" prefHeight="269.0" prefWidth="493.0" visible="false" />
+                  <ListView fx:id="searchForCreditLV" layoutX="524.0" layoutY="275.0" onMouseClicked="#selectAndHideMatchingCredit" onMouseExited="#hideMatchingSearchResults" prefHeight="207.0" prefWidth="191.0" visible="false" />
+                  <ListView fx:id="searchForTVSLV" layoutX="14.0" layoutY="91.0" onMouseClicked="#selectAndHideMatchingTVS" onMouseExited="#hideMatchingSearchResults" prefHeight="337.0" prefWidth="617.0" visible="false" />
                     </children></AnchorPane>
             </content>
         </Tab>
