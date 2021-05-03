@@ -113,7 +113,7 @@ public class ProducerController implements Initializable {
         if (programTypeSelection.getValue().equals(transmission)) {
             int duration = durationText.getText().isEmpty() ? -1 : Integer.parseInt(durationText.getText());
             if (!name.isEmpty()) {
-                facade.createTransmission(name, description, 1, duration);
+                facade.createTransmission(name, description, 1, duration, false);
             } else {
                 messageLabel.setText("Cannot create " + transmission + " without a name");
             }
@@ -131,7 +131,7 @@ public class ProducerController implements Initializable {
                 int duration = durationText.getText().isEmpty() ? -1 : Integer.parseInt(durationText.getText());
 
                 if (!name.isEmpty() && tvSeries != null) {
-                    facade.createEpisode(tvSeries, name, description, 1, episodeNumber, seasonNumber, duration);
+                    facade.createEpisode(tvSeries, name, description, 1, episodeNumber, seasonNumber, duration, false);
                 } else {
                     messageLabel.setText("Cannot create " + episode + " without a name & a TV-series");
                 }
@@ -194,8 +194,6 @@ public class ProducerController implements Initializable {
             for (Program program : facade.getPrograms()) {
                 if (program instanceof Transmission && program.isApproved()) {
                     searchListView.getItems().add(program.getName() +  ": " + program.getUuid());
-                } else {
-                    searchListView.getItems().add("\"" + program.getName() + "\"" + " Transmission endnu ikke godkendt af adminstrator");
                 }
             }
 
@@ -237,8 +235,6 @@ public class ProducerController implements Initializable {
                 for (Episode episode : series.getSeasonMap().get(Integer.parseInt(searchSeasonCombo.getSelectionModel().getSelectedItem()))) {
                     if(episode.isApproved()) {
                         searchListView.getItems().add(episode.getName() + ": " + episode.getUuid());
-                    } else {
-                        searchListView.getItems().add("\"" + episode.getName() + "\"" + " Episode endnu ikke godkendt af adminstrator");
                     }
                 }
             }

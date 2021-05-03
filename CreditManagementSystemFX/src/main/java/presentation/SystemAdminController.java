@@ -149,7 +149,7 @@ public class SystemAdminController implements Initializable {
         if (programTypeSelection.getValue().equals(transmission)) {
             int duration = durationText.getText().isEmpty() ? -1 : Integer.parseInt(durationText.getText());
             if (!name.isEmpty()) {
-                facade.createTransmission(name, description, 1, duration);
+                facade.createTransmission(name, description, 1, duration,false);
             } else {
                 messageLabel.setText("Cannot create " + transmission + " without a name");
             }
@@ -167,7 +167,7 @@ public class SystemAdminController implements Initializable {
                 int duration = durationText.getText().isEmpty() ? -1 : Integer.parseInt(durationText.getText());
 
                 if (!name.isEmpty() && tvSeries != null) {
-                    facade.createEpisode(tvSeries, name, description, 1, episodeNumber, seasonNumber, duration);
+                    facade.createEpisode(tvSeries, name, description, 1, episodeNumber, seasonNumber, duration, false);
                 } else {
                     messageLabel.setText("Cannot create " + episode + " without a name & a TV-series");
                 }
@@ -604,7 +604,7 @@ public class SystemAdminController implements Initializable {
 
     @FXML
     void approveSelectedProgram(ActionEvent event){
-        getSelectedProgramFromListView().setApproved();
+        getSelectedProgramFromListView().setApproved(true);
         System.out.println(getSelectedProgramFromListView().isApproved());
     }
 

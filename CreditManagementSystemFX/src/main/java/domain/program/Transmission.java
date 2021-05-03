@@ -8,7 +8,7 @@ public class Transmission extends Program{
         super(name);
     }
 
-    public Transmission(UUID uuid, String name, String description, int createdBy, int duration) {
-        super(uuid, name, description, createdBy, duration);
+    public Transmission(UUID uuid, String name, String description, int createdBy, int duration, boolean approved) {
+        super(uuid, name, description, createdBy, duration, approved);
     }
 }

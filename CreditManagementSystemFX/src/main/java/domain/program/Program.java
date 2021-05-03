@@ -19,13 +19,13 @@ public abstract class Program {
         this.name = name;
     }
 
-    public Program(UUID uuid, String name, String description, int createdBy, int duration) { // createdBy tager userID fra creator
+    public Program(UUID uuid, String name, String description, int createdBy, int duration, boolean approved) { // createdBy tager userID fra creator
         this.uuid = uuid;
         this.name = name;
         this.description = description;
         this.createdBy = createdBy;
         this.duration = duration;
-        this.approved = false;
+        this.approved = approved;
     }
 
     // Tjekker om creditsliste eksisterer, tilføjer givne credit til liste.
@@ -70,8 +70,8 @@ public abstract class Program {
     public void setDuration(int duration) {
         this.duration = duration;
     }
-    public void setApproved(){
-        this.approved = true;
+    public void setApproved(boolean approved){
+        this.approved = approved;
     }
 
     @Override

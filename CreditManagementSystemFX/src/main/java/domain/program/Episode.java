@@ -8,8 +8,8 @@ public class Episode extends Program {
     private int seasonNo;
     private TVSeries tvSeries;
 
-    public Episode(UUID uuid, TVSeries tvSeries, String name, String description, int createdBy, int episodeNo, int seasonNo, int duration) {
-        super(uuid, name, description, createdBy, duration);
+    public Episode(UUID uuid, TVSeries tvSeries, String name, String description, int createdBy, int episodeNo, int seasonNo, int duration, boolean approved) {
+        super(uuid, name, description, createdBy, duration, approved);
         this.tvSeries = tvSeries;
         this.seasonNo = seasonNo;
         this.episodeNo = episodeNo;
