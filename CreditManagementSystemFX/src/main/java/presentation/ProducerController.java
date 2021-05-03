@@ -1,5 +1,6 @@
 package presentation;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -19,6 +20,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 
 public class ProducerController implements Initializable {
@@ -30,13 +33,13 @@ public class ProducerController implements Initializable {
     @FXML
     private ComboBox<String> tvSeriesSelection, searchSeriesCombo, functionSelection, searchProgramCombo,
             searchSeasonCombo, creditedPersonSelection, programSelection, programTypeSelection, tvSeriesUpdateSelection,
-            functionUpdateSelection;
+            functionUpdateSelection, productionSelectionCombo;
 
     @FXML
     private Label creditedPersonLabel, tvSLabel, durationLabel, nameLabel, seasonNoLabel, messageLabel,
             episodeNoLabel, descriptionLabel, nameUpdateLabel, descriptionUpdateLabel, seasonNoUpdateLabel,
             episodeNoUpdateLabel, durationUpdateLabel, tvSUpdateLabel, currentlyUpdatingLabel, currentlyUpdatingUUID,
-            programUpdateSelection, creditedPersonUpdateLabel;
+            programUpdateSelection, creditedPersonUpdateLabel, productionLabel;
 
     @FXML
     private Button createProgramBtn, createCreditBtn, createPersonBtn, exportButton, updateProgramButton, updateCreditButton,
@@ -54,11 +57,23 @@ public class ProducerController implements Initializable {
     @FXML
     private Tab updateTab;
 
+    @FXML
+    private ImageView creditedLogoImageView;
+
     private final String transmission = "Transmission";
     private final String tvSeries = "TV-Series";
     private final String episode = "Episode";
 
-    private Facade facade = new Facade();
+    private final String tv2Logo = "Tv2";
+    private final String nordiskFilmLogo = "Nordisk Film";
+
+    private final File nordiskFilmLogoFile = new File("src/main/resources/presentation/NF-Logo.png");
+    private final File tv2LogoFile = new File("src/main/resources/presentation/tv2creditslogo.png");
+
+    private final Image nordiskFilmLogoImage = new Image(nordiskFilmLogoFile.toURI().toString());
+    private final Image tv2LogoImage = new Image(tv2LogoFile.toURI().toString());
+
+    private final Facade facade = new Facade();
 
     @FXML
     void logOutAction(ActionEvent e) throws IOException{
@@ -109,11 +124,12 @@ public class ProducerController implements Initializable {
 
         String name = nameText.getText();
         String description = descriptionText.getText();
+        String production = productionSelectionCombo.getSelectionModel().getSelectedItem();
 
         if (programTypeSelection.getValue().equals(transmission)) {
             int duration = durationText.getText().isEmpty() ? -1 : Integer.parseInt(durationText.getText());
             if (!name.isEmpty()) {
-                facade.createTransmission(name, description, 1, duration, false);
+                facade.createTransmission(name, description, 1, duration, false, production);
             } else {
                 messageLabel.setText("Cannot create " + transmission + " without a name");
             }
@@ -131,7 +147,7 @@ public class ProducerController implements Initializable {
                 int duration = durationText.getText().isEmpty() ? -1 : Integer.parseInt(durationText.getText());
 
                 if (!name.isEmpty() && tvSeries != null) {
-                    facade.createEpisode(tvSeries, name, description, 1, episodeNumber, seasonNumber, duration, false);
+                    facade.createEpisode(tvSeries, name, description, 1, episodeNumber, seasonNumber, duration, false, production);
                 } else {
                     messageLabel.setText("Cannot create " + episode + " without a name & a TV-series");
                 }
@@ -180,6 +196,7 @@ public class ProducerController implements Initializable {
     @FXML
     void searchProgramComboAction(ActionEvent event) {
         searchSeriesCombo.getItems().clear();
+        creditedLogoImageView.setImage(null);
         if (searchProgramCombo.getSelectionModel().getSelectedItem().equals(transmission)){
             searchSeriesCombo.setDisable(true);
             searchSeasonCombo.setDisable(true);
@@ -196,7 +213,6 @@ public class ProducerController implements Initializable {
                     searchListView.getItems().add(program.getName() +  ": " + program.getUuid());
                 }
             }
-
         } else if (searchProgramCombo.getSelectionModel().getSelectedItem().equals(tvSeries)){
             searchSeriesCombo.setDisable(false);
             searchSeasonCombo.setDisable(false);
@@ -227,6 +243,7 @@ public class ProducerController implements Initializable {
 
     @FXML
     void searchSeasonComboAction(ActionEvent event) {
+        creditedLogoImageView.setImage(null);
         try {
             searchListView.getItems().clear();
 
@@ -235,6 +252,11 @@ public class ProducerController implements Initializable {
                 for (Episode episode : series.getSeasonMap().get(Integer.parseInt(searchSeasonCombo.getSelectionModel().getSelectedItem()))) {
                     if(episode.isApproved()) {
                         searchListView.getItems().add(episode.getName() + ": " + episode.getUuid());
+                        if (episode.getProduction().equals(tv2Logo)){
+                            creditedLogoImageView.setImage(tv2LogoImage);
+                        } else if (episode.getProduction().equals(nordiskFilmLogo)){
+                            creditedLogoImageView.setImage(nordiskFilmLogoImage);
+                        }
                     }
                 }
             }
@@ -250,6 +272,11 @@ public class ProducerController implements Initializable {
         updateProgramButton.setDisable(false);
 
         Program selectedProgram = getSelectedProgramFromListView();
+        if (selectedProgram.getProduction().equals(tv2Logo)){
+            creditedLogoImageView.setImage(tv2LogoImage);
+        } else if (selectedProgram.getProduction().equals(nordiskFilmLogo)){
+            creditedLogoImageView.setImage(nordiskFilmLogoImage);
+        }
 
         //Get the credits from the selected program IF the program contains credits
         if(selectedProgram.getCredits() != null) {
@@ -441,6 +468,9 @@ public class ProducerController implements Initializable {
 
         searchProgramCombo.getItems().add(transmission);
         searchProgramCombo.getItems().add(tvSeries);
+
+        productionSelectionCombo.getItems().add(tv2Logo);
+        productionSelectionCombo.getItems().add(nordiskFilmLogo);
 
         programTypeSelection.getItems().add(transmission);
         programTypeSelection.getItems().add(tvSeries);

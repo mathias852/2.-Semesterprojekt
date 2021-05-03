@@ -1,5 +1,6 @@
 package presentation;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -19,6 +20,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 
 public class GuestController implements Initializable {
@@ -29,11 +32,23 @@ public class GuestController implements Initializable {
     @FXML
     private ListView<String> searchListView, searchListViewCredits, searchForTVSLV;
 
+    @FXML
+    private ImageView creditedLogoImageView;
+
     private final String transmission = "Transmission";
     private final String tvSeries = "TV-Series";
     private final String episode = "Episode";
 
-    private Facade facade = new Facade();
+    private final String tv2Logo = "Tv2";
+    private final String nordiskFilmLogo = "Nordisk Film";
+
+    private final File nordiskFilmLogoFile = new File("src/main/resources/presentation/NF-Logo.png");
+    private final File tv2LogoFile = new File("src/main/resources/presentation/tv2creditslogo.png");
+
+    private final Image nordiskFilmLogoImage = new Image(nordiskFilmLogoFile.toURI().toString());
+    private final Image tv2LogoImage = new Image(tv2LogoFile.toURI().toString());
+
+    private final Facade facade = new Facade();
 
     @FXML
     void logOutAction(ActionEvent e) throws IOException{
@@ -58,7 +73,7 @@ public class GuestController implements Initializable {
 
             searchListView.getItems().clear();
             for (Program program : facade.getPrograms()) {
-                if (program instanceof Transmission) {
+                if (program instanceof Transmission && program.isApproved()) {
                     searchListView.getItems().add(program.getName() +  ": " + program.getUuid());
                 }
             }
@@ -98,7 +113,14 @@ public class GuestController implements Initializable {
             if (searchSeriesCombo.getSelectionModel().getSelectedIndex() != -1) {
                 TVSeries series = getSelectedTvSeriesFromComboBox();
                 for (Episode episode : series.getSeasonMap().get(Integer.parseInt(searchSeasonCombo.getSelectionModel().getSelectedItem()))) {
-                    searchListView.getItems().add(episode.getName() + ": " + episode.getUuid());
+                    if (episode.isApproved()) {
+                        searchListView.getItems().add(episode.getName() + ": " + episode.getUuid());
+                        if (episode.getProduction().equals(tv2Logo)){
+                            creditedLogoImageView.setImage(tv2LogoImage);
+                        } else if (episode.getProduction().equals(nordiskFilmLogo)){
+                            creditedLogoImageView.setImage(nordiskFilmLogoImage);
+                        }
+                    }
                 }
             }
         } catch (NumberFormatException e) {
@@ -112,6 +134,11 @@ public class GuestController implements Initializable {
         searchListViewCredits.getItems().clear();
 
         Program selectedProgram = getSelectedProgramFromListView();
+        if (selectedProgram.getProduction().equals(tv2Logo)){
+            creditedLogoImageView.setImage(tv2LogoImage);
+        } else if (selectedProgram.getProduction().equals(nordiskFilmLogo)){
+            creditedLogoImageView.setImage(nordiskFilmLogoImage);
+        }
 
         //Get the credits from the selected program IF the program contains credits
         if(selectedProgram.getCredits() != null) {

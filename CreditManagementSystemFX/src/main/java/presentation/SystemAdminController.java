@@ -12,9 +12,12 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
@@ -32,6 +35,9 @@ public class SystemAdminController implements Initializable {
     private TextArea deleteProgramTextArea;
 
     @FXML
+    private ImageView creditedLogoImageView;
+
+    @FXML
     private TextField durationText, descriptionText, seasonNumberText, episodeNumberText, nameText,
             creditedPersonNameText, nameUpdateText, descriptionUpdateText, episodeNumberUpdateText, durationUpdateText,
             creditedPersonNameUpdateText, seasonNumberUpdateText, usernameText;
@@ -39,13 +45,14 @@ public class SystemAdminController implements Initializable {
     @FXML
     private ComboBox<String> tvSeriesSelection, searchSeriesCombo, functionSelection, searchProgramCombo,
             searchSeasonCombo, creditedPersonSelection, programSelection, programTypeSelection, tvSeriesUpdateSelection,
-            functionUpdateSelection, usertypeCombo, searchApprovedProgramCombo, searchApprovedSeriesCombo, searchApprovedSeasonCombo;
+            functionUpdateSelection, usertypeCombo, searchApprovedProgramCombo, searchApprovedSeriesCombo, searchApprovedSeasonCombo,
+            productionSelectionCombo;
 
     @FXML
     private Label creditedPersonLabel, tvSLabel, durationLabel, nameLabel, seasonNoLabel, messageLabel,
             episodeNoLabel, descriptionLabel, nameUpdateLabel, descriptionUpdateLabel, seasonNoUpdateLabel,
             episodeNoUpdateLabel, durationUpdateLabel, tvSUpdateLabel, currentlyUpdatingLabel, currentlyUpdatingUUID,
-            programUpdateSelection, creditedPersonUpdateLabel, createUserLabel;
+            programUpdateSelection, creditedPersonUpdateLabel, createUserLabel, productionLabel;
 
     @FXML
     private Button createProgramBtn, createCreditBtn, createPersonBtn, exportButton, updateProgramButton, updateCreditButton,
@@ -68,7 +75,16 @@ public class SystemAdminController implements Initializable {
     private final String tvSeries = "TV-Series";
     private final String episode = "Episode";
 
-    private Facade facade = new Facade();
+    private final String tv2Logo = "Tv2";
+    private final String nordiskFilmLogo = "Nordisk Film";
+
+    private final File nordiskFilmLogoFile = new File("src/main/resources/presentation/NF-Logo.png");
+    private final File tv2LogoFile = new File("src/main/resources/presentation/tv2creditslogo.png");
+
+    private final Image nordiskFilmLogoImage = new Image(nordiskFilmLogoFile.toURI().toString());
+    private final Image tv2LogoImage = new Image(tv2LogoFile.toURI().toString());
+
+    private final Facade facade = new Facade();
 
     @FXML
     private void createUserAction(ActionEvent e){
@@ -145,11 +161,12 @@ public class SystemAdminController implements Initializable {
 
         String name = nameText.getText();
         String description = descriptionText.getText();
+        String production = productionSelectionCombo.getSelectionModel().getSelectedItem();
 
         if (programTypeSelection.getValue().equals(transmission)) {
             int duration = durationText.getText().isEmpty() ? -1 : Integer.parseInt(durationText.getText());
             if (!name.isEmpty()) {
-                facade.createTransmission(name, description, 1, duration,false);
+                facade.createTransmission(name, description, 1, duration,false, production);
             } else {
                 messageLabel.setText("Cannot create " + transmission + " without a name");
             }
@@ -167,7 +184,7 @@ public class SystemAdminController implements Initializable {
                 int duration = durationText.getText().isEmpty() ? -1 : Integer.parseInt(durationText.getText());
 
                 if (!name.isEmpty() && tvSeries != null) {
-                    facade.createEpisode(tvSeries, name, description, 1, episodeNumber, seasonNumber, duration, false);
+                    facade.createEpisode(tvSeries, name, description, 1, episodeNumber, seasonNumber, duration, false, production);
                 } else {
                     messageLabel.setText("Cannot create " + episode + " without a name & a TV-series");
                 }
@@ -278,6 +295,11 @@ public class SystemAdminController implements Initializable {
                 deleteSelectedButton.setDisable(true);
                 for (Episode episode : series.getSeasonMap().get(Integer.parseInt(searchSeasonCombo.getSelectionModel().getSelectedItem()))) {
                     searchListView.getItems().add(episode.getName() + ": " + episode.getUuid());
+                    if (episode.getProduction().equals(tv2Logo)){
+                        creditedLogoImageView.setImage(tv2LogoImage);
+                    } else if (episode.getProduction().equals(nordiskFilmLogo)){
+                        creditedLogoImageView.setImage(nordiskFilmLogoImage);
+                    }
                 }
             }
         } catch (NumberFormatException e) {
@@ -299,6 +321,11 @@ public class SystemAdminController implements Initializable {
             deleteSelectedButton.setText("Delete Episode");
         }
         Program selectedProgram = getSelectedProgramFromListView();
+        if (selectedProgram.getProduction().equals(tv2Logo)){
+            creditedLogoImageView.setImage(tv2LogoImage);
+        } else if (selectedProgram.getProduction().equals(nordiskFilmLogo)){
+            creditedLogoImageView.setImage(nordiskFilmLogoImage);
+        }
 
         //Get the credits from the selected program IF the program contains credits
         if(selectedProgram.getCredits() != null) {
@@ -597,7 +624,8 @@ public class SystemAdminController implements Initializable {
         if(selectedProgram.getCredits() != null) {
             ArrayList<Credit> credits = selectedProgram.getCredits();
             for (Credit credit : credits) {
-                searchApprovedListViewCredits.getItems().add(credit.getCreditedPerson().getName() + ": " + credit.getFunction().role);
+                searchApprovedListViewCredits.getItems().add(credit.getCreditedPerson().getName() + ": " + credit.getFunction().role + ": persons ID " +
+                        credit.getCreditedPerson().getUuid());
             }
         }
     }
@@ -658,6 +686,9 @@ public class SystemAdminController implements Initializable {
         searchProgramCombo.getItems().add(tvSeries);
         searchApprovedProgramCombo.getItems().add(transmission);
         searchApprovedProgramCombo.getItems().add(tvSeries);
+
+        productionSelectionCombo.getItems().add(tv2Logo);
+        productionSelectionCombo.getItems().add(nordiskFilmLogo);
 
 
         programTypeSelection.getItems().add(transmission);

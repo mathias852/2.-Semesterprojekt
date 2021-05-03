@@ -5,10 +5,11 @@
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<TabPane fx:id="mainTabPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="531.0" prefWidth="653.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="presentation.GuestController">
+<TabPane fx:id="mainTabPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="531.0" prefWidth="653.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="presentation.GuestController">
     <tabs>
         <Tab text="Search/view">
             <content>
@@ -21,6 +22,7 @@
                         <Button fx:id="exportButton" layoutX="14.0" layoutY="458.0" mnemonicParsing="false" onAction="#exportButtonOnAction" text="Gem til .txt" />
                         <ListView fx:id="searchListViewCredits" layoutX="215.0" layoutY="250.0" prefHeight="233.0" prefWidth="300.0" />
                   <ListView fx:id="searchForTVSLV" layoutX="14.0" layoutY="91.0" onMouseClicked="#selectAndHideMatchingTVS" onMouseExited="#hideMatchingTVS" prefHeight="337.0" prefWidth="617.0" visible="false" />
+                  <ImageView fx:id="creditedLogoImageView" fitHeight="139.0" fitWidth="185.0" layoutX="15.0" layoutY="230.0" pickOnBounds="true" preserveRatio="true" />
                     </children></AnchorPane>
             </content>
         </Tab>

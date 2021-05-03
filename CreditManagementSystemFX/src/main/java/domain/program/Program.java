@@ -8,7 +8,7 @@ import java.util.UUID;
 public abstract class Program {
 
     private UUID uuid;
-    private String name, description;
+    private String name, description, production;
     private int createdBy;
     private int duration;
     private ArrayList<Credit> credits;
@@ -19,13 +19,14 @@ public abstract class Program {
         this.name = name;
     }
 
-    public Program(UUID uuid, String name, String description, int createdBy, int duration, boolean approved) { // createdBy tager userID fra creator
+    public Program(UUID uuid, String name, String description, int createdBy, int duration, boolean approved, String production) { // createdBy tager userID fra creator
         this.uuid = uuid;
         this.name = name;
         this.description = description;
         this.createdBy = createdBy;
         this.duration = duration;
         this.approved = approved;
+        this.production = production;
     }
 
     // Tjekker om creditsliste eksisterer, tilføjer givne credit til liste.
@@ -54,6 +55,9 @@ public abstract class Program {
     }
     public int getDuration() {
         return duration;
+    }
+    public String getProduction(){
+        return production;
     }
     public ArrayList<Credit> getCredits() {
         return credits;
