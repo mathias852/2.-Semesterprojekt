@@ -74,7 +74,8 @@ public class GuestController implements Initializable {
             searchListView.getItems().clear();
             for (Program program : facade.getPrograms()) {
                 if (program instanceof Transmission && program.isApproved()) {
-                    searchListView.getItems().add(program.getName() +  ": " + program.getUuid());
+                    searchListView.getItems().add(program.getName());
+
                 }
             }
 
@@ -114,7 +115,7 @@ public class GuestController implements Initializable {
                 TVSeries series = getSelectedTvSeriesFromComboBox();
                 for (Episode episode : series.getSeasonMap().get(Integer.parseInt(searchSeasonCombo.getSelectionModel().getSelectedItem()))) {
                     if (episode.isApproved()) {
-                        searchListView.getItems().add(episode.getName() + ": " + episode.getUuid());
+                        searchListView.getItems().add(episode.getName());
                         if (episode.getProduction().equals(tv2Logo)){
                             creditedLogoImageView.setImage(tv2LogoImage);
                         } else if (episode.getProduction().equals(nordiskFilmLogo)){
@@ -160,7 +161,7 @@ public class GuestController implements Initializable {
                 if (tvSeries.getName().length() >= input.length()
                         && !searchForTVSLV.getItems().contains(input)
                         && tvSeries.getName().substring(0,input.length()).equalsIgnoreCase(input)) {
-                    searchForTVSLV.getItems().add(tvSeries.getName() + ";" + tvSeries.getUuid());
+                    searchForTVSLV.getItems().add(tvSeries.getName());
                 } else if (tvSeries.getName().contains(" ")) {
                     String[] splitName = tvSeries.getName().split(" ");
                     StringBuilder combinedName;
@@ -173,7 +174,7 @@ public class GuestController implements Initializable {
                         }
                         if (combinedName.length() >= input.length()
                                 && combinedName.substring(0,input.length()).equalsIgnoreCase(input)) {
-                            searchForTVSLV.getItems().add(tvSeries.getName() + ";" + tvSeries.getUuid());
+                            searchForTVSLV.getItems().add(tvSeries.getName());
                         }
                     }
                 }
