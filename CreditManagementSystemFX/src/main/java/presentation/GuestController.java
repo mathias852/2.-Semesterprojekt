@@ -59,7 +59,7 @@ public class GuestController implements Initializable {
             searchListView.getItems().clear();
             for (Program program : facade.getPrograms()) {
                 if (program instanceof Transmission) {
-                    searchListView.getItems().add(program.getName() +  ": " + program.getUuid());
+                    searchListView.getItems().add(program.getName());
                 }
             }
 
@@ -98,7 +98,7 @@ public class GuestController implements Initializable {
             if (searchSeriesCombo.getSelectionModel().getSelectedIndex() != -1) {
                 TVSeries series = getSelectedTvSeriesFromComboBox();
                 for (Episode episode : series.getSeasonMap().get(Integer.parseInt(searchSeasonCombo.getSelectionModel().getSelectedItem()))) {
-                    searchListView.getItems().add(episode.getName() + ": " + episode.getUuid());
+                    searchListView.getItems().add(episode.getName());
                 }
             }
         } catch (NumberFormatException e) {
@@ -132,7 +132,7 @@ public class GuestController implements Initializable {
                 if (tvSeries.getName().length() >= input.length()
                         && !searchForTVSLV.getItems().contains(input)
                         && tvSeries.getName().substring(0,input.length()).equalsIgnoreCase(input)) {
-                    searchForTVSLV.getItems().add(tvSeries.getName() + ";" + tvSeries.getUuid());
+                    searchForTVSLV.getItems().add(tvSeries.getName());
                 }
             }
         }

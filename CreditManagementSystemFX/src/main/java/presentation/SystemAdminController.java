@@ -1,6 +1,7 @@
 package presentation;
 
 import domain.Facade;
+import domain.accesscontrol.Producer;
 import domain.credit.Credit;
 import domain.credit.CreditedPerson;
 import domain.program.Episode;
@@ -14,6 +15,7 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import persistence.PersistenceHandler;
 
 import java.io.IOException;
 import java.net.URL;
@@ -69,9 +71,11 @@ public class SystemAdminController implements Initializable {
     private final String episode = "Episode";
 
     private Facade facade = new Facade();
+    private PersistenceHandler persistenceHandler = new PersistenceHandler();
+
 
     @FXML
-    private void createUserAction(ActionEvent e){
+    private void createUserAction(ActionEvent e) {
 
         Pattern pattern = Pattern.compile("^(?=.{2,20}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$");
         Matcher matcher = pattern.matcher(usernameText.getText());
@@ -80,17 +84,31 @@ public class SystemAdminController implements Initializable {
         if (matchFound && !passwordText.getText().isBlank()) {
             boolean success = false;
             if (usertypeCombo.getSelectionModel().getSelectedItem().equals("Producer")) {
+
                 success = LoginController.loginHandler.createProducer(usernameText.getText(), passwordText.getText().hashCode());
+
+                if (success) {
+                    String userString = LoginController.loginHandler.getUsers().get(LoginController.loginHandler.getUsers().size() - 1).getUsername() + ";" + LoginController.loginHandler.getUsers().get(LoginController.loginHandler.getUsers().size() - 1).getHashedPassword();;
+                    persistenceHandler.writeProducer(userString);
+
+                    createUserLabel.setText("Created a User");
+                } else {
+                    createUserLabel.setText("Could not create user");
+                }
+
             } else if (usertypeCombo.getSelectionModel().getSelectedItem().equals("System Administrator")) {
+
                 success = LoginController.loginHandler.createSystemAdmin(usernameText.getText(), passwordText.getText().hashCode());
-            }
 
-            if (success) {
-                createUserLabel.setText("Created a User");
-            } else {
-                createUserLabel.setText("Could not create user");
-            }
+                if (success) {
+                    String userString = LoginController.loginHandler.getUsers().get(LoginController.loginHandler.getUsers().size() - 1).getUsername() + ";" + LoginController.loginHandler.getUsers().get(LoginController.loginHandler.getUsers().size() - 1).getHashedPassword();;
+                    persistenceHandler.writeSystemAdmin(userString);
 
+                    createUserLabel.setText("Created a User");
+                } else {
+                    createUserLabel.setText("Could not create user");
+                }
+            }
         } else {
             createUserLabel.setText("Could not create user");
         }
@@ -149,13 +167,13 @@ public class SystemAdminController implements Initializable {
         if (programTypeSelection.getValue().equals(transmission)) {
             int duration = durationText.getText().isEmpty() ? -1 : Integer.parseInt(durationText.getText());
             if (!name.isEmpty()) {
-                facade.createTransmission(name, description, 1, duration);
+                facade.createTransmission(name, description, LoginController.loginHandler.getCurrentUser().getUsername(), duration);
             } else {
                 messageLabel.setText("Cannot create " + transmission + " without a name");
             }
         } else if (programTypeSelection.getValue().equals(tvSeries)) {
             if (!name.isEmpty()) {
-                facade.createTvSeries(name, description, 1);
+                facade.createTvSeries(name, description, LoginController.loginHandler.getCurrentUser().getUsername());
             } else {
                 messageLabel.setText("Cannot create " + tvSeries + " without a name");
             }
@@ -167,7 +185,7 @@ public class SystemAdminController implements Initializable {
                 int duration = durationText.getText().isEmpty() ? -1 : Integer.parseInt(durationText.getText());
 
                 if (!name.isEmpty() && tvSeries != null) {
-                    facade.createEpisode(tvSeries, name, description, 1, episodeNumber, seasonNumber, duration);
+                    facade.createEpisode(tvSeries, name, description, LoginController.loginHandler.getCurrentUser().getUsername(), episodeNumber, seasonNumber, duration);
                 } else {
                     messageLabel.setText("Cannot create " + episode + " without a name & a TV-series");
                 }
@@ -216,7 +234,7 @@ public class SystemAdminController implements Initializable {
     @FXML
     void searchProgramComboAction(ActionEvent event) {
         searchSeriesCombo.getItems().clear();
-        if (searchProgramCombo.getSelectionModel().getSelectedItem().equals(transmission)){
+        if (searchProgramCombo.getSelectionModel().getSelectedItem().equals(transmission)) {
             searchSeriesCombo.setDisable(true);
             searchSeasonCombo.setDisable(true);
             updateTvSeriesButton.setDisable(true);
@@ -229,11 +247,11 @@ public class SystemAdminController implements Initializable {
             searchListView.getItems().clear();
             for (Program program : facade.getPrograms()) {
                 if (program instanceof Transmission) {
-                    searchListView.getItems().add(program.getName() +  ": " + program.getUuid());
+                    searchListView.getItems().add(program.getName() + ": " + program.getUuid() + ": " + program.getCreatedBy());
                 }
             }
 
-        } else if (searchProgramCombo.getSelectionModel().getSelectedItem().equals(tvSeries)){
+        } else if (searchProgramCombo.getSelectionModel().getSelectedItem().equals(tvSeries)) {
             searchSeriesCombo.setDisable(false);
             searchSeasonCombo.setDisable(false);
 
@@ -245,6 +263,7 @@ public class SystemAdminController implements Initializable {
 
     @FXML
     void searchSeriesComboAction(ActionEvent event) {
+
         searchSeasonCombo.getItems().clear();
         //To find the episodes based on a season from a TV-series
         try {
@@ -260,7 +279,7 @@ public class SystemAdminController implements Initializable {
                 }
             }
             updateTvSeriesButton.setDisable(false);
-        } catch (IndexOutOfBoundsException e){
+        } catch (IndexOutOfBoundsException e) {
             System.out.println("Not yet implemented && Not sure why this is happening??? Yikes - " +
                     "Think it has something to do with the change in combo-box you just made");
         }
@@ -277,7 +296,8 @@ public class SystemAdminController implements Initializable {
                 deleteSelectedButton.setText("Delete Selected");
                 deleteSelectedButton.setDisable(true);
                 for (Episode episode : series.getSeasonMap().get(Integer.parseInt(searchSeasonCombo.getSelectionModel().getSelectedItem()))) {
-                    searchListView.getItems().add(episode.getName() + ": " + episode.getUuid());
+                    searchListView.getItems().add(episode.getName() + ": " + episode.getUuid() + ": " + episode.getCreatedBy());
+
                 }
             }
         } catch (NumberFormatException e) {
@@ -292,16 +312,15 @@ public class SystemAdminController implements Initializable {
         updateProgramButton.setDisable(false);
         deleteSelectedButton.setDisable(false);
 
-        if(getSelectedProgramFromListView() instanceof Transmission){
+        if (getSelectedProgramFromListView() instanceof Transmission) {
             deleteSelectedButton.setText("Delete transmission");
-        }
-        else if (getSelectedProgramFromListView() instanceof Episode){
+        } else if (getSelectedProgramFromListView() instanceof Episode) {
             deleteSelectedButton.setText("Delete Episode");
         }
         Program selectedProgram = getSelectedProgramFromListView();
 
         //Get the credits from the selected program IF the program contains credits
-        if(selectedProgram.getCredits() != null) {
+        if (selectedProgram.getCredits() != null) {
             ArrayList<Credit> credits = selectedProgram.getCredits();
             for (Credit credit : credits) {
                 searchListViewCredits.getItems().add(credit.getCreditedPerson().getName() + ": " + credit.getFunction().role);
@@ -310,8 +329,8 @@ public class SystemAdminController implements Initializable {
     }
 
     @FXML
-    void selectCreditFromListView(MouseEvent event){
-        if( !searchListViewCredits.getSelectionModel().isEmpty() && !searchListViewCredits.getSelectionModel().getSelectedItem().isEmpty()){
+    void selectCreditFromListView(MouseEvent event) {
+        if (!searchListViewCredits.getSelectionModel().isEmpty() && !searchListViewCredits.getSelectionModel().getSelectedItem().isEmpty()) {
             deleteSelectedButton.setText("Delete credit");
         }
     }
@@ -422,10 +441,9 @@ public class SystemAdminController implements Initializable {
                 facade.getTvSeriesList().get(tvSeriesUpdateSelection.getSelectionModel().getSelectedIndex());
 
         if (program instanceof Transmission) {
-            facade.updateTransmission(program, name, description, 1, duration);
-        }
-        else if (program instanceof Episode) {
-            facade.updateEpisode(program, name, description, 1, duration, seasonNo, episodeNo, tvSeries);
+            facade.updateTransmission(program, name, description, duration);
+        } else if (program instanceof Episode) {
+            facade.updateEpisode(program, name, description, duration, seasonNo, episodeNo, tvSeries);
         }
         updateUpdateUI();
     }
@@ -475,7 +493,7 @@ public class SystemAdminController implements Initializable {
     }
 
     @FXML
-    void openConfirmBox(MouseEvent event){
+    void openConfirmBox(MouseEvent event) {
         confirmAnchorPane.setVisible(true);
         //If-statement for bedre bruger-oplevelse ved sletning af forskellige typer programmer/krediteringer
         if (!searchListViewCredits.getSelectionModel().isEmpty() && !searchListViewCredits.getSelectionModel().getSelectedItem().isEmpty()) {
@@ -498,12 +516,12 @@ public class SystemAdminController implements Initializable {
     }
 
     @FXML
-    void declineDeleteSelected(ActionEvent event){
+    void declineDeleteSelected(ActionEvent event) {
         confirmAnchorPane.setVisible(false);
     }
 
     @FXML
-    void deleteSelected(ActionEvent event){
+    void deleteSelected(ActionEvent event) {
         // Deletes selected program
         if (!searchSeriesCombo.getSelectionModel().isEmpty() && searchSeasonCombo.getSelectionModel().isEmpty()) {
             System.out.println("This has not been implemented - not sure if we need this option right now?");

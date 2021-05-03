@@ -1,5 +1,6 @@
 package domain.program;
 
+import domain.accesscontrol.User;
 import domain.credit.Credit;
 
 import java.util.ArrayList;
@@ -9,7 +10,7 @@ public abstract class Program {
 
     private UUID uuid;
     private String name, description;
-    private int createdBy;
+    private String createdBy;
     private int duration;
     private ArrayList<Credit> credits;
 
@@ -18,7 +19,7 @@ public abstract class Program {
         this.name = name;
     }
 
-    public Program(UUID uuid, String name, String description, int createdBy, int duration) { // createdBy tager userID fra creator
+    public Program(UUID uuid, String name, String description, String createdBy, int duration) { // createdBy tager userID fra creator
         this.uuid = uuid;
         this.name = name;
         this.description = description;
@@ -47,7 +48,7 @@ public abstract class Program {
     public String getDescription() {
         return description;
     }
-    public int getCreatedBy() {
+    public String getCreatedBy() {
         return createdBy;
     }
     public int getDuration() {
@@ -62,7 +63,7 @@ public abstract class Program {
     public void setDescription(String description) {
         this.description = description;
     }
-    public void setCreatedBy(int createdBy) {
+    public void setCreatedBy(String createdBy) {
         this.createdBy = createdBy;
     }
     public void setDuration(int duration) {
@@ -82,4 +83,6 @@ public abstract class Program {
     public String getName() {
         return name;
     }
+
+
 }
