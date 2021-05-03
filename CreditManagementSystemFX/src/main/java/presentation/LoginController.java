@@ -2,6 +2,7 @@ package presentation;
 
 import java.io.IOException;
 import java.net.URL;
+import java.security.Key;
 import java.util.ResourceBundle;
 
 import domain.accesscontrol.LoginHandler;
@@ -14,6 +15,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 
 public class LoginController implements Initializable {
 
@@ -26,6 +29,9 @@ public class LoginController implements Initializable {
     @FXML
     private Label failedLoginLabel;
 
+    @FXML
+    private Button loginButton;
+
     protected static LoginHandler loginHandler = new LoginHandler();;
 
     @Override
@@ -35,9 +41,18 @@ public class LoginController implements Initializable {
 
     }
 
+    //Used to login via then ENTER key
+    @FXML
+    void logInUsingEnter(KeyEvent event) {
+        if(event.getCode().equals(KeyCode.ENTER)){
+           loginButton.fire();
+        }
+    }
+
+
+    //Verifies credentials entered by the user
     @FXML
     private void verifyCredentials(ActionEvent e) throws IOException{
-
         if(loginHandler.verifyCredentials(usernameText.getText(), passwordText.getText()) instanceof SystemAdmin){
             System.out.println("Logged in as SysAdmin");
             App.setRoot("SystemAdminView");

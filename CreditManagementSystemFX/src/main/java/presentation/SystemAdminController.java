@@ -1,7 +1,6 @@
 package presentation;
 
 import domain.Facade;
-import domain.accesscontrol.LoginHandler;
 import domain.credit.Credit;
 import domain.credit.CreditedPerson;
 import domain.program.Episode;
@@ -14,10 +13,9 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 
-import javax.security.auth.spi.LoginModule;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.net.URL;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -25,39 +23,34 @@ import java.util.regex.Pattern;
 
 public class SystemAdminController implements Initializable {
     @FXML
-    private TextField usernameText;
-
-    @FXML
     private PasswordField passwordText;
 
     @FXML
-    private ComboBox<String> usertypeCombo;
+    private AnchorPane confirmAnchorPane;
 
     @FXML
-    private Button createUserButton;
-
-    @FXML
-    private Label createUserLabel;
+    private TextArea deleteProgramTextArea;
 
     @FXML
     private TextField durationText, descriptionText, seasonNumberText, episodeNumberText, nameText,
             creditedPersonNameText, nameUpdateText, descriptionUpdateText, episodeNumberUpdateText, durationUpdateText,
-            creditedPersonNameUpdateText, seasonNumberUpdateText;
+            creditedPersonNameUpdateText, seasonNumberUpdateText, usernameText;
 
     @FXML
     private ComboBox<String> tvSeriesSelection, searchSeriesCombo, functionSelection, searchProgramCombo,
             searchSeasonCombo, creditedPersonSelection, programSelection, programTypeSelection, tvSeriesUpdateSelection,
-            functionUpdateSelection;
+            functionUpdateSelection, usertypeCombo;
 
     @FXML
     private Label creditedPersonLabel, tvSLabel, durationLabel, nameLabel, seasonNoLabel, messageLabel,
             episodeNoLabel, descriptionLabel, nameUpdateLabel, descriptionUpdateLabel, seasonNoUpdateLabel,
             episodeNoUpdateLabel, durationUpdateLabel, tvSUpdateLabel, currentlyUpdatingLabel, currentlyUpdatingUUID,
-            programUpdateSelection, creditedPersonUpdateLabel;
+            programUpdateSelection, creditedPersonUpdateLabel, createUserLabel;
 
     @FXML
     private Button createProgramBtn, createCreditBtn, createPersonBtn, exportButton, updateProgramButton, updateCreditButton,
-            updateProgramBtn, updatePersonBtn, updateCreditBtn, updateTvSeriesButton, updateTvSeriesBtn, deleteSelectedButton;
+            updateProgramBtn, updatePersonBtn, updateCreditBtn, updateTvSeriesButton, updateTvSeriesBtn, deleteSelectedButton,
+            createUserButton, confirmDeleteButton, declineDeleteButton;
 
     @FXML
     private ListView<String> searchListView, searchListViewCredits;
@@ -256,6 +249,11 @@ public class SystemAdminController implements Initializable {
         //To find the episodes based on a season from a TV-series
         try {
             TVSeries series = facade.getTvSeriesList().get(searchSeriesCombo.getSelectionModel().getSelectedIndex());
+
+            //Enables the delete button when a series has been chosen
+            deleteSelectedButton.setDisable(false);
+            deleteSelectedButton.setText("Delete Tv-Series");
+
             if (series.getSeasonMap() != null) {
                 for (Integer i : series.getSeasonMap().keySet()) {
                     searchSeasonCombo.getItems().add(String.valueOf(i));
@@ -275,12 +273,15 @@ public class SystemAdminController implements Initializable {
 
             if (searchSeriesCombo.getSelectionModel().getSelectedIndex() != -1) {
                 TVSeries series = getSelectedTvSeriesFromComboBox();
+                //The deleteSelectedButton is just to make sure that you cannot delete a series when you've chosen an season
+                deleteSelectedButton.setText("Delete Selected");
+                deleteSelectedButton.setDisable(true);
                 for (Episode episode : series.getSeasonMap().get(Integer.parseInt(searchSeasonCombo.getSelectionModel().getSelectedItem()))) {
                     searchListView.getItems().add(episode.getName() + ": " + episode.getUuid());
                 }
             }
         } catch (NumberFormatException e) {
-            System.out.println("This is just happening because we parse the value 'null' as an integer. And we do that because" +
+            System.out.println("This just happens because we parse the value 'null' as an integer. And we do that because" +
                     " we clear the season-combobox");
         }
     }
@@ -474,15 +475,46 @@ public class SystemAdminController implements Initializable {
     }
 
     @FXML
+    void openConfirmBox(MouseEvent event){
+        confirmAnchorPane.setVisible(true);
+        //If-statement for bedre bruger-oplevelse ved sletning af forskellige typer programmer/krediteringer
+        if (!searchListViewCredits.getSelectionModel().isEmpty() && !searchListViewCredits.getSelectionModel().getSelectedItem().isEmpty()) {
+            deleteProgramTextArea.setText("Er du sikker på, at du vil slette følgende creditering? \n" +
+                    searchListViewCredits.getSelectionModel().getSelectedItem() + "\nFra programmet " +
+                    getSelectedProgramFromListView().getName() + "\nMed ID: " +
+                    getSelectedProgramFromListView().getUuid());
+        } else if (searchListView.getSelectionModel().getSelectedItem() != null) {
+            if (getSelectedProgramFromListView() instanceof Transmission) {
+                deleteProgramTextArea.setText("Er du sikker på, at du vil slette følgende tranmission \n" +
+                        getSelectedProgramFromListView().getName() + "\nMed ID: " +
+                        getSelectedProgramFromListView().getUuid());
+            } else if (getSelectedProgramFromListView() instanceof Episode) {
+                deleteProgramTextArea.setText("Er du sikker på, at du vil slette følgende episode? \n" +
+                        searchListView.getSelectionModel().getSelectedItem() + "\nfra tv-serien " +
+                        facade.getTvSeriesFromEpisode((Episode) getSelectedProgramFromListView()).getName() +
+                        "\nMed ID: " + getSelectedProgramFromListView().getUuid());
+            }
+        }
+    }
+
+    @FXML
+    void declineDeleteSelected(ActionEvent event){
+        confirmAnchorPane.setVisible(false);
+    }
+
+    @FXML
     void deleteSelected(ActionEvent event){
         // Deletes selected program
-        if (!searchListViewCredits.getSelectionModel().isEmpty() && !searchListViewCredits.getSelectionModel().getSelectedItem().isEmpty()) {
+        if (!searchSeriesCombo.getSelectionModel().isEmpty() && searchSeasonCombo.getSelectionModel().isEmpty()) {
+            System.out.println("This has not been implemented - not sure if we need this option right now?");
+            System.out.println("As goes for deleting a season");
+        } else if (!searchListViewCredits.getSelectionModel().isEmpty() && !searchListViewCredits.getSelectionModel().getSelectedItem().isEmpty()) {
             facade.deleteCredit(getSelectedProgramFromListView(), getSelectedCreditFromListView());
-            deleteSelectedButton.setDisable(true);
         } else if (getSelectedProgramFromListView() != null) {
             facade.deleteProgram(getSelectedProgramFromListView());
-            deleteSelectedButton.setDisable(true);
         }
+        confirmAnchorPane.setVisible(false);
+        deleteSelectedButton.setDisable(true);
     }
 
     private TVSeries getSelectedTvSeriesFromComboBox() {

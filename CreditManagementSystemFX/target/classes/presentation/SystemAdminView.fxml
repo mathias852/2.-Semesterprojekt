@@ -7,153 +7,175 @@
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<TabPane fx:id="mainTabPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="531.0" prefWidth="653.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="presentation.SystemAdminController">
-  <tabs>
-    <Tab text="Create">
-      <content>
-        <AnchorPane minHeight="0.0" minWidth="0.0">
-               <children>
-                  <TextField fx:id="nameText" layoutX="96.0" layoutY="108.0" prefHeight="25.0" prefWidth="152.0" />
-                  <TextField fx:id="descriptionText" layoutX="96.0" layoutY="149.0" prefHeight="25.0" prefWidth="152.0" />
-                  <ComboBox fx:id="programTypeSelection" layoutX="26.0" layoutY="66.0" onAction="#dropDownSelection" prefHeight="25.0" prefWidth="223.0" promptText="Choose program type" />
-                  <Label fx:id="nameLabel" layoutX="26.0" layoutY="112.0" text="Name" />
-                  <Label fx:id="descriptionLabel" layoutX="26.0" layoutY="153.0" text="Description" />
-                  <TextField fx:id="seasonNumberText" layoutX="96.0" layoutY="234.0" prefHeight="25.0" prefWidth="152.0" />
-                  <TextField fx:id="episodeNumberText" layoutX="96.0" layoutY="274.0" prefHeight="25.0" prefWidth="152.0" />
-                  <TextField fx:id="durationText" layoutX="96.0" layoutY="192.0" prefHeight="25.0" prefWidth="152.0" />
-                  <Label fx:id="seasonNoLabel" layoutX="26.0" layoutY="239.0" text="Season" />
-                  <Label fx:id="episodeNoLabel" layoutX="25.0" layoutY="277.0" text="Episode" />
-                  <Label fx:id="durationLabel" layoutX="26.0" layoutY="198.0" text="Duration" />
-                  <ComboBox fx:id="tvSeriesSelection" layoutX="96.0" layoutY="318.0" prefWidth="150.0" />
-                  <Label fx:id="tvSLabel" layoutX="25.0" layoutY="322.0" text="TV-Series" />
-                  <Button fx:id="createProgramBtn" layoutX="26.0" layoutY="369.0" mnemonicParsing="false" onAction="#createProgram" prefHeight="25.0" prefWidth="224.0" text="Create program" />
-                  <ComboBox fx:id="programSelection" layoutX="458.0" layoutY="238.0" prefHeight="25.0" prefWidth="139.0" promptText="Programs" />
-                  <ComboBox fx:id="functionSelection" layoutX="458.0" layoutY="327.0" prefHeight="25.0" prefWidth="139.0" promptText="Function" />
-                  <Label layoutX="364.0" layoutY="286.0" text="Credited person" />
-                  <Label layoutX="365.0" layoutY="328.0" text="Function" />
-                  <ComboBox fx:id="creditedPersonSelection" layoutX="458.0" layoutY="282.0" prefHeight="25.0" prefWidth="139.0" promptText="Credited person" />
-                  <TextField fx:id="creditedPersonNameText" layoutX="430.0" layoutY="65.0" prefHeight="25.0" prefWidth="154.0" />
-                  <Label fx:id="creditedPersonLabel" layoutX="365.0" layoutY="68.0" text="Name" />
-                  <Label layoutX="365.0" layoutY="34.0" text="Create person">
-                     <font>
-                        <Font name="System Bold" size="13.0" />
-                     </font>
-                  </Label>
-                  <Label layoutX="365.0" layoutY="240.0" text="Program" />
-                  <Label layoutX="362.0" layoutY="212.0" text="Create credit">
-                     <font>
-                        <Font name="System Bold" size="13.0" />
-                     </font>
-                  </Label>
-                  <Label layoutX="26.0" layoutY="34.0" text="Create program">
-                     <font>
-                        <Font name="System Bold" size="13.0" />
-                     </font>
-                  </Label>
-                  <Button fx:id="createPersonBtn" layoutX="365.0" layoutY="103.0" mnemonicParsing="false" onAction="#createPerson" prefHeight="25.0" prefWidth="219.0" text="Create person" />
-                  <Button fx:id="createCreditBtn" layoutX="364.0" layoutY="369.0" mnemonicParsing="false" onAction="#createCredit" prefHeight="25.0" prefWidth="238.0" text="Create credit" />
-                  <Label fx:id="messageLabel" layoutX="21.0" layoutY="441.0" prefHeight="17.0" prefWidth="571.0" />
-               </children></AnchorPane>
-      </content>
-    </Tab>
-    <Tab text="Search/view">
-      <content>
-        <AnchorPane minHeight="0.0" minWidth="0.0" prefWidth="646.0">
-               <children>
-                  <ListView fx:id="searchListView" layoutX="215.0" layoutY="21.0" onMouseClicked="#selectedProgramFromListView" prefHeight="203.0" prefWidth="300.0" />
-                  <ComboBox fx:id="searchProgramCombo" layoutX="14.0" layoutY="21.0" onAction="#searchProgramComboAction" prefHeight="25.0" prefWidth="189.0" promptText="Choose program type" />
-                  <ComboBox fx:id="searchSeriesCombo" disable="true" editable="true" layoutX="14.0" layoutY="67.0" onAction="#searchSeriesComboAction" prefHeight="25.0" prefWidth="189.0" promptText="Choose TV-series" />
-                  <ComboBox fx:id="searchSeasonCombo" disable="true" editable="true" layoutX="14.0" layoutY="111.0" onAction="#searchSeasonComboAction" prefHeight="25.0" prefWidth="189.0" promptText="Choose season" />
-                  <Button fx:id="exportButton" layoutX="14.0" layoutY="458.0" mnemonicParsing="false" onAction="#exportButtonOnAction" text="Gem til .txt" />
-                  <ListView fx:id="searchListViewCredits" layoutX="215.0" layoutY="250.0" onMouseClicked="#selectCreditFromListView" prefHeight="233.0" prefWidth="300.0" />
-                  <Button fx:id="updateProgramButton" disable="true" layoutX="532.0" layoutY="21.0" mnemonicParsing="false" onAction="#updateUpdateTabProgramOnAction" text="Update program" />
-                  <Button fx:id="updateCreditButton" layoutX="532.0" layoutY="251.0" mnemonicParsing="false" onAction="#updateUpdateTabCreditOnAction" text="Update credit" />
-                  <Button fx:id="updateTvSeriesButton" disable="true" layoutX="14.0" layoutY="152.0" mnemonicParsing="false" onAction="#updateUpdateTabTVSeriesOnAction" text="Update TV-series" />
-                  <Button fx:id="updatePersonButton" layoutX="532.0" layoutY="287.0" mnemonicParsing="false" onAction="#updateUpdateTabPersonOnAction" text="Update person" />
-                  <Button fx:id="deleteSelectedButton" layoutX="532.0" layoutY="458.0" mnemonicParsing="false" onAction="#deleteSelected" text="Delete selected" />
-               </children></AnchorPane>
-      </content>
-    </Tab>
-      <Tab fx:id="updateTab" text="Update">
-         <content>
-            <AnchorPane minHeight="0.0" minWidth="0.0">
-               <children>
-                  <TextField fx:id="nameUpdateText" layoutX="96.0" layoutY="108.0" prefHeight="25.0" prefWidth="152.0" />
-                  <TextField fx:id="descriptionUpdateText" layoutX="96.0" layoutY="149.0" prefHeight="25.0" prefWidth="152.0" />
-                  <Label fx:id="nameUpdateLabel" layoutX="26.0" layoutY="112.0" text="Name" />
-                  <Label fx:id="descriptionUpdateLabel" layoutX="26.0" layoutY="153.0" text="Description" />
-                  <TextField fx:id="seasonNumberUpdateText" layoutX="96.0" layoutY="234.0" prefHeight="25.0" prefWidth="152.0" />
-                  <TextField fx:id="episodeNumberUpdateText" layoutX="96.0" layoutY="274.0" prefHeight="25.0" prefWidth="152.0" />
-                  <TextField fx:id="durationUpdateText" layoutX="96.0" layoutY="192.0" prefHeight="25.0" prefWidth="152.0" />
-                  <Label fx:id="seasonNoUpdateLabel" layoutX="26.0" layoutY="238.0" text="Season" />
-                  <Label fx:id="episodeNoUpdateLabel" layoutX="26.0" layoutY="277.0" text="Episode" />
-                  <Label fx:id="durationUpdateLabel" layoutX="26.0" layoutY="197.0" text="Duration" />
-                  <ComboBox fx:id="tvSeriesUpdateSelection" layoutX="96.0" layoutY="318.0" prefWidth="150.0" />
-                  <Label fx:id="tvSUpdateLabel" layoutX="26.0" layoutY="322.0" text="TV-Series" />
-                  <Button fx:id="updateProgramBtn" layoutX="26.0" layoutY="369.0" mnemonicParsing="false" onAction="#updateProgram" prefHeight="25.0" prefWidth="224.0" text="Update program" visible="false" />
-                  <ComboBox fx:id="functionUpdateSelection" layoutX="458.0" layoutY="327.0" prefHeight="25.0" prefWidth="139.0" promptText="Function" />
-                  <Label layoutX="364.0" layoutY="285.0" text="Credited person" />
-                  <Label layoutX="365.0" layoutY="328.0" text="Function" />
-                  <TextField fx:id="creditedPersonNameUpdateText" disable="true" layoutX="430.0" layoutY="65.0" prefHeight="25.0" prefWidth="154.0" />
-                  <Label fx:id="creditedPersonLabel1" disable="true" layoutX="365.0" layoutY="68.0" text="Name" />
-                  <Label disable="true" layoutX="365.0" layoutY="34.0" text="Update person">
-                     <font>
-                        <Font name="System Bold" size="13.0" />
-                     </font>
-                  </Label>
-                  <Label layoutX="365.0" layoutY="240.0" text="Program" />
-                  <Label layoutX="362.0" layoutY="212.0" text="Update credit">
-                     <font>
-                        <Font name="System Bold" size="13.0" />
-                     </font>
-                  </Label>
-                  <Label layoutX="26.0" layoutY="34.0" text="Update program">
-                     <font>
-                        <Font name="System Bold" size="13.0" />
-                     </font>
-                  </Label>
-                  <Button fx:id="updatePersonBtn" disable="true" layoutX="365.0" layoutY="103.0" mnemonicParsing="false" onAction="#createPerson" prefHeight="25.0" prefWidth="219.0" text="Update person" />
-                  <Button fx:id="updateCreditBtn" layoutX="364.0" layoutY="369.0" mnemonicParsing="false" onAction="#updateCredit" prefHeight="25.0" prefWidth="238.0" text="Update credit" />
-                  <Label fx:id="messageLabel1" layoutX="21.0" layoutY="441.0" prefHeight="17.0" prefWidth="571.0" />
-                  <Label fx:id="currentlyUpdatingLabel" layoutX="27.0" layoutY="60.0" prefHeight="17.0" prefWidth="222.0" text="Choose program in &quot;Search/view&quot; tab" />
-                  <Button fx:id="updateTvSeriesBtn" layoutX="26.0" layoutY="369.0" mnemonicParsing="false" onAction="#updateTvSeries" prefHeight="25.0" prefWidth="224.0" text="Update TV Series" visible="false" />
-                  <Label layoutX="28.0" layoutY="82.0" prefHeight="17.0" prefWidth="35.0" text="UUID:" />
-                  <Label fx:id="currentlyUpdatingUUID" layoutX="70.0" layoutY="82.0" prefHeight="17.0" prefWidth="220.0" />
-                  <Label fx:id="programUpdateSelection" layoutX="458.0" layoutY="240.0" text="Program" />
-                  <Label fx:id="creditedPersonUpdateLabel" layoutX="458.0" layoutY="286.0" text="Credited person" />
-               </children>
-            </AnchorPane>
-         </content>
-      </Tab>
-     <Tab text="Settings">
-        <content>
-           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-              <children>
-                 <Button fx:id="logOutButton" layoutX="443.0" layoutY="401.0" mnemonicParsing="false" onAction="#logOutAction" prefHeight="63.0" prefWidth="187.0" text="Log out">
-                    <font>
-                       <Font size="36.0" />
-                    </font>
-                 </Button>
-                  <TextField fx:id="usernameText" layoutX="125.0" layoutY="67.0" promptText="Enter username" />
-                  <PasswordField fx:id="passwordText" layoutX="125.0" layoutY="112.0" promptText="Enter password" />
-                  <Label layoutX="27.0" layoutY="71.0" text="Enter username:" />
-                  <Label layoutX="27.0" layoutY="116.0" text="Enter password:" />
-                  <ComboBox fx:id="usertypeCombo" layoutX="125.0" layoutY="155.0" prefWidth="150.0" promptText="Select user type" />
-                  <Label layoutX="27.0" layoutY="159.0" text="User type:" />
-                  <Label layoutX="27.0" layoutY="37.0" text="Create user">
-                     <font>
-                        <Font name="System Bold" size="13.0" />
-                     </font>
-                  </Label>
-                  <Button fx:id="createUserButton" layoutX="28.0" layoutY="197.0" mnemonicParsing="false" onAction="#createUserAction" prefHeight="25.0" prefWidth="248.0" text="Create user" />
-                  <Label fx:id="createUserLabel" layoutX="27.0" layoutY="243.0" prefHeight="17.0" prefWidth="249.0" />
-              </children>
-           </AnchorPane>
-        </content>
-     </Tab>
-  </tabs>
-</TabPane>
+
+<AnchorPane xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="presentation.SystemAdminController">
+   <children>
+      <TabPane fx:id="mainTabPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="531.0" prefWidth="653.0" tabClosingPolicy="UNAVAILABLE">
+        <tabs>
+          <Tab text="Create">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0">
+                     <children>
+                        <TextField fx:id="nameText" layoutX="96.0" layoutY="108.0" prefHeight="25.0" prefWidth="152.0" />
+                        <TextField fx:id="descriptionText" layoutX="96.0" layoutY="149.0" prefHeight="25.0" prefWidth="152.0" />
+                        <ComboBox fx:id="programTypeSelection" layoutX="26.0" layoutY="66.0" onAction="#dropDownSelection" prefHeight="25.0" prefWidth="223.0" promptText="Choose program type" />
+                        <Label fx:id="nameLabel" layoutX="26.0" layoutY="112.0" text="Name" />
+                        <Label fx:id="descriptionLabel" layoutX="26.0" layoutY="153.0" text="Description" />
+                        <TextField fx:id="seasonNumberText" layoutX="96.0" layoutY="234.0" prefHeight="25.0" prefWidth="152.0" />
+                        <TextField fx:id="episodeNumberText" layoutX="96.0" layoutY="274.0" prefHeight="25.0" prefWidth="152.0" />
+                        <TextField fx:id="durationText" layoutX="96.0" layoutY="192.0" prefHeight="25.0" prefWidth="152.0" />
+                        <Label fx:id="seasonNoLabel" layoutX="26.0" layoutY="239.0" text="Season" />
+                        <Label fx:id="episodeNoLabel" layoutX="25.0" layoutY="277.0" text="Episode" />
+                        <Label fx:id="durationLabel" layoutX="26.0" layoutY="198.0" text="Duration" />
+                        <ComboBox fx:id="tvSeriesSelection" layoutX="96.0" layoutY="318.0" prefWidth="150.0" />
+                        <Label fx:id="tvSLabel" layoutX="25.0" layoutY="322.0" text="TV-Series" />
+                        <Button fx:id="createProgramBtn" layoutX="26.0" layoutY="369.0" mnemonicParsing="false" onAction="#createProgram" prefHeight="25.0" prefWidth="224.0" text="Create program" />
+                        <ComboBox fx:id="programSelection" layoutX="458.0" layoutY="238.0" prefHeight="25.0" prefWidth="139.0" promptText="Programs" />
+                        <ComboBox fx:id="functionSelection" layoutX="458.0" layoutY="327.0" prefHeight="25.0" prefWidth="139.0" promptText="Function" />
+                        <Label layoutX="364.0" layoutY="286.0" text="Credited person" />
+                        <Label layoutX="365.0" layoutY="328.0" text="Function" />
+                        <ComboBox fx:id="creditedPersonSelection" layoutX="458.0" layoutY="282.0" prefHeight="25.0" prefWidth="139.0" promptText="Credited person" />
+                        <TextField fx:id="creditedPersonNameText" layoutX="430.0" layoutY="65.0" prefHeight="25.0" prefWidth="154.0" />
+                        <Label fx:id="creditedPersonLabel" layoutX="365.0" layoutY="68.0" text="Name" />
+                        <Label layoutX="365.0" layoutY="34.0" text="Create person">
+                           <font>
+                              <Font name="System Bold" size="13.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="365.0" layoutY="240.0" text="Program" />
+                        <Label layoutX="362.0" layoutY="212.0" text="Create credit">
+                           <font>
+                              <Font name="System Bold" size="13.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="26.0" layoutY="34.0" text="Create program">
+                           <font>
+                              <Font name="System Bold" size="13.0" />
+                           </font>
+                        </Label>
+                        <Button fx:id="createPersonBtn" layoutX="365.0" layoutY="103.0" mnemonicParsing="false" onAction="#createPerson" prefHeight="25.0" prefWidth="219.0" text="Create person" />
+                        <Button fx:id="createCreditBtn" layoutX="364.0" layoutY="369.0" mnemonicParsing="false" onAction="#createCredit" prefHeight="25.0" prefWidth="238.0" text="Create credit" />
+                        <Label fx:id="messageLabel" layoutX="21.0" layoutY="441.0" prefHeight="17.0" prefWidth="571.0" />
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+          <Tab text="Search/view">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefWidth="646.0">
+                     <children>
+                        <ListView fx:id="searchListView" layoutX="215.0" layoutY="21.0" onMouseClicked="#selectedProgramFromListView" prefHeight="203.0" prefWidth="300.0" />
+                        <ComboBox fx:id="searchProgramCombo" layoutX="14.0" layoutY="21.0" onAction="#searchProgramComboAction" prefHeight="25.0" prefWidth="189.0" promptText="Choose program type" />
+                        <ComboBox fx:id="searchSeriesCombo" disable="true" editable="true" layoutX="14.0" layoutY="67.0" onAction="#searchSeriesComboAction" prefHeight="25.0" prefWidth="189.0" promptText="Choose TV-series" />
+                        <ComboBox fx:id="searchSeasonCombo" disable="true" editable="true" layoutX="14.0" layoutY="111.0" onAction="#searchSeasonComboAction" prefHeight="25.0" prefWidth="189.0" promptText="Choose season" />
+                        <Button fx:id="exportButton" layoutX="14.0" layoutY="458.0" mnemonicParsing="false" onAction="#exportButtonOnAction" text="Gem til .txt" />
+                        <ListView fx:id="searchListViewCredits" layoutX="215.0" layoutY="250.0" onMouseClicked="#selectCreditFromListView" prefHeight="233.0" prefWidth="300.0" />
+                        <Button fx:id="updateProgramButton" disable="true" layoutX="532.0" layoutY="21.0" mnemonicParsing="false" onAction="#updateUpdateTabProgramOnAction" text="Update program" />
+                        <Button fx:id="updateCreditButton" layoutX="532.0" layoutY="251.0" mnemonicParsing="false" onAction="#updateUpdateTabCreditOnAction" text="Update credit" />
+                        <Button fx:id="updateTvSeriesButton" disable="true" layoutX="14.0" layoutY="152.0" mnemonicParsing="false" onAction="#updateUpdateTabTVSeriesOnAction" text="Update TV-series" />
+                        <Button fx:id="updatePersonButton" layoutX="532.0" layoutY="287.0" mnemonicParsing="false" onAction="#updateUpdateTabPersonOnAction" text="Update person" />
+                        <Button fx:id="deleteSelectedButton" disable="true" layoutX="532.0" layoutY="458.0" mnemonicParsing="false" onMouseClicked="#openConfirmBox" text="Delete selected" />
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+            <Tab fx:id="updateTab" text="Update">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0">
+                     <children>
+                        <TextField fx:id="nameUpdateText" layoutX="96.0" layoutY="108.0" prefHeight="25.0" prefWidth="152.0" />
+                        <TextField fx:id="descriptionUpdateText" layoutX="96.0" layoutY="149.0" prefHeight="25.0" prefWidth="152.0" />
+                        <Label fx:id="nameUpdateLabel" layoutX="26.0" layoutY="112.0" text="Name" />
+                        <Label fx:id="descriptionUpdateLabel" layoutX="26.0" layoutY="153.0" text="Description" />
+                        <TextField fx:id="seasonNumberUpdateText" layoutX="96.0" layoutY="234.0" prefHeight="25.0" prefWidth="152.0" />
+                        <TextField fx:id="episodeNumberUpdateText" layoutX="96.0" layoutY="274.0" prefHeight="25.0" prefWidth="152.0" />
+                        <TextField fx:id="durationUpdateText" layoutX="96.0" layoutY="192.0" prefHeight="25.0" prefWidth="152.0" />
+                        <Label fx:id="seasonNoUpdateLabel" layoutX="26.0" layoutY="238.0" text="Season" />
+                        <Label fx:id="episodeNoUpdateLabel" layoutX="26.0" layoutY="277.0" text="Episode" />
+                        <Label fx:id="durationUpdateLabel" layoutX="26.0" layoutY="197.0" text="Duration" />
+                        <ComboBox fx:id="tvSeriesUpdateSelection" layoutX="96.0" layoutY="318.0" prefWidth="150.0" />
+                        <Label fx:id="tvSUpdateLabel" layoutX="26.0" layoutY="322.0" text="TV-Series" />
+                        <Button fx:id="updateProgramBtn" layoutX="26.0" layoutY="369.0" mnemonicParsing="false" onAction="#updateProgram" prefHeight="25.0" prefWidth="224.0" text="Update program" visible="false" />
+                        <ComboBox fx:id="functionUpdateSelection" layoutX="458.0" layoutY="327.0" prefHeight="25.0" prefWidth="139.0" promptText="Function" />
+                        <Label layoutX="364.0" layoutY="285.0" text="Credited person" />
+                        <Label layoutX="365.0" layoutY="328.0" text="Function" />
+                        <TextField fx:id="creditedPersonNameUpdateText" disable="true" layoutX="430.0" layoutY="65.0" prefHeight="25.0" prefWidth="154.0" />
+                        <Label fx:id="creditedPersonLabel1" disable="true" layoutX="365.0" layoutY="68.0" text="Name" />
+                        <Label disable="true" layoutX="365.0" layoutY="34.0" text="Update person">
+                           <font>
+                              <Font name="System Bold" size="13.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="365.0" layoutY="240.0" text="Program" />
+                        <Label layoutX="362.0" layoutY="212.0" text="Update credit">
+                           <font>
+                              <Font name="System Bold" size="13.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="26.0" layoutY="34.0" text="Update program">
+                           <font>
+                              <Font name="System Bold" size="13.0" />
+                           </font>
+                        </Label>
+                        <Button fx:id="updatePersonBtn" disable="true" layoutX="365.0" layoutY="103.0" mnemonicParsing="false" onAction="#createPerson" prefHeight="25.0" prefWidth="219.0" text="Update person" />
+                        <Button fx:id="updateCreditBtn" layoutX="364.0" layoutY="369.0" mnemonicParsing="false" onAction="#updateCredit" prefHeight="25.0" prefWidth="238.0" text="Update credit" />
+                        <Label fx:id="messageLabel1" layoutX="21.0" layoutY="441.0" prefHeight="17.0" prefWidth="571.0" />
+                        <Label fx:id="currentlyUpdatingLabel" layoutX="27.0" layoutY="60.0" prefHeight="17.0" prefWidth="222.0" text="Choose program in &quot;Search/view&quot; tab" />
+                        <Button fx:id="updateTvSeriesBtn" layoutX="26.0" layoutY="369.0" mnemonicParsing="false" onAction="#updateTvSeries" prefHeight="25.0" prefWidth="224.0" text="Update TV Series" visible="false" />
+                        <Label layoutX="28.0" layoutY="82.0" prefHeight="17.0" prefWidth="35.0" text="UUID:" />
+                        <Label fx:id="currentlyUpdatingUUID" layoutX="70.0" layoutY="82.0" prefHeight="17.0" prefWidth="220.0" />
+                        <Label fx:id="programUpdateSelection" layoutX="458.0" layoutY="240.0" text="Program" />
+                        <Label fx:id="creditedPersonUpdateLabel" layoutX="458.0" layoutY="286.0" text="Credited person" />
+                     </children>
+                  </AnchorPane>
+               </content>
+            </Tab>
+           <Tab text="Settings">
+              <content>
+                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                    <children>
+                       <Button fx:id="logOutButton" layoutX="443.0" layoutY="401.0" mnemonicParsing="false" onAction="#logOutAction" prefHeight="63.0" prefWidth="187.0" text="Log out">
+                          <font>
+                             <Font size="36.0" />
+                          </font>
+                       </Button>
+                        <TextField fx:id="usernameText" layoutX="125.0" layoutY="67.0" promptText="Enter username" />
+                        <PasswordField fx:id="passwordText" layoutX="125.0" layoutY="112.0" promptText="Enter password" />
+                        <Label layoutX="27.0" layoutY="71.0" text="Enter username:" />
+                        <Label layoutX="27.0" layoutY="116.0" text="Enter password:" />
+                        <ComboBox fx:id="usertypeCombo" layoutX="125.0" layoutY="155.0" prefWidth="150.0" promptText="Select user type" />
+                        <Label layoutX="27.0" layoutY="159.0" text="User type:" />
+                        <Label layoutX="27.0" layoutY="37.0" text="Create user">
+                           <font>
+                              <Font name="System Bold" size="13.0" />
+                           </font>
+                        </Label>
+                        <Button fx:id="createUserButton" layoutX="28.0" layoutY="197.0" mnemonicParsing="false" onAction="#createUserAction" prefHeight="25.0" prefWidth="248.0" text="Create user" />
+                        <Label fx:id="createUserLabel" layoutX="27.0" layoutY="243.0" prefHeight="17.0" prefWidth="249.0" />
+                    </children>
+                 </AnchorPane>
+              </content>
+           </Tab>
+        </tabs>
+      </TabPane>
+      <AnchorPane fx:id="confirmAnchorPane" prefHeight="502.0" prefWidth="653.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <ImageView fitHeight="170.0" fitWidth="386.0" layoutX="147.0" layoutY="186.0" pickOnBounds="true">
+               <image>
+                  <Image url="@white.png" />
+               </image>
+            </ImageView>
+            <TextArea fx:id="deleteProgramTextArea" editable="false" layoutX="157.0" layoutY="196.0" prefHeight="108.0" prefWidth="364.0" />
+            <Button fx:id="confirmDeleteButton" layoutX="374.0" layoutY="319.0" mnemonicParsing="false" onAction="#deleteSelected" prefHeight="25.0" prefWidth="57.0" text="Yes" />
+            <Button fx:id="declineDeleteButton" layoutX="462.0" layoutY="319.0" mnemonicParsing="false" onAction="#declineDeleteSelected" prefHeight="25.0" prefWidth="57.0" text="No" />
+         </children>
+      </AnchorPane>
+   </children>
+</AnchorPane>
