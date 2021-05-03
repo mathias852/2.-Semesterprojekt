@@ -307,6 +307,7 @@ public class GuestController implements Initializable {
     @FXML
     void selectAndHideMatchingFunction() {
         searchForFunctionCB.setValue(searchForFunctionLV.getSelectionModel().getSelectedItem());
+
         searchForFunctionLV.setVisible(false);
     }
 
