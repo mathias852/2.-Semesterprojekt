@@ -1,3 +1,0 @@
-2a93e924-6638-465a-b5cd-cb8d16f00d69;Top Gun ;En skyde film;1;124;true;Tv2
-ae880937-b2cd-4206-b8c8-35966165390a;Melodi Gran Prix;Et sang show;1;12;false;Tv2
-3129a54d-2d5f-4fbc-a39a-9c478905ff11;Flyvende Farmor;En overskudsfarmor på tur;1;234;true;Nordisk Film
