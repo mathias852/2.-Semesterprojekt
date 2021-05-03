@@ -12,6 +12,7 @@ public abstract class Program {
     private int createdBy;
     private int duration;
     private ArrayList<Credit> credits;
+    private boolean approved;
 
     public Program(String name) {
         this.uuid = UUID.randomUUID();
@@ -24,6 +25,7 @@ public abstract class Program {
         this.description = description;
         this.createdBy = createdBy;
         this.duration = duration;
+        this.approved = false;
     }
 
     // Tjekker om creditsliste eksisterer, tilføjer givne credit til liste.
@@ -81,5 +83,9 @@ public abstract class Program {
 
     public String getName() {
         return name;
+    }
+
+    public boolean isApproved() {
+        return approved;
     }
 }

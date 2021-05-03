@@ -192,8 +192,10 @@ public class ProducerController implements Initializable {
 
             searchListView.getItems().clear();
             for (Program program : facade.getPrograms()) {
-                if (program instanceof Transmission) {
+                if (program instanceof Transmission && program.isApproved()) {
                     searchListView.getItems().add(program.getName() +  ": " + program.getUuid());
+                } else {
+                    searchListView.getItems().add("\"" + program.getName() + "\"" + " Transmission endnu ikke godkendt af adminstrator");
                 }
             }
 
@@ -233,7 +235,11 @@ public class ProducerController implements Initializable {
             if (searchSeriesCombo.getSelectionModel().getSelectedIndex() != -1) {
                 TVSeries series = getSelectedTvSeriesFromComboBox();
                 for (Episode episode : series.getSeasonMap().get(Integer.parseInt(searchSeasonCombo.getSelectionModel().getSelectedItem()))) {
-                    searchListView.getItems().add(episode.getName() + ": " + episode.getUuid());
+                    if(episode.isApproved()) {
+                        searchListView.getItems().add(episode.getName() + ": " + episode.getUuid());
+                    } else {
+                        searchListView.getItems().add("\"" + episode.getName() + "\"" + " Episode endnu ikke godkendt af adminstrator");
+                    }
                 }
             }
         } catch (NumberFormatException e) {
