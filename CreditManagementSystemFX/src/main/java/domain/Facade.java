@@ -102,7 +102,7 @@ public class Facade {
         //Loop through the programs array - if instance of transmission, we store that instance as a single line in the transmission-file
         for (Program p : programs) {
             if (p instanceof Transmission) {
-                transmissionString = p.getUuid() + ";" + p.getName() + ";" + p.getDescription() + ";" + p.getCreatedBy() + ";" + p.getDuration() + ";" + p.isApproved();
+                transmissionString = p.getUuid() + ";" + p.getName() + ";" + p.getDescription() + ";" + p.getCreatedBy() + ";" + p.getDuration() + ";" + p.isApproved() + ";" + p.getProduction();
                 persistenceHandler.writeTransmission(transmissionString);
                 //If the transmission has credits associated we store them in the credit-file
                 if (p.getCredits() != null) {
@@ -114,7 +114,7 @@ public class Facade {
                 //If instance of Episode - store in the episode-file
             } else if (p instanceof Episode) {
                 Episode e = (Episode) p;
-                episodeString = e.getUuid() + ";" + getTvSeriesFromEpisode(e).getUuid() + ";" + e.getName() + ";" + e.getDescription() + ";" + e.getCreatedBy() + ";" + e.getEpisodeNo() + ";" + e.getSeasonNo() + ";" + e.getDuration() + ";" + e.isApproved();
+                episodeString = e.getUuid() + ";" + getTvSeriesFromEpisode(e).getUuid() + ";" + e.getName() + ";" + e.getDescription() + ";" + e.getCreatedBy() + ";" + e.getEpisodeNo() + ";" + e.getSeasonNo() + ";" + e.getDuration() + ";" + e.isApproved() + ";" + p.getProduction();
                 persistenceHandler.writeEpisode(episodeString);
                 //If the episode has credits associated we store them in the credit-file
                 if (e.getCredits() != null) {

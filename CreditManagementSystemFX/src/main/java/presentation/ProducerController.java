@@ -44,7 +44,7 @@ public class ProducerController implements Initializable {
 
     @FXML
     private Button createProgramBtn, createCreditBtn, createPersonBtn, exportButton, updateProgramButton, updateCreditButton,
-            updateProgramBtn, updatePersonButton, updateCreditBtn, updateTvSeriesButton, updateTvSeriesBtn, deleteSelectedButton;
+            updateProgramBtn, updatePersonButton, updateTvSeriesButton, updateTvSeriesBtn;
 
     @FXML
     private ListView<String> searchListView, searchListViewCredits;
@@ -74,7 +74,7 @@ public class ProducerController implements Initializable {
     private final Image nordiskFilmLogoImage = new Image(nordiskFilmLogoFile.toURI().toString());
     private final Image tv2LogoImage = new Image(tv2LogoFile.toURI().toString());
 
-    private final Facade facade = new Facade();
+    private Facade facade = new Facade();
 
     @FXML
     void logOutAction(ActionEvent e) throws IOException{
@@ -277,7 +277,8 @@ public class ProducerController implements Initializable {
     @FXML
     void selectedProgramFromListView(MouseEvent event) {
         searchListViewCredits.getItems().clear();
-
+        System.out.println(LoginController.loginHandler.getCurrentUser().getUsername());
+        System.out.println(getSelectedProgramFromListView().getCreatedBy());
         if(getSelectedProgramFromListView().getCreatedBy() == LoginController.loginHandler.getCurrentUser().getUsername()){
             updateCreditButton.setDisable(false);
             updatePersonButton.setDisable(false);
