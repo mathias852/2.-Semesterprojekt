@@ -7,6 +7,7 @@
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
@@ -18,18 +19,18 @@
                     <children>
                         <TextField fx:id="nameText" layoutX="96.0" layoutY="108.0" prefHeight="25.0" prefWidth="152.0" />
                         <TextField fx:id="descriptionText" layoutX="96.0" layoutY="149.0" prefHeight="25.0" prefWidth="152.0" />
-                        <ComboBox fx:id="programTypeSelection" layoutX="26.0" layoutY="66.0" onAction="#dropDownSelection" prefHeight="25.0" prefWidth="223.0" promptText="Choose program type" />
-                        <Label fx:id="nameLabel" layoutX="26.0" layoutY="112.0" text="Name" />
-                        <Label fx:id="descriptionLabel" layoutX="26.0" layoutY="153.0" text="Description" />
-                        <TextField fx:id="seasonNumberText" layoutX="96.0" layoutY="234.0" prefHeight="25.0" prefWidth="152.0" />
-                        <TextField fx:id="episodeNumberText" layoutX="96.0" layoutY="274.0" prefHeight="25.0" prefWidth="152.0" />
+                        <ComboBox fx:id="programTypeSelection" layoutX="25.0" layoutY="66.0" onAction="#dropDownSelection" prefHeight="25.0" prefWidth="223.0" promptText="Choose program type" />
+                        <Label fx:id="nameLabel" layoutX="25.0" layoutY="112.0" text="Name" />
+                        <Label fx:id="descriptionLabel" layoutX="25.0" layoutY="153.0" text="Description" />
+                        <TextField fx:id="seasonNumberText" layoutX="96.0" layoutY="276.0" prefHeight="25.0" prefWidth="152.0" />
+                        <TextField fx:id="episodeNumberText" layoutX="96.0" layoutY="316.0" prefHeight="25.0" prefWidth="152.0" />
                         <TextField fx:id="durationText" layoutX="96.0" layoutY="192.0" prefHeight="25.0" prefWidth="152.0" />
-                        <Label fx:id="seasonNoLabel" layoutX="26.0" layoutY="239.0" text="Season" />
-                        <Label fx:id="episodeNoLabel" layoutX="25.0" layoutY="277.0" text="Episode" />
-                        <Label fx:id="durationLabel" layoutX="26.0" layoutY="198.0" text="Duration" />
-                        <ComboBox fx:id="tvSeriesSelection" layoutX="96.0" layoutY="318.0" prefWidth="150.0" />
-                        <Label fx:id="tvSLabel" layoutX="25.0" layoutY="322.0" text="TV-Series" />
-                        <Button fx:id="createProgramBtn" layoutX="26.0" layoutY="369.0" mnemonicParsing="false" onAction="#createProgram" prefHeight="25.0" prefWidth="224.0" text="Create program" />
+                        <Label fx:id="seasonNoLabel" layoutX="25.0" layoutY="278.0" text="Season" />
+                        <Label fx:id="episodeNoLabel" layoutX="25.0" layoutY="319.0" text="Episode" />
+                        <Label fx:id="durationLabel" layoutX="25.0" layoutY="198.0" text="Duration" />
+                        <ComboBox fx:id="tvSeriesSelection" layoutX="96.0" layoutY="361.0" prefWidth="150.0" />
+                        <Label fx:id="tvSLabel" layoutX="25.0" layoutY="365.0" text="TV-Series" />
+                        <Button fx:id="createProgramBtn" layoutX="25.0" layoutY="417.0" mnemonicParsing="false" onAction="#createProgram" prefHeight="25.0" prefWidth="224.0" text="Create program" />
                         <ComboBox fx:id="programSelection" layoutX="458.0" layoutY="238.0" prefHeight="25.0" prefWidth="139.0" promptText="Programs" />
                         <ComboBox fx:id="functionSelection" layoutX="458.0" layoutY="327.0" prefHeight="25.0" prefWidth="139.0" promptText="Function" />
                         <Label layoutX="364.0" layoutY="286.0" text="Credited person" />
@@ -48,7 +49,7 @@
                                 <Font name="System Bold" size="13.0" />
                             </font>
                         </Label>
-                        <Label layoutX="26.0" layoutY="34.0" text="Create program">
+                        <Label layoutX="25.0" layoutY="34.0" text="Create program">
                             <font>
                                 <Font name="System Bold" size="13.0" />
                             </font>
@@ -56,7 +57,9 @@
                         <Button fx:id="createPersonBtn" layoutX="365.0" layoutY="103.0" mnemonicParsing="false" onAction="#createPerson" prefHeight="25.0" prefWidth="219.0" text="Create person" />
                         <Button fx:id="createCreditBtn" layoutX="364.0" layoutY="369.0" mnemonicParsing="false" onAction="#createCredit" prefHeight="25.0" prefWidth="238.0" text="Create credit" />
                         <Label fx:id="messageLabel" layoutX="21.0" layoutY="441.0" prefHeight="17.0" prefWidth="571.0" />
-                  <Label layoutX="27.0" layoutY="12.0" text="Producer view" />
+                  <Label layoutX="25.0" layoutY="12.0" text="Producer view" />
+                  <Label fx:id="productionLabel" layoutX="25.0" layoutY="239.0" prefHeight="17.0" prefWidth="59.0" text="Production" />
+                  <ComboBox fx:id="productionSelectionCombo" layoutX="96.0" layoutY="234.0" prefWidth="150.0" />
                     </children></AnchorPane>
             </content>
         </Tab>
@@ -71,9 +74,11 @@
                         <Button fx:id="exportButton" layoutX="14.0" layoutY="458.0" mnemonicParsing="false" onAction="#exportButtonOnAction" text="Gem til .txt" />
                         <ListView fx:id="searchListViewCredits" layoutX="215.0" layoutY="250.0" prefHeight="233.0" prefWidth="300.0" />
                         <Button fx:id="updateProgramButton" disable="true" layoutX="532.0" layoutY="21.0" mnemonicParsing="false" onAction="#updateUpdateTabProgramOnAction" text="Update program" />
-                        <Button fx:id="updateCreditButton" layoutX="532.0" layoutY="251.0" mnemonicParsing="false" onAction="#updateUpdateTabCreditOnAction" text="Update credit" />
+                        <Button fx:id="updateCreditButton" disable="true" layoutX="532.0" layoutY="251.0" mnemonicParsing="false" onAction="#updateUpdateTabCreditOnAction" text="Update credit" />
                         <Button fx:id="updateTvSeriesButton" disable="true" layoutX="14.0" layoutY="152.0" mnemonicParsing="false" onAction="#updateUpdateTabTVSeriesOnAction" text="Update TV-series" />
-                        <Button fx:id="updatePersonButton" layoutX="532.0" layoutY="287.0" mnemonicParsing="false" onAction="#updateUpdateTabPersonOnAction" text="Update person" />
+                        <Button fx:id="updatePersonButton" disable="true" layoutX="532.0" layoutY="287.0" mnemonicParsing="false" onAction="#updateUpdateTabPersonOnAction" text="Update person" />
+                    <ImageView fx:id="creditedLogoImageView" fitHeight="139.0" fitWidth="185.0" layoutX="15.0" layoutY="230.0" pickOnBounds="true" preserveRatio="true" />
+
                     </children></AnchorPane>
             </content>
         </Tab>

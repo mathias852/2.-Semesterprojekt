@@ -1,5 +1,6 @@
 package presentation;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -8,6 +9,7 @@ import java.util.ResourceBundle;
 import java.util.UUID;
 
 import domain.Facade;
+import domain.accesscontrol.Producer;
 import domain.credit.Credit;
 import domain.credit.CreditedPerson;
 import domain.program.Episode;
@@ -19,6 +21,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 
 public class ProducerController implements Initializable {
@@ -30,17 +34,17 @@ public class ProducerController implements Initializable {
     @FXML
     private ComboBox<String> tvSeriesSelection, searchSeriesCombo, functionSelection, searchProgramCombo,
             searchSeasonCombo, creditedPersonSelection, programSelection, programTypeSelection, tvSeriesUpdateSelection,
-            functionUpdateSelection;
+            functionUpdateSelection, productionSelectionCombo;
 
     @FXML
     private Label creditedPersonLabel, tvSLabel, durationLabel, nameLabel, seasonNoLabel, messageLabel,
             episodeNoLabel, descriptionLabel, nameUpdateLabel, descriptionUpdateLabel, seasonNoUpdateLabel,
             episodeNoUpdateLabel, durationUpdateLabel, tvSUpdateLabel, currentlyUpdatingLabel, currentlyUpdatingUUID,
-            programUpdateSelection, creditedPersonUpdateLabel;
+            programUpdateSelection, creditedPersonUpdateLabel, productionLabel;
 
     @FXML
     private Button createProgramBtn, createCreditBtn, createPersonBtn, exportButton, updateProgramButton, updateCreditButton,
-            updateProgramBtn, updatePersonBtn, updateCreditBtn, updateTvSeriesButton, updateTvSeriesBtn;
+            updateProgramBtn, updatePersonButton, updateTvSeriesButton, updateTvSeriesBtn;
 
     @FXML
     private ListView<String> searchListView, searchListViewCredits;
@@ -54,14 +58,27 @@ public class ProducerController implements Initializable {
     @FXML
     private Tab updateTab;
 
+    @FXML
+    private ImageView creditedLogoImageView;
+
     private final String transmission = "Transmission";
     private final String tvSeries = "TV-Series";
     private final String episode = "Episode";
+
+    private final String tv2Logo = "Tv2";
+    private final String nordiskFilmLogo = "Nordisk Film";
+
+    private final File nordiskFilmLogoFile = new File("src/main/resources/presentation/NF-Logo.png");
+    private final File tv2LogoFile = new File("src/main/resources/presentation/tv2creditslogo.png");
+
+    private final Image nordiskFilmLogoImage = new Image(nordiskFilmLogoFile.toURI().toString());
+    private final Image tv2LogoImage = new Image(tv2LogoFile.toURI().toString());
 
     private Facade facade = new Facade();
 
     @FXML
     void logOutAction(ActionEvent e) throws IOException{
+        facade.exportToTxt();
         App.setRoot("primary");
     }
 
@@ -84,21 +101,27 @@ public class ProducerController implements Initializable {
             CreditedPerson creditedPerson = facade.getCreditedPeople().get(creditedPersonSelection.getSelectionModel().getSelectedIndex());
             Credit.Function function = facade.getFunctions().get(functionSelection.getSelectionModel().getSelectedIndex());
 
-            //Tjekker om credit allerede eksisterer
-            if (program.getCredits() == null) {
-                facade.createCredit(creditedPerson, function, program);
-            } else {
-                boolean exists = false;
-                for (Credit credit : program.getCredits()) {
-                    if (credit.getCreditedPerson().equals(creditedPerson) && credit.getFunction().equals(function)) {
-                        exists = true;
-                        break;
+            if(program.getCreatedBy() == LoginController.loginHandler.getCurrentUser().getUsername()){
+                //Tjekker om credit allerede eksisterer
+                if (program.getCredits() == null) {
+                    facade.createCredit(creditedPerson, function, program);
+                } else {
+                    boolean exists = false;
+                    for (Credit credit : program.getCredits()) {
+                        if (credit.getCreditedPerson().equals(creditedPerson) && credit.getFunction().equals(function)) {
+                            exists = true;
+                            break;
+                        }
+                    }
+                    if (!exists) {
+                        facade.createCredit(creditedPerson, function, program);
                     }
                 }
-                if (!exists) {
-                    facade.createCredit(creditedPerson, function, program);
-                }
+            } else {
+                System.out.println("Fuck off, you didn't make this program and can therefore not create credits for it");
             }
+
+
         } catch (IndexOutOfBoundsException e) {
             System.out.println("Ikke implementeret endnu");
         }
@@ -109,17 +132,19 @@ public class ProducerController implements Initializable {
 
         String name = nameText.getText();
         String description = descriptionText.getText();
+        String production = productionSelectionCombo.getSelectionModel().getSelectedItem();
 
         if (programTypeSelection.getValue().equals(transmission)) {
             int duration = durationText.getText().isEmpty() ? -1 : Integer.parseInt(durationText.getText());
             if (!name.isEmpty()) {
-                facade.createTransmission(name, description, 1, duration);
+                facade.createTransmission(name, description, LoginController.loginHandler.getCurrentUser().getUsername(), duration, false, production);
+
             } else {
                 messageLabel.setText("Cannot create " + transmission + " without a name");
             }
         } else if (programTypeSelection.getValue().equals(tvSeries)) {
             if (!name.isEmpty()) {
-                facade.createTvSeries(name, description, 1);
+                facade.createTvSeries(name, description, LoginController.loginHandler.getCurrentUser().getUsername());
             } else {
                 messageLabel.setText("Cannot create " + tvSeries + " without a name");
             }
@@ -131,7 +156,7 @@ public class ProducerController implements Initializable {
                 int duration = durationText.getText().isEmpty() ? -1 : Integer.parseInt(durationText.getText());
 
                 if (!name.isEmpty() && tvSeries != null) {
-                    facade.createEpisode(tvSeries, name, description, 1, episodeNumber, seasonNumber, duration);
+                    facade.createEpisode(tvSeries, name, description, LoginController.loginHandler.getCurrentUser().getUsername(), episodeNumber, seasonNumber, duration, false, production);
                 } else {
                     messageLabel.setText("Cannot create " + episode + " without a name & a TV-series");
                 }
@@ -180,6 +205,7 @@ public class ProducerController implements Initializable {
     @FXML
     void searchProgramComboAction(ActionEvent event) {
         searchSeriesCombo.getItems().clear();
+        creditedLogoImageView.setImage(null);
         if (searchProgramCombo.getSelectionModel().getSelectedItem().equals(transmission)){
             searchSeriesCombo.setDisable(true);
             searchSeasonCombo.setDisable(true);
@@ -192,11 +218,10 @@ public class ProducerController implements Initializable {
 
             searchListView.getItems().clear();
             for (Program program : facade.getPrograms()) {
-                if (program instanceof Transmission) {
-                    searchListView.getItems().add(program.getName() +  ": " + program.getUuid());
+                if (program instanceof Transmission && program.isApproved()) {
+                    searchListView.getItems().add(program.getName() +  ": " + program.getUuid()+ ": " + program.getCreatedBy());
                 }
             }
-
         } else if (searchProgramCombo.getSelectionModel().getSelectedItem().equals(tvSeries)){
             searchSeriesCombo.setDisable(false);
             searchSeasonCombo.setDisable(false);
@@ -227,13 +252,21 @@ public class ProducerController implements Initializable {
 
     @FXML
     void searchSeasonComboAction(ActionEvent event) {
+        creditedLogoImageView.setImage(null);
         try {
             searchListView.getItems().clear();
 
             if (searchSeriesCombo.getSelectionModel().getSelectedIndex() != -1) {
                 TVSeries series = getSelectedTvSeriesFromComboBox();
                 for (Episode episode : series.getSeasonMap().get(Integer.parseInt(searchSeasonCombo.getSelectionModel().getSelectedItem()))) {
-                    searchListView.getItems().add(episode.getName() + ": " + episode.getUuid());
+                    if(episode.isApproved()) {
+                        searchListView.getItems().add(episode.getName() + ": " + episode.getUuid() + ": " + episode.getCreatedBy());
+                        if (episode.getProduction().equals(tv2Logo)){
+                            creditedLogoImageView.setImage(tv2LogoImage);
+                        } else if (episode.getProduction().equals(nordiskFilmLogo)){
+                            creditedLogoImageView.setImage(nordiskFilmLogoImage);
+                        }
+                    }
                 }
             }
         } catch (NumberFormatException e) {
@@ -244,10 +277,26 @@ public class ProducerController implements Initializable {
 
     @FXML
     void selectedProgramFromListView(MouseEvent event) {
+        updateCreditButton.setDisable(true);
+        updatePersonButton.setDisable(true);
+        updateProgramButton.setDisable(true);
+
         searchListViewCredits.getItems().clear();
-        updateProgramButton.setDisable(false);
+        System.out.println("Current user:" + LoginController.loginHandler.getCurrentUser().getUsername());
+        System.out.println("Selected program created by:" + getSelectedProgramFromListView().getCreatedBy());
+        if(getSelectedProgramFromListView().getCreatedBy().equals(LoginController.loginHandler.getCurrentUser().getUsername())){
+            System.out.println("HELLO");
+            updateCreditButton.setDisable(false);
+            updatePersonButton.setDisable(false);
+            updateProgramButton.setDisable(false);
+        }
 
         Program selectedProgram = getSelectedProgramFromListView();
+        if (selectedProgram.getProduction().equals(tv2Logo)){
+            creditedLogoImageView.setImage(tv2LogoImage);
+        } else if (selectedProgram.getProduction().equals(nordiskFilmLogo)){
+            creditedLogoImageView.setImage(nordiskFilmLogoImage);
+        }
 
         //Get the credits from the selected program IF the program contains credits
         if(selectedProgram.getCredits() != null) {
@@ -260,39 +309,45 @@ public class ProducerController implements Initializable {
 
     @FXML
     void updateUpdateTabProgramOnAction(ActionEvent event) {
-        ArrayList<Node> updateNodes = new ArrayList<>(Arrays.asList(
-                nameUpdateLabel, descriptionUpdateLabel, durationUpdateLabel,
-                nameUpdateText, descriptionUpdateText, durationUpdateText));
-        ArrayList<Node> episodeNodes = new ArrayList<>(Arrays.asList(
-                seasonNoUpdateLabel, seasonNumberUpdateText, episodeNoUpdateLabel,
-                episodeNumberUpdateText, tvSUpdateLabel, tvSeriesUpdateSelection));
-        if (searchListView.getSelectionModel().getSelectedItem() != null) {
-            Program program = getSelectedProgramFromListView();
-            updateNodes.forEach(node -> node.setVisible(true));
-            updateProgramBtn.setVisible(true);
-            updateTvSeriesBtn.setVisible(false);
-            nameUpdateText.setText(program.getName());
-            descriptionUpdateText.setText(program.getDescription());
-            durationUpdateText.setText(String.valueOf(program.getDuration()));
-            mainTabPane.getSelectionModel().select(updateTab);
+        if(LoginController.loginHandler.getCurrentUser().getUsername().equals(getSelectedProgramFromListView().getCreatedBy())){
+            ArrayList<Node> updateNodes = new ArrayList<>(Arrays.asList(
+                    nameUpdateLabel, descriptionUpdateLabel, durationUpdateLabel,
+                    nameUpdateText, descriptionUpdateText, durationUpdateText));
+            ArrayList<Node> episodeNodes = new ArrayList<>(Arrays.asList(
+                    seasonNoUpdateLabel, seasonNumberUpdateText, episodeNoUpdateLabel,
+                    episodeNumberUpdateText, tvSUpdateLabel, tvSeriesUpdateSelection));
+            if (searchListView.getSelectionModel().getSelectedItem() != null) {
+                Program program = getSelectedProgramFromListView();
+                updateNodes.forEach(node -> node.setVisible(true));
+                updateProgramBtn.setVisible(true);
+                updateTvSeriesBtn.setVisible(false);
+                nameUpdateText.setText(program.getName());
+                descriptionUpdateText.setText(program.getDescription());
+                durationUpdateText.setText(String.valueOf(program.getDuration()));
+                mainTabPane.getSelectionModel().select(updateTab);
 
-            if (searchProgramCombo.getSelectionModel().getSelectedItem().equals(tvSeries)) {
-                Episode episode = (Episode) program;
-                episodeNodes.forEach(node -> node.setVisible(true));
-                seasonNumberUpdateText.setText(String.valueOf(episode.getSeasonNo()));
-                episodeNumberUpdateText.setText(String.valueOf(episode.getEpisodeNo()));
-                tvSeriesUpdateSelection.getItems().clear();
-                for (TVSeries tvSeries : facade.getTvSeriesList()) {
-                    tvSeriesUpdateSelection.getItems().add(tvSeries.getName());
+                if (searchProgramCombo.getSelectionModel().getSelectedItem().equals(tvSeries)) {
+                    Episode episode = (Episode) program;
+                    episodeNodes.forEach(node -> node.setVisible(true));
+                    seasonNumberUpdateText.setText(String.valueOf(episode.getSeasonNo()));
+                    episodeNumberUpdateText.setText(String.valueOf(episode.getEpisodeNo()));
+                    tvSeriesUpdateSelection.getItems().clear();
+                    for (TVSeries tvSeries : facade.getTvSeriesList()) {
+                        tvSeriesUpdateSelection.getItems().add(tvSeries.getName());
+                    }
+                    tvSeriesUpdateSelection.getSelectionModel().select(facade.getTvSeriesFromEpisode(episode).getName());
+
+                } else if (searchProgramCombo.getSelectionModel().getSelectedItem().equals(transmission)) {
+                    episodeNodes.forEach(node -> node.setVisible(false));
                 }
-                tvSeriesUpdateSelection.getSelectionModel().select(facade.getTvSeriesFromEpisode(episode).getName());
-
-            } else if (searchProgramCombo.getSelectionModel().getSelectedItem().equals(transmission)) {
-                episodeNodes.forEach(node -> node.setVisible(false));
+                currentlyUpdatingLabel.setText("Currently editing: " + getSelectedProgramFromListView().getName());
+                currentlyUpdatingUUID.setText(String.valueOf(getSelectedProgramFromListView().getUuid()));
             }
-            currentlyUpdatingLabel.setText("Currently editing: " + getSelectedProgramFromListView().getName());
-            currentlyUpdatingUUID.setText(String.valueOf(getSelectedProgramFromListView().getUuid()));
+        } else {
+            System.out.println("FUCK OFF");
         }
+
+
     }
 
     @FXML
@@ -364,10 +419,10 @@ public class ProducerController implements Initializable {
                 facade.getTvSeriesList().get(tvSeriesUpdateSelection.getSelectionModel().getSelectedIndex());
 
         if (program instanceof Transmission) {
-            facade.updateTransmission(program, name, description, 1, duration);
+            facade.updateTransmission(program, name, description, duration);
         }
         else if (program instanceof Episode) {
-            facade.updateEpisode(program, name, description, 1, duration, seasonNo, episodeNo, tvSeries);
+            facade.updateEpisode(program, name, description, duration, seasonNo, episodeNo, tvSeries);
         }
         updateUpdateUI();
     }
@@ -439,6 +494,9 @@ public class ProducerController implements Initializable {
 
         searchProgramCombo.getItems().add(transmission);
         searchProgramCombo.getItems().add(tvSeries);
+
+        productionSelectionCombo.getItems().add(tv2Logo);
+        productionSelectionCombo.getItems().add(nordiskFilmLogo);
 
         programTypeSelection.getItems().add(transmission);
         programTypeSelection.getItems().add(tvSeries);

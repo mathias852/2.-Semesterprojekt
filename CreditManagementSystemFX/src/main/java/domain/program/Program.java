@@ -1,5 +1,6 @@
 package domain.program;
 
+import domain.accesscontrol.User;
 import domain.credit.Credit;
 
 import java.util.ArrayList;
@@ -8,22 +9,25 @@ import java.util.UUID;
 public abstract class Program {
 
     private UUID uuid;
-    private String name, description;
-    private int createdBy;
+    private String name, description, production,createdBy;
+
     private int duration;
     private ArrayList<Credit> credits;
+    private boolean approved;
 
     public Program(String name) {
         this.uuid = UUID.randomUUID();
         this.name = name;
     }
 
-    public Program(UUID uuid, String name, String description, int createdBy, int duration) { // createdBy tager userID fra creator
+    public Program(UUID uuid, String name, String description, String createdBy, int duration,boolean approved, String production) { // createdBy tager userID fra creator
         this.uuid = uuid;
         this.name = name;
         this.description = description;
         this.createdBy = createdBy;
         this.duration = duration;
+        this.approved = approved;
+        this.production = production;
     }
 
     // Tjekker om creditsliste eksisterer, tilføjer givne credit til liste.
@@ -47,11 +51,14 @@ public abstract class Program {
     public String getDescription() {
         return description;
     }
-    public int getCreatedBy() {
+    public String getCreatedBy() {
         return createdBy;
     }
     public int getDuration() {
         return duration;
+    }
+    public String getProduction(){
+        return production;
     }
     public ArrayList<Credit> getCredits() {
         return credits;
@@ -62,11 +69,14 @@ public abstract class Program {
     public void setDescription(String description) {
         this.description = description;
     }
-    public void setCreatedBy(int createdBy) {
+    public void setCreatedBy(String createdBy) {
         this.createdBy = createdBy;
     }
     public void setDuration(int duration) {
         this.duration = duration;
+    }
+    public void setApproved(boolean approved){
+        this.approved = approved;
     }
 
     @Override
@@ -82,4 +92,9 @@ public abstract class Program {
     public String getName() {
         return name;
     }
+
+    public boolean isApproved() {
+        return approved;
+    }
+
 }

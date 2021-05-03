@@ -1,5 +1,7 @@
 package domain.program;
 
+import domain.accesscontrol.User;
+
 import java.util.*;
 
 public class TVSeries {
@@ -7,10 +9,10 @@ public class TVSeries {
     private Map<Integer, ArrayList<Episode>> seasonMap;
     private String name;
     private String description;
-    private int createdBy;
+    private String createdBy;
     private UUID uuid;
 
-    public TVSeries(UUID uuid, String name, String description, int createdBy) {
+    public TVSeries(UUID uuid, String name, String description, String createdBy) {
         this.name = name;
         this.description = description;
         this.createdBy = createdBy;
@@ -49,10 +51,10 @@ public class TVSeries {
     public void setDescription(String description) {
         this.description = description;
     }
-    public int getCreatedBy() {
+    public String getCreatedBy() {
         return createdBy;
     }
-    public void setCreatedBy(int createdBy) {
+    public void setCreatedBy(String createdBy) {
         this.createdBy = createdBy;
     }
     public void setUuid(UUID uuid) {

@@ -16,6 +16,8 @@ public class PersistenceHandler {
     private File tvSeries = new File("src/main/resources/TvSeries.txt");
     private File person = new File("src/main/resources/person.txt");
     private File transmission = new File("src/main/resources/transmission.txt");
+    private File systemAdmin = new File("src/main/resources/systemadmin.txt");
+    private File producer = new File("src/main/resources/producer.txt");
 
     public PersistenceHandler() {
     }
@@ -59,7 +61,6 @@ public class PersistenceHandler {
         return list;
     }
 
-
     public void deleteFiles() {
 
         credit.delete();
@@ -90,6 +91,14 @@ public class PersistenceHandler {
         write(episode, s);
     }
 
+    public void writeSystemAdmin(String s) {
+        write(systemAdmin, s);
+    }
+
+    public void writeProducer(String s) {
+        write(producer, s);
+    }
+
 
     public ArrayList<String[]> readCredit() {
         return read(credit);
@@ -109,5 +118,13 @@ public class PersistenceHandler {
 
     public ArrayList<String[]> readTransmission() {
         return read(transmission);
+    }
+
+    public ArrayList<String[]> readSystemAdmin() {
+        return read(systemAdmin);
+    }
+
+    public ArrayList<String[]> readProducer() {
+        return read(producer);
     }
 }
