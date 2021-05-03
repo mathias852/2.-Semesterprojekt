@@ -135,6 +135,7 @@ public class SystemAdminController implements Initializable {
 
     @FXML
     void logOutAction(ActionEvent e) throws IOException {
+        facade.exportToTxt();
         App.setRoot("primary");
     }
 

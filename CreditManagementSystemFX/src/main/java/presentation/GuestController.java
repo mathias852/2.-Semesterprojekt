@@ -198,6 +198,7 @@ public class GuestController implements Initializable {
             ArrayList<Program> programs = new ArrayList<>();
             for (String programText : searchListView.getItems()) {
                 String[] splitProgramText = programText.split(":");
+
                 Program program = facade.getProgramFromUuid(UUID.fromString(splitProgramText[1].trim()));
                 programs.add(program);
             }

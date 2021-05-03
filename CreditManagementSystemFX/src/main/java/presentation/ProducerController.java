@@ -78,6 +78,7 @@ public class ProducerController implements Initializable {
 
     @FXML
     void logOutAction(ActionEvent e) throws IOException{
+        facade.exportToTxt();
         App.setRoot("primary");
     }
 
@@ -276,10 +277,15 @@ public class ProducerController implements Initializable {
 
     @FXML
     void selectedProgramFromListView(MouseEvent event) {
+        updateCreditButton.setDisable(true);
+        updatePersonButton.setDisable(true);
+        updateProgramButton.setDisable(true);
+
         searchListViewCredits.getItems().clear();
-        System.out.println(LoginController.loginHandler.getCurrentUser().getUsername());
-        System.out.println(getSelectedProgramFromListView().getCreatedBy());
-        if(getSelectedProgramFromListView().getCreatedBy() == LoginController.loginHandler.getCurrentUser().getUsername()){
+        System.out.println("Current user:" + LoginController.loginHandler.getCurrentUser().getUsername());
+        System.out.println("Selected program created by:" + getSelectedProgramFromListView().getCreatedBy());
+        if(getSelectedProgramFromListView().getCreatedBy().equals(LoginController.loginHandler.getCurrentUser().getUsername())){
+            System.out.println("HELLO");
             updateCreditButton.setDisable(false);
             updatePersonButton.setDisable(false);
             updateProgramButton.setDisable(false);
@@ -303,7 +309,7 @@ public class ProducerController implements Initializable {
 
     @FXML
     void updateUpdateTabProgramOnAction(ActionEvent event) {
-        if(LoginController.loginHandler.getCurrentUser().getUsername() == getSelectedProgramFromListView().getCreatedBy()){
+        if(LoginController.loginHandler.getCurrentUser().getUsername().equals(getSelectedProgramFromListView().getCreatedBy())){
             ArrayList<Node> updateNodes = new ArrayList<>(Arrays.asList(
                     nameUpdateLabel, descriptionUpdateLabel, durationUpdateLabel,
                     nameUpdateText, descriptionUpdateText, durationUpdateText));

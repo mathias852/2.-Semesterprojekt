@@ -1,0 +1,4 @@
+3b0e3e1c-ba41-46c0-b670-e9f130546c40;99c4107d-ff92-4fb1-906e-14712fa528f1;hovsa det her var faktisk episoden;123;kapper;123;123;123;false;Tv2
+3b0e3e1c-ba41-46c0-b670-e9f130546c40;99c4107d-ff92-4fb1-906e-14712fa528f1;hovsa det her var faktisk episoden;123;kapper;123;123;123;true;Tv2
+3b0e3e1c-ba41-46c0-b670-e9f130546c40;99c4107d-ff92-4fb1-906e-14712fa528f1;hovsa det her var faktisk episoden;123;kapper;123;123;123;false;Tv2
+3b0e3e1c-ba41-46c0-b670-e9f130546c40;99c4107d-ff92-4fb1-906e-14712fa528f1;hovsa det her var faktisk episoden;123;kapper;123;123;123;true;Tv2

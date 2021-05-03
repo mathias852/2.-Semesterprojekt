@@ -68,8 +68,6 @@ public class PersistenceHandler {
         tvSeries.delete();
         transmission.delete();
         episode.delete();
-        producer.delete();
-        systemAdmin.delete();
 
     }
 
