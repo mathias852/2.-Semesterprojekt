@@ -14,7 +14,8 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="presentation.SystemAdminController">
+
+<AnchorPane xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="presentation.SystemAdminController">
    <children>
       <TabPane fx:id="mainTabPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="531.0" prefWidth="653.0" tabClosingPolicy="UNAVAILABLE">
         <tabs>
@@ -66,7 +67,7 @@
                   </AnchorPane>
             </content>
           </Tab>
-          <Tab fx:id="searchViewTab" text="Search/view">
+          <Tab text="Search/view">
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefWidth="646.0">
                      <children>
@@ -132,20 +133,6 @@
                         <Label fx:id="currentlyUpdatingUUID" layoutX="70.0" layoutY="82.0" prefHeight="17.0" prefWidth="220.0" />
                         <Label fx:id="programUpdateSelection" layoutX="458.0" layoutY="240.0" text="Program" />
                         <Label fx:id="creditedPersonUpdateLabel" layoutX="458.0" layoutY="286.0" text="Credited person" />
-                     </children>
-                  </AnchorPane>
-               </content>
-            </Tab>
-            <Tab fx:id="approvedTab" text="Approve">
-               <content>
-                  <AnchorPane minHeight="0.0" minWidth="0.0" prefWidth="646.0">
-                     <children>
-                        <ListView fx:id="searchApprovedListView" layoutX="215.0" layoutY="21.0" onMouseClicked="#selectedApprovedProgramFromListView" prefHeight="203.0" prefWidth="300.0" />
-                        <ComboBox fx:id="searchApprovedProgramCombo" layoutX="14.0" layoutY="21.0" onAction="#searchApprovedProgramComboAction" prefHeight="25.0" prefWidth="189.0" promptText="Choose program type" />
-                        <ComboBox fx:id="searchApprovedSeriesCombo" disable="true" editable="true" layoutX="14.0" layoutY="67.0" onAction="#searchApprovedSeriesComboAction" prefHeight="25.0" prefWidth="189.0" promptText="Choose TV-series" />
-                        <ComboBox fx:id="searchApprovedSeasonCombo" disable="true" editable="true" layoutX="14.0" layoutY="111.0" onAction="#searchApprovedSeasonComboAction" prefHeight="25.0" prefWidth="189.0" promptText="Choose season" />
-                        <ListView fx:id="searchApprovedListViewCredits" layoutX="215.0" layoutY="250.0" prefHeight="233.0" prefWidth="300.0" />
-                        <Button fx:id="approveSelectedButton" layoutX="532.0" layoutY="21.0" mnemonicParsing="false" onAction="#approveSelectedProgram" text="Approve selected" />
                      </children>
                   </AnchorPane>
                </content>

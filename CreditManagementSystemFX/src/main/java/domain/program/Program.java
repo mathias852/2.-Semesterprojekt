@@ -70,9 +70,6 @@ public abstract class Program {
     public void setDuration(int duration) {
         this.duration = duration;
     }
-    public void setApproved(){
-        this.approved = true;
-    }
 
     @Override
     public String toString() {
