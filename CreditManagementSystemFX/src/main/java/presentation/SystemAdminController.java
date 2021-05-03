@@ -39,7 +39,7 @@ public class SystemAdminController implements Initializable {
     @FXML
     private ComboBox<String> tvSeriesSelection, searchSeriesCombo, functionSelection, searchProgramCombo,
             searchSeasonCombo, creditedPersonSelection, programSelection, programTypeSelection, tvSeriesUpdateSelection,
-            functionUpdateSelection, usertypeCombo;
+            functionUpdateSelection, usertypeCombo, searchApprovedProgramCombo, searchApprovedSeriesCombo, searchApprovedSeasonCombo;
 
     @FXML
     private Label creditedPersonLabel, tvSLabel, durationLabel, nameLabel, seasonNoLabel, messageLabel,
@@ -50,10 +50,10 @@ public class SystemAdminController implements Initializable {
     @FXML
     private Button createProgramBtn, createCreditBtn, createPersonBtn, exportButton, updateProgramButton, updateCreditButton,
             updateProgramBtn, updatePersonBtn, updateCreditBtn, updateTvSeriesButton, updateTvSeriesBtn, deleteSelectedButton,
-            createUserButton, confirmDeleteButton, declineDeleteButton;
+            createUserButton, confirmDeleteButton, declineDeleteButton, approveSelectedButton;
 
     @FXML
-    private ListView<String> searchListView, searchListViewCredits;
+    private ListView<String> searchListView, searchListViewCredits,searchApprovedListView, searchApprovedListViewCredits;
 
     @FXML
     private TableView<String> searchTableView;
@@ -62,7 +62,7 @@ public class SystemAdminController implements Initializable {
     private TabPane mainTabPane;
 
     @FXML
-    private Tab updateTab;
+    private Tab updateTab, searchViewTab, approvedTab;
 
     private final String transmission = "Transmission";
     private final String tvSeries = "TV-Series";
@@ -517,17 +517,130 @@ public class SystemAdminController implements Initializable {
         deleteSelectedButton.setDisable(true);
     }
 
+    @FXML
+    void searchApprovedProgramComboAction (ActionEvent event){
+        searchApprovedSeriesCombo.getItems().clear();
+        if (searchApprovedProgramCombo.getSelectionModel().getSelectedItem().equals(transmission)){
+            searchApprovedSeriesCombo.setDisable(true);
+            searchApprovedSeasonCombo.setDisable(true);
+            searchApprovedSeriesCombo.getSelectionModel().clearSelection();
+            searchApprovedSeasonCombo.getSelectionModel().clearSelection();
+            searchApprovedSeriesCombo.setPromptText("Choose TV-series");
+            searchApprovedSeasonCombo.setPromptText("Choose season");
+
+            searchApprovedListView.getItems().clear();
+            for (Program program : facade.getPrograms()) {
+                if (program instanceof Transmission && !program.isApproved()) {
+                    searchApprovedListView.getItems().add(program.getName() +  ": " + program.getUuid());
+                }
+            }
+
+        } else if (searchApprovedProgramCombo.getSelectionModel().getSelectedItem().equals(tvSeries)){
+            searchApprovedSeriesCombo.setDisable(false);
+            searchApprovedSeasonCombo.setDisable(false);
+
+            for (TVSeries tvSeries : facade.getTvSeriesList()) {
+                searchApprovedSeriesCombo.getItems().add(tvSeries.getName());
+            }
+        }
+    }
+
+    @FXML
+    void searchApprovedSeriesComboAction (ActionEvent event){
+        searchApprovedSeasonCombo.getItems().clear();
+        //To find the episodes based on a season from a TV-series
+        try {
+            TVSeries series = facade.getTvSeriesList().get(searchApprovedSeriesCombo.getSelectionModel().getSelectedIndex());
+
+            //Enables the delete button when a series has been chosen
+            deleteSelectedButton.setDisable(false);
+            deleteSelectedButton.setText("Delete Tv-Series");
+
+            if (series.getSeasonMap() != null) {
+                for (Integer i : series.getSeasonMap().keySet()) {
+                    searchApprovedSeasonCombo.getItems().add(String.valueOf(i));
+                }
+            }
+            updateTvSeriesButton.setDisable(false);
+        } catch (IndexOutOfBoundsException e){
+            System.out.println("Not yet implemented && Not sure why this is happening??? Yikes - " +
+                    "Think it has something to do with the change in combo-box you just made");
+        }
+    }
+
+    @FXML
+    void searchApprovedSeasonComboAction (ActionEvent event){
+        try {
+            searchApprovedListView.getItems().clear();
+
+            if (searchApprovedSeriesCombo.getSelectionModel().getSelectedIndex() != -1) {
+                TVSeries series = getSelectedTvSeriesFromComboBox();
+                for (Episode episode : series.getSeasonMap().get(Integer.parseInt(searchApprovedSeasonCombo.getSelectionModel().getSelectedItem()))) {
+                    if (!episode.isApproved()) {
+                        searchApprovedListView.getItems().add(episode.getName() + ": " + episode.getUuid());
+                    }
+                }
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("This just happens because we parse the value 'null' as an integer. And we do that because" +
+                    " we clear the season-combobox");
+        }
+    }
+
+    @FXML
+    void selectedApprovedProgramFromListView(MouseEvent event) {
+        searchApprovedListViewCredits.getItems().clear();
+
+        Program selectedProgram = getSelectedProgramFromListView();
+
+        //Get the credits from the selected program IF the program contains credits
+        if(selectedProgram.getCredits() != null) {
+            ArrayList<Credit> credits = selectedProgram.getCredits();
+            for (Credit credit : credits) {
+                searchApprovedListViewCredits.getItems().add(credit.getCreditedPerson().getName() + ": " + credit.getFunction().role);
+            }
+        }
+    }
+
+    @FXML
+    void approveSelectedProgram(ActionEvent event){
+        getSelectedProgramFromListView().setApproved();
+        System.out.println(getSelectedProgramFromListView().isApproved());
+    }
+
+
     private TVSeries getSelectedTvSeriesFromComboBox() {
-        return facade.getTvSeriesList().get(searchSeriesCombo.getSelectionModel().getSelectedIndex());
+        try{
+            if (searchViewTab.isSelected()){
+                return facade.getTvSeriesList().get(searchSeriesCombo.getSelectionModel().getSelectedIndex());
+
+            } else if (approvedTab.isSelected()) {
+                return facade.getTvSeriesList().get(searchApprovedSeriesCombo.getSelectionModel().getSelectedIndex());
+            }
+        } catch (NullPointerException e) {
+            System.out.println("No series in the list - wow");
+        }
+        return null;
     }
 
     private Program getSelectedProgramFromListView() {
-        //Choose the String-item from the listview instead of the index
-        String viewString = searchListView.getSelectionModel().getSelectedItem();
-        //Split the string to get the UUID
-        String[] viewStringArray = viewString.split(":");
-        //Use the getProgramFromUuid method from the facade to get the program from the string. The trim after the string is to get rid of whitespace
-        return facade.getProgramFromUuid(UUID.fromString(viewStringArray[1].trim()));
+        try {
+            String viewString = null;
+            //Choose the String-item from the listview instead of the index
+            if(searchViewTab.isSelected()) {
+                viewString = searchListView.getSelectionModel().getSelectedItem();
+            } else if (approvedTab.isSelected()) {
+                approveSelectedButton.setDisable(false);
+                viewString = searchApprovedListView.getSelectionModel().getSelectedItem();
+            }
+            //Split the string to get the UUID
+            String[] viewStringArray = viewString.split(":");
+            //Use the getProgramFromUuid method from the facade to get the program from the string. The trim after the string is to get rid of whitespace
+            return facade.getProgramFromUuid(UUID.fromString(viewStringArray[1].trim()));
+        } catch (NullPointerException e) {
+            System.out.println("A program has not been selected");
+        }
+        return null;
     }
 
     private Credit getSelectedCreditFromListView() {
@@ -543,6 +656,9 @@ public class SystemAdminController implements Initializable {
 
         searchProgramCombo.getItems().add(transmission);
         searchProgramCombo.getItems().add(tvSeries);
+        searchApprovedProgramCombo.getItems().add(transmission);
+        searchApprovedProgramCombo.getItems().add(tvSeries);
+
 
         programTypeSelection.getItems().add(transmission);
         programTypeSelection.getItems().add(tvSeries);
