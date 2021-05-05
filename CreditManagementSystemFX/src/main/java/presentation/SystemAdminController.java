@@ -1,6 +1,7 @@
 package presentation;
 
 import domain.Facade;
+import domain.LoginHandler;
 import domain.accesscontrol.Producer;
 import domain.credit.Credit;
 import domain.credit.CreditedPerson;
@@ -88,55 +89,52 @@ public class SystemAdminController implements Initializable {
     private final Image tv2LogoImage = new Image(tv2LogoFile.toURI().toString());
 
     private final Facade facade = new Facade();
-
-    private PersistenceHandler persistenceHandler = new PersistenceHandler();
-
-
+    private final LoginHandler loginHandler = new LoginHandler();
 
     @FXML
     private void createUserAction(ActionEvent e) {
 
+        //Create a pattern that the username must obey
         Pattern pattern = Pattern.compile("^(?=.{2,20}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$");
         Matcher matcher = pattern.matcher(usernameText.getText());
+        //Checks if the matcher variable did find a match that correspond to the pattern
         boolean matchFound = matcher.find();
 
+        //We get the value from the usernameTextField
+        String userName = usernameText.getText();
+        //We get the value from the passwordTextField and convert it to hash
+        int password = passwordText.getText().hashCode();
+
+
+        //Checks if the userName correspond to the constraint made in pattern and that the password is not empty
         if (matchFound && !passwordText.getText().isBlank()) {
-            boolean success = false;
+            //If the userType is equal to producer we call the createProducer()
             if (usertypeCombo.getSelectionModel().getSelectedItem().equals("Producer")) {
 
-                success = LoginController.loginHandler.createProducer(usernameText.getText(), passwordText.getText().hashCode());
-
-                if (success) {
-                    String userString = LoginController.loginHandler.getUsers().get(LoginController.loginHandler.getUsers().size() - 1).getUsername() + ";" + LoginController.loginHandler.getUsers().get(LoginController.loginHandler.getUsers().size() - 1).getHashedPassword();;
-                    persistenceHandler.writeProducer(userString);
-
-                    createUserLabel.setText("Created a User");
+                if (loginHandler.createProducer(userName, password)) {
+                    createUserLabel.setText("Created a producer");
                 } else {
-                    createUserLabel.setText("Could not create user");
+                    createUserLabel.setText("Could not create a producer");
                 }
-
+            //If the userType is equal to System Administrator we call the createSystemAdmin()
             } else if (usertypeCombo.getSelectionModel().getSelectedItem().equals("System Administrator")) {
 
-                success = LoginController.loginHandler.createSystemAdmin(usernameText.getText(), passwordText.getText().hashCode());
-
-                if (success) {
-                    String userString = LoginController.loginHandler.getUsers().get(LoginController.loginHandler.getUsers().size() - 1).getUsername() + ";" + LoginController.loginHandler.getUsers().get(LoginController.loginHandler.getUsers().size() - 1).getHashedPassword();;
-                    persistenceHandler.writeSystemAdmin(userString);
-
-                    createUserLabel.setText("Created a User");
+                if (loginHandler.createSystemAdmin(userName, password)) {
+                    createUserLabel.setText("Created a System Administrator");
                 } else {
-                    createUserLabel.setText("Could not create user");
+                    createUserLabel.setText("Could not create System Administrator");
                 }
             }
         } else {
-            createUserLabel.setText("Could not create user");
+            createUserLabel.setText("Your username does not match our constraints or you forgot to type a password");
         }
     }
 
     @FXML
     void logOutAction(ActionEvent e) throws IOException {
+        loginHandler.exportUsersToTxt();
         facade.exportToTxt();
-        App.setRoot("primary");
+        App.setRoot("logInPage");
     }
 
     //Method for the createPerson-button
@@ -188,13 +186,13 @@ public class SystemAdminController implements Initializable {
         if (programTypeSelection.getValue().equals(transmission)) {
             int duration = durationText.getText().isEmpty() ? -1 : Integer.parseInt(durationText.getText());
             if (!name.isEmpty()) {
-                facade.createTransmission(name, description, LoginController.loginHandler.getCurrentUser().getUsername(), duration,false, production);
+                facade.createTransmission(name, description, LoginController.loginHandler.getCurrentUser().getUuid(), duration,false, production);
             } else {
                 messageLabel.setText("Cannot create " + transmission + " without a name");
             }
         } else if (programTypeSelection.getValue().equals(tvSeries)) {
             if (!name.isEmpty()) {
-                facade.createTvSeries(name, description, LoginController.loginHandler.getCurrentUser().getUsername());
+                facade.createTvSeries(name, description, LoginController.loginHandler.getCurrentUser().getUuid());
             } else {
                 messageLabel.setText("Cannot create " + tvSeries + " without a name");
             }
@@ -206,7 +204,8 @@ public class SystemAdminController implements Initializable {
                 int duration = durationText.getText().isEmpty() ? -1 : Integer.parseInt(durationText.getText());
 
                 if (!name.isEmpty() && tvSeries != null) {
-                    facade.createEpisode(tvSeries, name, description, LoginController.loginHandler.getCurrentUser().getUsername(), episodeNumber, seasonNumber, duration, false, production);
+                    facade.createEpisode(tvSeries, name, description, loginHandler.getCurrentUser().getUuid(),
+                            episodeNumber, seasonNumber, duration, false, production);
                 } else {
                     messageLabel.setText("Cannot create " + episode + " without a name & a TV-series");
                 }
@@ -248,7 +247,7 @@ public class SystemAdminController implements Initializable {
     }
 
     @FXML
-    void exportButtonOnAction(ActionEvent event) {
+    void exportButtonOnAction(ActionEvent event) throws IOException {
         facade.exportToTxt();
     }
 
@@ -267,8 +266,9 @@ public class SystemAdminController implements Initializable {
 
             searchListView.getItems().clear();
             for (Program program : facade.getPrograms()) {
-                if (program instanceof Transmission) {
-                    searchListView.getItems().add(program.getName() + ": " + program.getUuid() + ": " + program.getCreatedBy());
+                if (program instanceof Transmission && program.isApproved()) {
+                    searchListView.getItems().add(program.getName() + ": " + program.getUuid() + ": " +
+                            loginHandler.getUserFromUuid(program.getCreatedBy()).getUsername());
                 }
             }
 
@@ -317,11 +317,14 @@ public class SystemAdminController implements Initializable {
                 deleteSelectedButton.setText("Delete Selected");
                 deleteSelectedButton.setDisable(true);
                 for (Episode episode : series.getSeasonMap().get(Integer.parseInt(searchSeasonCombo.getSelectionModel().getSelectedItem()))) {
-                    searchListView.getItems().add(episode.getName() + ": " + episode.getUuid() + ": " + episode.getCreatedBy());
-                    if (episode.getProduction().equals(tv2Logo)){
-                        creditedLogoImageView.setImage(tv2LogoImage);
-                    } else if (episode.getProduction().equals(nordiskFilmLogo)){
-                        creditedLogoImageView.setImage(nordiskFilmLogoImage);
+                    if (episode.isApproved()) {
+                        searchListView.getItems().add(episode.getName() + ": " + episode.getUuid() + ": " +
+                                loginHandler.getUserFromUuid(episode.getCreatedBy()).getUsername());
+                        if (episode.getProduction().equals(tv2Logo)) {
+                            creditedLogoImageView.setImage(tv2LogoImage);
+                        } else if (episode.getProduction().equals(nordiskFilmLogo)) {
+                            creditedLogoImageView.setImage(nordiskFilmLogoImage);
+                        }
                     }
                 }
             }
@@ -639,7 +642,7 @@ public class SystemAdminController implements Initializable {
     void selectedApprovedProgramFromListView(MouseEvent event) {
         searchApprovedListViewCredits.getItems().clear();
 
-        Program selectedProgram = getSelectedProgramFromListView();
+        Program selectedProgram = getSelectedProgramFromApprovedListView();
 
         //Get the credits from the selected program IF the program contains credits
         if(selectedProgram.getCredits() != null) {
@@ -653,8 +656,8 @@ public class SystemAdminController implements Initializable {
 
     @FXML
     void approveSelectedProgram(ActionEvent event){
-        getSelectedProgramFromListView().setApproved(true);
-        System.out.println(getSelectedProgramFromListView().isApproved());
+        getSelectedProgramFromApprovedListView().setApproved(true);
+        System.out.println(getSelectedProgramFromApprovedListView().isApproved());
     }
 
 
@@ -672,24 +675,42 @@ public class SystemAdminController implements Initializable {
         return null;
     }
 
-    private Program getSelectedProgramFromListView() {
-        try {
-            String viewString = null;
-            //Choose the String-item from the listview instead of the index
-            if(searchViewTab.isSelected()) {
-                viewString = searchListView.getSelectionModel().getSelectedItem();
-            } else if (approvedTab.isSelected()) {
-                approveSelectedButton.setDisable(false);
-                viewString = searchApprovedListView.getSelectionModel().getSelectedItem();
-            }
-            //Split the string to get the UUID
-            String[] viewStringArray = viewString.split(":");
-            //Use the getProgramFromUuid method from the facade to get the program from the string. The trim after the string is to get rid of whitespace
-            return facade.getProgramFromUuid(UUID.fromString(viewStringArray[1].trim()));
-        } catch (NullPointerException e) {
-            System.out.println("A program has not been selected");
+    /**
+     * Can't get the below code to work. It ignores the if-statement even though it should be true -
+     * Just made two independent methods
+     */
+
+/*    private Program getSelectedProgramFromListView() {
+        String viewString = "";
+        //Choose the String-item from the listview instead of the index
+        if(searchViewTab.isSelected()) {
+            viewString = searchListView.getSelectionModel().getSelectedItem();
+        } else if (approvedTab.isSelected()) {
+            approveSelectedButton.setDisable(false);
+            viewString = searchApprovedListView.getSelectionModel().getSelectedItem();
         }
-        return null;
+        //Split the string to get the UUID
+        String[] viewStringArray = viewString.split(":");
+        //Use the getProgramFromUuid method from the facade to get the program from the string. The trim after the string is to get rid of whitespace
+        return facade.getProgramFromUuid(UUID.fromString(viewStringArray[1].trim()));
+    } */
+
+    private Program getSelectedProgramFromListView() {
+        //Choose the String-item from the listview instead of the index
+        String viewString = searchListView.getSelectionModel().getSelectedItem();
+        //Split the string to get the UUID
+        String[] viewStringArray = viewString.split(":");
+        //Use the getProgramFromUuid method from the facade to get the program from the string. The trim after the string is to get rid of whitespace
+        return facade.getProgramFromUuid(UUID.fromString(viewStringArray[1].trim()));
+    }
+
+    private Program getSelectedProgramFromApprovedListView() {
+        //Choose the String-item from the listview instead of the index
+        approveSelectedButton.setDisable(false);
+        String viewString = searchApprovedListView.getSelectionModel().getSelectedItem();
+        String[] viewStringArray = viewString.split(":");
+        //Use the getProgramFromUuid method from the facade to get the program from the string. The trim after the string is to get rid of whitespace
+        return facade.getProgramFromUuid(UUID.fromString(viewStringArray[1].trim()));
     }
 
     private Credit getSelectedCreditFromListView() {
@@ -699,6 +720,7 @@ public class SystemAdminController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         facade.importFromTxt();
+        loginHandler.importLogins();
 
         usertypeCombo.getItems().add("Producer");
         usertypeCombo.getItems().add("System Administrator");

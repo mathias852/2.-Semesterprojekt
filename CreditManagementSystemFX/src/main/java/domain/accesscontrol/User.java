@@ -1,5 +1,6 @@
 package domain.accesscontrol;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 public class User {
@@ -7,15 +8,37 @@ public class User {
     private UUID uuid;
     private String username;
     private int hashedPassword;
+    private ArrayList<User> users;
 
-    public User(String username, int password){
-        this.uuid = UUID.randomUUID();
+    public User(UUID uuid, String username, int password){
+        this.uuid = uuid;
         this.username = username;
         this.hashedPassword = password;
     }
 
-    public User(UUID id){
-        this.uuid = id;
+
+    public void addUser(User user){
+        if (users == null) {
+            users = new ArrayList<>();
+        }
+        if (user instanceof SystemAdmin && !users.contains(user)){
+            System.out.println("Added a new admin to the list: " + user.getUsername());
+            users.add(user);
+        } else if (user instanceof Producer && !users.contains(user)) {
+            System.out.println("Added a new producer to the list: " + user.getUsername());
+            users.add(user);
+        }
+    }
+
+    // Tjekker om userliste eksisterer, sletter givne user fra liste.
+    public void deleteUser(User user) {
+        if(users != null){
+            users.remove(user);
+        }
+    }
+
+    public ArrayList<User> getUsers() {
+        return users;
     }
 
     public String getUsername() {
@@ -36,9 +59,5 @@ public class User {
 
     public UUID getUuid() {
         return this.uuid;
-    }
-
-    public void setUuid(UUID uuid) {
-        this.uuid = uuid;
     }
 }

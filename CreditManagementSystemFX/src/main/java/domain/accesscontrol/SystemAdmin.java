@@ -1,8 +1,10 @@
 package domain.accesscontrol;
 
-public class SystemAdmin extends Producer {
+import java.util.UUID;
 
-    public SystemAdmin(String username, int password) {
-        super(username, password);
+public class SystemAdmin extends User {
+
+    public SystemAdmin(UUID uuid, String username, int password) {
+        super(uuid, username, password);
     }
 }

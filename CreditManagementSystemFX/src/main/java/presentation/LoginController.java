@@ -2,13 +2,11 @@ package presentation;
 
 import java.io.IOException;
 import java.net.URL;
-import java.security.Key;
-import java.util.ArrayList;
 import java.util.ResourceBundle;
 
+import domain.LoginHandler;
 import domain.accesscontrol.User;
 import domain.Facade;
-import domain.accesscontrol.LoginHandler;
 import domain.accesscontrol.Producer;
 import domain.accesscontrol.SystemAdmin;
 import javafx.event.ActionEvent;
@@ -20,7 +18,6 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import persistence.PersistenceHandler;
 
 public class LoginController implements Initializable {
 
@@ -37,28 +34,10 @@ public class LoginController implements Initializable {
     private Button loginButton;
 
     protected static LoginHandler loginHandler = new LoginHandler();
-    private PersistenceHandler persistenceHandler = new PersistenceHandler();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-
-        loginHandler.createSystemAdmin("admin", "admin".hashCode());
-        importLogins();
-
-    }
-
-    private void importLogins(){
-
-        ArrayList<String[]> producers = persistenceHandler.readProducer();
-        for(String[] s : producers){
-            loginHandler.createProducer(s[0], Integer.parseInt(s[1]));
-        }
-
-        ArrayList<String[]> sysAdmin = persistenceHandler.readSystemAdmin();
-        for(String[] s : sysAdmin){
-            loginHandler.createSystemAdmin(s[0], Integer.parseInt(s[1]));
-        }
-
+        loginHandler.importLogins();
     }
 
     //Used to login via then ENTER key
@@ -69,16 +48,22 @@ public class LoginController implements Initializable {
         }
     }
 
-
     //Verifies credentials entered by the user
     @FXML
     private void verifyCredentials(ActionEvent e) throws IOException{
-        if(loginHandler.verifyCredentials(usernameText.getText(), passwordText.getText().hashCode()) instanceof SystemAdmin){
+        String username = usernameText.getText();
+        int password = passwordText.getText().hashCode();
+
+        User user = loginHandler.verifyCredentials(username, password);
+
+        if(user instanceof SystemAdmin){
             System.out.println("Logged in as SysAdmin");
             App.setRoot("SystemAdminView");
-        } else if(loginHandler.verifyCredentials(usernameText.getText(), passwordText.getText().hashCode()) instanceof Producer){
+            loginHandler.setCurrentUser(user);
+        } else if(user instanceof Producer){
             System.out.println("Logged in as Producer");
             App.setRoot("ProducerView");
+            loginHandler.setCurrentUser(user);
         } else {
             failedLoginLabel.setVisible(true);
         }

@@ -9,6 +9,7 @@ import java.util.ResourceBundle;
 import java.util.UUID;
 
 import domain.Facade;
+import domain.accesscontrol.Producer;
 import domain.credit.Credit;
 import domain.credit.CreditedPerson;
 import domain.program.Episode;
@@ -52,11 +53,11 @@ public class GuestController implements Initializable {
 
     @FXML
     void logOutAction(ActionEvent e) throws IOException{
-        App.setRoot("primary");
+        App.setRoot("logInPage");
     }
 
     @FXML
-    void exportButtonOnAction(ActionEvent event) {
+    void exportButtonOnAction(ActionEvent event) throws IOException {
         facade.exportToTxt();
     }
 
@@ -133,6 +134,8 @@ public class GuestController implements Initializable {
     @FXML
     void selectedProgramFromListView() {
         searchListViewCredits.getItems().clear();
+
+        //System.out.println(searchListView.getItem);
 
         Program selectedProgram = getSelectedProgramFromListView();
         if (selectedProgram.getProduction().equals(tv2Logo)){
