@@ -38,7 +38,9 @@ public class ProducerController implements Initializable {
     @FXML
     private ComboBox<String> tvSeriesSelection, searchSeriesCombo, functionSelection, searchProgramCombo,
             searchSeasonCombo, creditedPersonSelection, programSelection, programTypeSelection, tvSeriesUpdateSelection,
-            functionUpdateSelection, productionSelectionCombo;
+            functionUpdateSelection, productionSelectionCombo, myProgramTabApprovedComboBox, myProgramTabSearchProgramCombo,
+            myProgramTabSearchSeriesCombo, myProgramTabSearchSeasonCombo, productionSelectionUpdateCombo;
+    ;
 
     @FXML
     private Label creditedPersonLabel, tvSLabel, durationLabel, nameLabel, seasonNoLabel, messageLabel,
@@ -48,13 +50,11 @@ public class ProducerController implements Initializable {
 
     @FXML
     private Button createProgramBtn, createCreditBtn, createPersonBtn, exportButton, updateProgramButton, updateCreditButton,
-            updateProgramBtn, updatePersonButton, updateTvSeriesButton, updateTvSeriesBtn;
+            updateProgramBtn, updatePersonButton, updateTvSeriesButton, updateTvSeriesBtn, myProgramTabUpdateTvSeriesButton,
+            myProgramTabUpdateProgramButton, myProgramTabUpdateCreditButton, myProgramTabUpdatePersonButton, updateCreditBtnForMyProgramTab;
 
     @FXML
-    private ListView<String> searchListView, searchListViewCredits;
-
-    @FXML
-    private TableView<String> searchTableView;
+    private ListView<String> searchListView, searchListViewCredits, myProgramTabSearchListView, myProgramTabSearchListViewCredits;
 
     @FXML
     private TabPane mainTabPane;
@@ -63,14 +63,13 @@ public class ProducerController implements Initializable {
     private Tab updateTab;
 
     @FXML
-    private ImageView creditedLogoImageView;
+    private ImageView creditedLogoImageView, myProgramTabCreditedLogoImageView;
 
-    private final String transmission = "Transmission";
-    private final String tvSeries = "TV-Series";
-    private final String episode = "Episode";
+    private final String transmission = "Transmission", tvSeries = "TV-Series", episode = "Episode";
 
-    private final String tv2Logo = "Tv2";
-    private final String nordiskFilmLogo = "Nordisk Film";
+    private final String tv2Logo = "Tv2", nordiskFilmLogo = "Nordisk Film";
+
+    private final String approved = "Approved", pending = "Pending approval";
 
     private final File nordiskFilmLogoFile = new File("src/main/resources/presentation/NF-Logo.png");
     private final File tv2LogoFile = new File("src/main/resources/presentation/tv2creditslogo.png");
@@ -328,6 +327,13 @@ public class ProducerController implements Initializable {
                 nameUpdateText.setText(program.getName());
                 descriptionUpdateText.setText(program.getDescription());
                 durationUpdateText.setText(String.valueOf(program.getDuration()));
+
+                if (program.getProduction().equals(tv2Logo)){
+                    productionSelectionUpdateCombo.getSelectionModel().select(0);
+                } else if (program.getProduction().equals(nordiskFilmLogo)){
+                    productionSelectionUpdateCombo.getSelectionModel().select(1);
+                }
+
                 mainTabPane.getSelectionModel().select(updateTab);
 
                 if (searchProgramCombo.getSelectionModel().getSelectedItem().equals(tvSeries)) {
@@ -348,17 +354,78 @@ public class ProducerController implements Initializable {
                 currentlyUpdatingUUID.setText(String.valueOf(getSelectedProgramFromListView().getUuid()));
             }
         } else {
-            System.out.println("FUCK OFF");
+            System.out.println("You did not create this program - If you wish to change it either contact an admin or the owner of the program");
         }
+    }
 
+    //This method is 90 % a duplicate of the above but we have some struggls with the getSelectedProgramFromListView to work on two different tabs
+    //Tried an if-statement but somehow it dosn't enter correctly
+    @FXML
+    void myProgramTabUpdateUpdateTabProgramOnAction(ActionEvent event) {
+        if(loginHandler.getCurrentUser().getUuid().equals(myProgramTabGetSelectedProgramFromListView().getCreatedBy())){
+            ArrayList<Node> updateNodes = new ArrayList<>(Arrays.asList(
+                    nameUpdateLabel, descriptionUpdateLabel, durationUpdateLabel,
+                    nameUpdateText, descriptionUpdateText, durationUpdateText));
+            ArrayList<Node> episodeNodes = new ArrayList<>(Arrays.asList(
+                    seasonNoUpdateLabel, seasonNumberUpdateText, episodeNoUpdateLabel,
+                    episodeNumberUpdateText, tvSUpdateLabel, tvSeriesUpdateSelection));
+            if (myProgramTabSearchListView.getSelectionModel().getSelectedItem() != null) {
+                Program program = myProgramTabGetSelectedProgramFromListView();
+                updateNodes.forEach(node -> node.setVisible(true));
+                updateProgramBtn.setVisible(true);
+                updateTvSeriesBtn.setVisible(false);
+                nameUpdateText.setText(program.getName());
+                descriptionUpdateText.setText(program.getDescription());
+                durationUpdateText.setText(String.valueOf(program.getDuration()));
 
+                if (program.getProduction().equals(tv2Logo)){
+                    productionSelectionUpdateCombo.getSelectionModel().select(0);
+                } else if (program.getProduction().equals(nordiskFilmLogo)){
+                    productionSelectionUpdateCombo.getSelectionModel().select(1);
+                }
+
+                mainTabPane.getSelectionModel().select(updateTab);
+
+                if (myProgramTabSearchProgramCombo.getSelectionModel().getSelectedItem().equals(tvSeries)) {
+                    Episode episode = (Episode) program;
+                    episodeNodes.forEach(node -> node.setVisible(true));
+                    seasonNumberUpdateText.setText(String.valueOf(episode.getSeasonNo()));
+                    episodeNumberUpdateText.setText(String.valueOf(episode.getEpisodeNo()));
+                    tvSeriesUpdateSelection.getItems().clear();
+                    for (TVSeries tvSeries : facade.getTvSeriesList()) {
+                        tvSeriesUpdateSelection.getItems().add(tvSeries.getName());
+                    }
+                    tvSeriesUpdateSelection.getSelectionModel().select(facade.getTvSeriesFromEpisode(episode).getName());
+
+                } else if (myProgramTabSearchProgramCombo.getSelectionModel().getSelectedItem().equals(transmission)) {
+                    episodeNodes.forEach(node -> node.setVisible(false));
+                }
+                currentlyUpdatingLabel.setText("Currently editing: " + myProgramTabGetSelectedProgramFromListView().getName());
+                currentlyUpdatingUUID.setText(String.valueOf(myProgramTabGetSelectedProgramFromListView().getUuid()));
+            }
+        } else {
+            System.out.println("You did not create this program - If you wish to change it either contact an admin or the owner of the program");
+        }
     }
 
     @FXML
-    void updateUpdateTabCreditOnAction(ActionEvent event) {
+    void searchViewTabUpdateCredit(ActionEvent event) {
+        updateCreditBtnForMyProgramTab.setVisible(false);
         mainTabPane.getSelectionModel().select(updateTab);
         Program program = getSelectedProgramFromListView();
         Credit credit = program.getCredits().get(searchListViewCredits.getSelectionModel().getSelectedIndex());
+        creditedPersonUpdateLabel.setText(credit.getCreditedPerson().getName() + ": " + credit.getCreditedPerson().getUuid());
+        programUpdateSelection.setText(program.getName());
+
+        functionUpdateSelection.getSelectionModel().select(credit.getFunction().role);
+    }
+
+    @FXML
+    void myProgramTabUpdateCredit(ActionEvent event) {
+        updateCreditBtnForMyProgramTab.setVisible(true);
+        mainTabPane.getSelectionModel().select(updateTab);
+        Program program = myProgramTabGetSelectedProgramFromListView();
+        Credit credit = program.getCredits().get(myProgramTabSearchListViewCredits.getSelectionModel().getSelectedIndex());
         creditedPersonUpdateLabel.setText(credit.getCreditedPerson().getName() + ": " + credit.getCreditedPerson().getUuid());
         programUpdateSelection.setText(program.getName());
 
@@ -397,6 +464,129 @@ public class ProducerController implements Initializable {
     }
 
 
+
+    @FXML
+    void myProgramTabSearchProgramCombo(ActionEvent event) {
+        myProgramTabSearchSeriesCombo.getItems().clear();
+        myProgramTabCreditedLogoImageView.setImage(null);
+        String approvedComboBox = myProgramTabApprovedComboBox.getSelectionModel().getSelectedItem();
+
+        if (myProgramTabSearchProgramCombo.getSelectionModel().getSelectedItem().equals(transmission)){
+            myProgramTabSearchSeriesCombo.setDisable(true);
+            myProgramTabSearchSeasonCombo.setDisable(true);
+            myProgramTabUpdateTvSeriesButton.setDisable(true);
+            myProgramTabSearchSeriesCombo.getSelectionModel().clearSelection();
+            myProgramTabSearchSeasonCombo.getSelectionModel().clearSelection();
+            myProgramTabSearchSeriesCombo.setPromptText("Choose TV-series");
+            myProgramTabSearchSeasonCombo.setPromptText("Choose season");
+
+
+            myProgramTabSearchListView.getItems().clear();
+            for (Program program : facade.getPrograms()) {
+                if (approvedComboBox.equals(approved) && program.getCreatedBy().equals(loginHandler.getCurrentUser().getUuid())) {
+                    if (program instanceof Transmission && program.isApproved()) {
+                        myProgramTabSearchListView.getItems().add(program.getName() + ": " + program.getUuid() + ": " +
+                                loginHandler.getUserFromUuid(program.getCreatedBy()).getUsername());
+                    }
+                } else if (approvedComboBox.equals(pending) && program.getCreatedBy().equals(loginHandler.getCurrentUser().getUuid())) {
+                    if (program instanceof Transmission && !program.isApproved()){
+                        myProgramTabSearchListView.getItems().add(program.getName() + ": " + program.getUuid() + ": " +
+                                loginHandler.getUserFromUuid(program.getCreatedBy()).getUsername());
+
+                    }
+                }
+            }
+        } else if (myProgramTabSearchProgramCombo.getSelectionModel().getSelectedItem().equals(tvSeries)){
+            myProgramTabSearchSeriesCombo.setDisable(false);
+            myProgramTabSearchSeasonCombo.setDisable(false);
+
+            for (TVSeries tvSeries : facade.getTvSeriesList()) {
+                myProgramTabSearchSeriesCombo.getItems().add(tvSeries.getName());
+            }
+        }
+    }
+
+
+    @FXML
+    void myProgramTabSearchSeriesCombo(ActionEvent event) {
+        myProgramTabSearchSeasonCombo.getItems().clear();
+        //To find the episodes based on a season from a TV-series
+        try {
+            TVSeries series = facade.getTvSeriesList().get(myProgramTabSearchSeriesCombo.getSelectionModel().getSelectedIndex());
+            if (series.getSeasonMap() != null) {
+                for (Integer i : series.getSeasonMap().keySet()) {
+                    myProgramTabSearchSeasonCombo.getItems().add(String.valueOf(i));
+                }
+            }
+            myProgramTabUpdateTvSeriesButton.setDisable(false);
+        } catch (IndexOutOfBoundsException e){
+            System.out.println("Not yet implemented && Not sure why this is happening??? Yikes - " +
+                    "Think it has something to do with the change in combo-box you just made");
+        }
+    }
+
+    @FXML
+    void myProgramTabSearchSeasonCombo(ActionEvent event) {
+        myProgramTabCreditedLogoImageView.setImage(null);
+        String approvedComboBox = myProgramTabApprovedComboBox.getSelectionModel().getSelectedItem();
+
+        try {
+            myProgramTabSearchListView.getItems().clear();
+
+            if (myProgramTabSearchSeriesCombo.getSelectionModel().getSelectedIndex() != -1) {
+                TVSeries series = myProgramTabGetSelectedTvSeriesFromComboBox();
+                for (Episode episode : series.getSeasonMap().get(Integer.parseInt(myProgramTabSearchSeasonCombo.getSelectionModel().getSelectedItem()))) {
+                    if (approvedComboBox.equals(approved) && episode.isApproved() && episode.getCreatedBy().equals(loginHandler.getCurrentUser().getUuid())) {
+                        myProgramTabSearchListView.getItems().add(episode.getName() + ": " + episode.getUuid() + ": " +
+                                loginHandler.getUserFromUuid(episode.getCreatedBy()).getUsername());
+                    } else if (approvedComboBox.equals(pending) && !episode.isApproved() && episode.getCreatedBy().equals(loginHandler.getCurrentUser().getUuid())) {
+                        myProgramTabSearchListView.getItems().add(episode.getName() + ": " + episode.getUuid() + ": " +
+                                loginHandler.getUserFromUuid(episode.getCreatedBy()).getUsername());
+                    }
+                    if (episode.getProduction().equals(tv2Logo)) {
+                        myProgramTabCreditedLogoImageView.setImage(tv2LogoImage);
+                    } else if (episode.getProduction().equals(nordiskFilmLogo)) {
+                        myProgramTabCreditedLogoImageView.setImage(nordiskFilmLogoImage);
+                    }
+                }
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("This is just happening because we parse the value 'null' as an integer. And we do that because" +
+                    " we clear the season-combobox");
+        }
+    }
+
+    @FXML
+    void myProgramTabSelectedProgramFromListView(MouseEvent event) {
+        myProgramTabUpdateCreditButton.setDisable(true);
+        myProgramTabUpdatePersonButton.setDisable(true);
+        myProgramTabUpdateProgramButton.setDisable(true);
+
+        myProgramTabSearchListViewCredits.getItems().clear();
+        if(myProgramTabGetSelectedProgramFromListView().getCreatedBy().equals(loginHandler.getCurrentUser().getUuid())){
+            myProgramTabUpdateCreditButton.setDisable(false);
+            myProgramTabUpdatePersonButton.setDisable(false);
+            myProgramTabUpdateProgramButton.setDisable(false);
+        }
+
+        Program selectedProgram = myProgramTabGetSelectedProgramFromListView();
+        if (selectedProgram.getProduction().equals(tv2Logo)){
+            myProgramTabCreditedLogoImageView.setImage(tv2LogoImage);
+        } else if (selectedProgram.getProduction().equals(nordiskFilmLogo)){
+            myProgramTabCreditedLogoImageView.setImage(nordiskFilmLogoImage);
+        }
+
+        //Get the credits from the selected program IF the program contains credits
+        if(selectedProgram.getCredits() != null) {
+            ArrayList<Credit> credits = selectedProgram.getCredits();
+            for (Credit credit : credits) {
+                myProgramTabSearchListViewCredits.getItems().add(credit.getCreditedPerson().getName() + ": " + credit.getFunction().role);
+            }
+        }
+    }
+
+
+
     @FXML
     void updateCredit(ActionEvent event) {
         try {
@@ -411,10 +601,24 @@ public class ProducerController implements Initializable {
     }
 
     @FXML
+    void updateCreditFromMyProgramTab(ActionEvent event) {
+        try {
+            //Programmet hentes igennem index for vores program drop-down menu
+            Credit credit = myProgramTabGetSelectedCreditFromListView();
+            Credit.Function function = facade.getFunctions().get(functionUpdateSelection.getSelectionModel().getSelectedIndex());
+
+            facade.updateCredit(credit, function);
+        } catch (IndexOutOfBoundsException e) {
+            System.out.println("Ikke implementeret endnu");
+        }
+    }
+
+    @FXML
     void updateProgram(ActionEvent event) {
         Program program = facade.getProgramFromUuid(UUID.fromString(currentlyUpdatingUUID.getText()));
         String name = nameUpdateText.getText();
         String description = descriptionUpdateText.getText();
+        String production = productionSelectionUpdateCombo.getSelectionModel().getSelectedItem();
         int duration = durationUpdateText.getText().isEmpty() ? -1 : Integer.parseInt(durationUpdateText.getText());
         int seasonNo = seasonNumberUpdateText.getText().isEmpty() ? -1 : Integer.parseInt(seasonNumberUpdateText.getText());
         int episodeNo = episodeNumberUpdateText.getText().isEmpty() ? -1 : Integer.parseInt(episodeNumberUpdateText.getText());
@@ -423,10 +627,10 @@ public class ProducerController implements Initializable {
                 facade.getTvSeriesList().get(tvSeriesUpdateSelection.getSelectionModel().getSelectedIndex());
 
         if (program instanceof Transmission) {
-            facade.updateTransmission(program, name, description, duration);
+            facade.updateTransmission(program, name, description, duration, production);
         }
         else if (program instanceof Episode) {
-            facade.updateEpisode(program, name, description, duration, seasonNo, episodeNo, tvSeries);
+            facade.updateEpisode(program, name, description, duration, seasonNo, episodeNo, tvSeries, production);
         }
         updateUpdateUI();
     }
@@ -479,9 +683,22 @@ public class ProducerController implements Initializable {
         return facade.getTvSeriesList().get(searchSeriesCombo.getSelectionModel().getSelectedIndex());
     }
 
+    private TVSeries myProgramTabGetSelectedTvSeriesFromComboBox() {
+        return facade.getTvSeriesList().get(myProgramTabSearchSeriesCombo.getSelectionModel().getSelectedIndex());
+    }
+
     private Program getSelectedProgramFromListView() {
         //Choose the String-item from the listview instead of the index
         String viewString = searchListView.getSelectionModel().getSelectedItem();
+        //Split the string to get the UUID
+        String[] viewStringArray = viewString.split(":");
+        //Use the getProgramFromUuid method from the facade to get the program from the string. The trim after the string is to get rid of whitespace
+        return facade.getProgramFromUuid(UUID.fromString(viewStringArray[1].trim()));
+    }
+
+    private Program myProgramTabGetSelectedProgramFromListView() {
+        //Choose the String-item from the listview instead of the index
+        String viewString = myProgramTabSearchListView.getSelectionModel().getSelectedItem();
         //Split the string to get the UUID
         String[] viewStringArray = viewString.split(":");
         //Use the getProgramFromUuid method from the facade to get the program from the string. The trim after the string is to get rid of whitespace
@@ -494,6 +711,12 @@ public class ProducerController implements Initializable {
         return selectedProgram.getCredits().get(searchListViewCredits.getSelectionModel().getSelectedIndex());
     }
 
+    private Credit myProgramTabGetSelectedCreditFromListView() {
+        Program selectedProgram = myProgramTabGetSelectedProgramFromListView();
+        selectedProgram.setApproved(false);
+        return selectedProgram.getCredits().get(myProgramTabSearchListViewCredits.getSelectionModel().getSelectedIndex());
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         facade.importFromTxt();
@@ -504,12 +727,24 @@ public class ProducerController implements Initializable {
         searchProgramCombo.getItems().add(transmission);
         searchProgramCombo.getItems().add(tvSeries);
 
+        myProgramTabSearchProgramCombo.getItems().add(transmission);
+        myProgramTabSearchProgramCombo.getItems().add(tvSeries);
+
         productionSelectionCombo.getItems().add(tv2Logo);
         productionSelectionCombo.getItems().add(nordiskFilmLogo);
+
+        productionSelectionUpdateCombo.getItems().add(tv2Logo);
+        productionSelectionUpdateCombo.getItems().add(nordiskFilmLogo);
+
+        myProgramTabApprovedComboBox.getItems().add(approved);
+        myProgramTabApprovedComboBox.getItems().add(pending);
+
+        myProgramTabApprovedComboBox.getSelectionModel().selectFirst();
 
         programTypeSelection.getItems().add(transmission);
         programTypeSelection.getItems().add(tvSeries);
         programTypeSelection.getItems().add(episode);
+
         for (Credit.Function function : facade.getFunctions()) {
             functionSelection.getItems().add(function.role);
             functionUpdateSelection.getItems().add(function.role);

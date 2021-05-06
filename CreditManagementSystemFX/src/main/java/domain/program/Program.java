@@ -78,6 +78,9 @@ public abstract class Program {
     public void setApproved(boolean approved){
         this.approved = approved;
     }
+    public void setProduction(String production) {
+        this.production = production;
+    }
 
     @Override
     public String toString() {

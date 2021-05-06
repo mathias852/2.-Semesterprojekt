@@ -49,7 +49,7 @@ public class SystemAdminController implements Initializable {
     private ComboBox<String> tvSeriesSelection, searchSeriesCombo, functionSelection, searchProgramCombo,
             searchSeasonCombo, creditedPersonSelection, programSelection, programTypeSelection, tvSeriesUpdateSelection,
             functionUpdateSelection, usertypeCombo, searchApprovedProgramCombo, searchApprovedSeriesCombo, searchApprovedSeasonCombo,
-            productionSelectionCombo;
+            productionSelectionCombo, productionSelectionUpdateCombo;
 
     @FXML
     private Label creditedPersonLabel, tvSLabel, durationLabel, nameLabel, seasonNoLabel, messageLabel,
@@ -384,6 +384,13 @@ public class SystemAdminController implements Initializable {
             nameUpdateText.setText(program.getName());
             descriptionUpdateText.setText(program.getDescription());
             durationUpdateText.setText(String.valueOf(program.getDuration()));
+
+            if (program.getProduction().equals(tv2Logo)){
+                productionSelectionUpdateCombo.getSelectionModel().select(0);
+            } else if (program.getProduction().equals(nordiskFilmLogo)){
+                productionSelectionUpdateCombo.getSelectionModel().select(1);
+            }
+
             mainTabPane.getSelectionModel().select(updateTab);
 
             if (searchProgramCombo.getSelectionModel().getSelectedItem().equals(tvSeries)) {
@@ -466,6 +473,7 @@ public class SystemAdminController implements Initializable {
         Program program = facade.getProgramFromUuid(UUID.fromString(currentlyUpdatingUUID.getText()));
         String name = nameUpdateText.getText();
         String description = descriptionUpdateText.getText();
+        String production = productionSelectionUpdateCombo.getSelectionModel().getSelectedItem();
         int duration = durationUpdateText.getText().isEmpty() ? -1 : Integer.parseInt(durationUpdateText.getText());
         int seasonNo = seasonNumberUpdateText.getText().isEmpty() ? -1 : Integer.parseInt(seasonNumberUpdateText.getText());
         int episodeNo = episodeNumberUpdateText.getText().isEmpty() ? -1 : Integer.parseInt(episodeNumberUpdateText.getText());
@@ -474,9 +482,9 @@ public class SystemAdminController implements Initializable {
                 facade.getTvSeriesList().get(tvSeriesUpdateSelection.getSelectionModel().getSelectedIndex());
 
         if (program instanceof Transmission) {
-            facade.updateTransmission(program, name, description, duration);
+            facade.updateTransmission(program, name, description, duration, production);
         } else if (program instanceof Episode) {
-            facade.updateEpisode(program, name, description, duration, seasonNo, episodeNo, tvSeries);
+            facade.updateEpisode(program, name, description, duration, seasonNo, episodeNo, tvSeries, production);
         }
         updateUpdateUI();
     }

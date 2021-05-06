@@ -1,3 +1,2 @@
-f85a5a3a-dd0e-4943-a54c-940eead342eb;0c7bb0e9-7adb-4f3f-a8fd-6d7609c1f6cc;Everything burns;A hous burned to the ground;3c341a86-581c-4bcf-a192-b696234c60b7;2;1;45;true;Tv2
+f85a5a3a-dd0e-4943-a54c-940eead342eb;0c7bb0e9-7adb-4f3f-a8fd-6d7609c1f6cc;Everything burns;A hous burned to the ground;3c341a86-581c-4bcf-a192-b696234c60b7;2;1;45;false;Tv2
 0ee8bea9-f0f6-41dc-8658-e0e8475553cc;b3794996-72f6-42fa-90db-1fff32010af3;De sprøjter alle sammen;Alle hold skal bage en lagkage, og være fællels om at sprøjte kagecrem rund på kagen;3c341a86-581c-4bcf-a192-b696234c60b7;7;3;60;true;Nordisk Film
-906245ac-5503-4283-a51a-c23fcf6446f8;88919b4c-fe1e-4d56-a32d-1c2ea30bc8c4;En anden test;;99fc6171-974c-4fda-9ef6-a1b7d7d96617;1;4;134;false;Nordisk Film

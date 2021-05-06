@@ -224,9 +224,18 @@ public class Facade {
         return null;
     }
 
+    public Program getProgramFromCreatedBy(String programName, UUID uuid) {
+        for (Program program : getPrograms()) {
+            if (program.getName().equals(programName) && program.getCreatedBy().equals(uuid)) {
+                return program;
+            }
+        }
+        return null;
+    }
+
 
     //Update the values of the selected transmission
-    public void updateTransmission(Program program, String name, String description, int duration) {
+    public void updateTransmission(Program program, String name, String description, int duration, String production) {
         Transmission p = (Transmission) program;
         if (name != null) {
             p.setName(name);
@@ -237,11 +246,12 @@ public class Facade {
         if (duration != -1) {
             p.setDuration(duration);
         }
+        p.setProduction(production);
         p.setApproved(false);
     }
 
     //Update the values of the selected episode
-    public void updateEpisode(Program program, String name, String description, int duration, int seasonNo, int episodeNo, TVSeries tvSeries) {
+    public void updateEpisode(Program program, String name, String description, int duration, int seasonNo, int episodeNo, TVSeries tvSeries, String production) {
         Episode p = (Episode) program;
         int oldSeasonNo = p.getSeasonNo();
         int oldEpisodeNo = p.getEpisodeNo();
@@ -268,6 +278,7 @@ public class Facade {
         if (tvSeries != null) {
             p.setTvSeries(tvSeries);
         }
+        p.setProduction(production);
         p.setApproved(false);
     }
 

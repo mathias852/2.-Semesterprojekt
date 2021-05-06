@@ -84,6 +84,15 @@ public class LoginHandler {
         return null;
     }
 
+    public User getUserFromUsername(String string) {
+        for (User user : getUsers()) {
+            if (user.getUsername().equals(string)) {
+                return user;
+            }
+        }
+        return null;
+    }
+
 
     public boolean addUser(User user){
         if (users == null) {
