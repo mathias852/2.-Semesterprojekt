@@ -46,7 +46,7 @@ public class ProducerController implements Initializable {
     private Label creditedPersonLabel, tvSLabel, durationLabel, nameLabel, seasonNoLabel, messageLabel,
             episodeNoLabel, descriptionLabel, nameUpdateLabel, descriptionUpdateLabel, seasonNoUpdateLabel,
             episodeNoUpdateLabel, durationUpdateLabel, tvSUpdateLabel, currentlyUpdatingLabel, currentlyUpdatingUUID,
-            programUpdateSelection, creditedPersonUpdateLabel, productionLabel;
+            programUpdateSelection, creditedPersonUpdateLabel, productionLabel, programUuidUpdateSelection, creditIndexUpdateSelection;
 
     @FXML
     private Button createProgramBtn, createCreditBtn, createPersonBtn, exportButton, updateProgramButton, updateCreditButton,
@@ -121,15 +121,16 @@ public class ProducerController implements Initializable {
                     }
                 }
             } else {
-                System.out.println("Fuck off, you didn't make this program and can therefore not create credits for it");
+                System.out.println("Sorry, but you cannot add credits to a program you didn't create");
             }
 
 
         } catch (IndexOutOfBoundsException e) {
-            System.out.println("Ikke implementeret endnu");
+            System.out.println("IndexOutOfBoundsException in createCredit createCredit method");
         }
     }
 
+    //Below method creates a program with given/relevant input
     @FXML
     void createProgram(ActionEvent event) {
 
@@ -201,6 +202,7 @@ public class ProducerController implements Initializable {
 
     @FXML
     void exportButtonOnAction(ActionEvent event) throws IOException {
+        //Export to txt
         facade.exportToTxt();
     }
 
@@ -208,26 +210,35 @@ public class ProducerController implements Initializable {
     void searchProgramComboAction(ActionEvent event) {
         searchSeriesCombo.getItems().clear();
         creditedLogoImageView.setImage(null);
+
         if (searchProgramCombo.getSelectionModel().getSelectedItem().equals(transmission)){
+            //Disable irrelevant nodes
             searchSeriesCombo.setDisable(true);
             searchSeasonCombo.setDisable(true);
             updateTvSeriesButton.setDisable(true);
+
             searchSeriesCombo.getSelectionModel().clearSelection();
             searchSeasonCombo.getSelectionModel().clearSelection();
+
+            //Resets the combobox text for further search
             searchSeriesCombo.setPromptText("Choose TV-series");
             searchSeasonCombo.setPromptText("Choose season");
 
 
             searchListView.getItems().clear();
+
+            //Gets all approved transmissions and add them to the listview
             for (Program program : facade.getPrograms()) {
                 if (program instanceof Transmission && program.isApproved()) {
                     searchListView.getItems().add(program.getName() +  ": " + program.getUuid() + ": " + loginHandler.getUserFromUuid(program.getCreatedBy()).getUsername());
                 }
             }
         } else if (searchProgramCombo.getSelectionModel().getSelectedItem().equals(tvSeries)){
+            //Enables relevant nodes
             searchSeriesCombo.setDisable(false);
             searchSeasonCombo.setDisable(false);
 
+            //Add all tvSeries to the comboBox
             for (TVSeries tvSeries : facade.getTvSeriesList()) {
                 searchSeriesCombo.getItems().add(tvSeries.getName());
             }
@@ -247,8 +258,7 @@ public class ProducerController implements Initializable {
             }
             updateTvSeriesButton.setDisable(false);
         } catch (IndexOutOfBoundsException e){
-            System.out.println("Not yet implemented && Not sure why this is happening??? Yikes - " +
-                    "Think it has something to do with the change in combo-box you just made");
+            System.out.println("IndexOutOfBoundsException in searchSeriesComboAction Method");
         }
     }
 
@@ -258,6 +268,7 @@ public class ProducerController implements Initializable {
         try {
             searchListView.getItems().clear();
 
+            //Adds all episodes and the producer for said episode from a given series to the listView
             if (searchSeriesCombo.getSelectionModel().getSelectedIndex() != -1) {
                 TVSeries series = getSelectedTvSeriesFromComboBox();
                 for (Episode episode : series.getSeasonMap().get(Integer.parseInt(searchSeasonCombo.getSelectionModel().getSelectedItem()))) {
@@ -273,25 +284,21 @@ public class ProducerController implements Initializable {
                 }
             }
         } catch (NumberFormatException e) {
-            System.out.println("This is just happening because we parse the value 'null' as an integer. And we do that because" +
-                    " we clear the season-combobox");
+            System.out.println("A numberFormatException in the searchSeasonComboAction method");
         }
     }
 
     @FXML
     void selectedProgramFromListView(MouseEvent event) {
-        updateCreditButton.setDisable(true);
-        updatePersonButton.setDisable(true);
-        updateProgramButton.setDisable(true);
+        //List for related buttons.
+        ArrayList<Button> buttons = new ArrayList<>(Arrays.asList(updateCreditButton, updatePersonButton, updateProgramButton));
+        //Changes visibility for above buttons.
+        buttons.forEach(button -> button.setDisable(true));
 
         searchListViewCredits.getItems().clear();
-        //System.out.println("Current user:" + facade.getCurrentUser().getUsername());
-        //System.out.println("Selected program created by:" + getSelectedProgramFromListView().getCreatedBy());
+        //If the user who created the program is the current user, the update-buttons are enables
         if(getSelectedProgramFromListView().getCreatedBy().equals(loginHandler.getCurrentUser().getUuid())){
-            System.out.println("HELLO");
-            updateCreditButton.setDisable(false);
-            updatePersonButton.setDisable(false);
-            updateProgramButton.setDisable(false);
+            buttons.forEach(button -> button.setDisable(false));
         }
 
         Program selectedProgram = getSelectedProgramFromListView();
@@ -313,95 +320,59 @@ public class ProducerController implements Initializable {
     @FXML
     void updateUpdateTabProgramOnAction(ActionEvent event) {
         if(loginHandler.getCurrentUser().getUuid().equals(getSelectedProgramFromListView().getCreatedBy())){
+
+            //Insert related notes to an arrayList
             ArrayList<Node> updateNodes = new ArrayList<>(Arrays.asList(
                     nameUpdateLabel, descriptionUpdateLabel, durationUpdateLabel,
                     nameUpdateText, descriptionUpdateText, durationUpdateText));
             ArrayList<Node> episodeNodes = new ArrayList<>(Arrays.asList(
                     seasonNoUpdateLabel, seasonNumberUpdateText, episodeNoUpdateLabel,
                     episodeNumberUpdateText, tvSUpdateLabel, tvSeriesUpdateSelection));
+
             if (searchListView.getSelectionModel().getSelectedItem() != null) {
+                //Get the chosen program
                 Program program = getSelectedProgramFromListView();
+                //Changes the visibility for relevant nodes
                 updateNodes.forEach(node -> node.setVisible(true));
                 updateProgramBtn.setVisible(true);
                 updateTvSeriesBtn.setVisible(false);
+
+                //Updates the text in the update-tab based on the chosen program
                 nameUpdateText.setText(program.getName());
                 descriptionUpdateText.setText(program.getDescription());
                 durationUpdateText.setText(String.valueOf(program.getDuration()));
 
+                //To get the correct logo
                 if (program.getProduction().equals(tv2Logo)){
                     productionSelectionUpdateCombo.getSelectionModel().select(0);
                 } else if (program.getProduction().equals(nordiskFilmLogo)){
                     productionSelectionUpdateCombo.getSelectionModel().select(1);
                 }
 
-                mainTabPane.getSelectionModel().select(updateTab);
 
                 if (searchProgramCombo.getSelectionModel().getSelectedItem().equals(tvSeries)) {
+                    //Casts the chosen program to an episode
                     Episode episode = (Episode) program;
+                    //Changes the visibility for relevant nodes
                     episodeNodes.forEach(node -> node.setVisible(true));
+
+                    //Updates the text in the update-tab based on the chosen program
                     seasonNumberUpdateText.setText(String.valueOf(episode.getSeasonNo()));
                     episodeNumberUpdateText.setText(String.valueOf(episode.getEpisodeNo()));
+
                     tvSeriesUpdateSelection.getItems().clear();
                     for (TVSeries tvSeries : facade.getTvSeriesList()) {
                         tvSeriesUpdateSelection.getItems().add(tvSeries.getName());
                     }
                     tvSeriesUpdateSelection.getSelectionModel().select(facade.getTvSeriesFromEpisode(episode).getName());
-
                 } else if (searchProgramCombo.getSelectionModel().getSelectedItem().equals(transmission)) {
                     episodeNodes.forEach(node -> node.setVisible(false));
                 }
-                currentlyUpdatingLabel.setText("Currently editing: " + getSelectedProgramFromListView().getName());
-                currentlyUpdatingUUID.setText(String.valueOf(getSelectedProgramFromListView().getUuid()));
-            }
-        } else {
-            System.out.println("You did not create this program - If you wish to change it either contact an admin or the owner of the program");
-        }
-    }
-
-    //This method is 90 % a duplicate of the above but we have some struggls with the getSelectedProgramFromListView to work on two different tabs
-    //Tried an if-statement but somehow it dosn't enter correctly
-    @FXML
-    void myProgramTabUpdateUpdateTabProgramOnAction(ActionEvent event) {
-        if(loginHandler.getCurrentUser().getUuid().equals(myProgramTabGetSelectedProgramFromListView().getCreatedBy())){
-            ArrayList<Node> updateNodes = new ArrayList<>(Arrays.asList(
-                    nameUpdateLabel, descriptionUpdateLabel, durationUpdateLabel,
-                    nameUpdateText, descriptionUpdateText, durationUpdateText));
-            ArrayList<Node> episodeNodes = new ArrayList<>(Arrays.asList(
-                    seasonNoUpdateLabel, seasonNumberUpdateText, episodeNoUpdateLabel,
-                    episodeNumberUpdateText, tvSUpdateLabel, tvSeriesUpdateSelection));
-            if (myProgramTabSearchListView.getSelectionModel().getSelectedItem() != null) {
-                Program program = myProgramTabGetSelectedProgramFromListView();
-                updateNodes.forEach(node -> node.setVisible(true));
-                updateProgramBtn.setVisible(true);
-                updateTvSeriesBtn.setVisible(false);
-                nameUpdateText.setText(program.getName());
-                descriptionUpdateText.setText(program.getDescription());
-                durationUpdateText.setText(String.valueOf(program.getDuration()));
-
-                if (program.getProduction().equals(tv2Logo)){
-                    productionSelectionUpdateCombo.getSelectionModel().select(0);
-                } else if (program.getProduction().equals(nordiskFilmLogo)){
-                    productionSelectionUpdateCombo.getSelectionModel().select(1);
-                }
+                currentlyUpdatingLabel.setText("Currently editing: " + program.getName());
+                currentlyUpdatingUUID.setText(String.valueOf(program.getUuid()));
 
                 mainTabPane.getSelectionModel().select(updateTab);
 
-                if (myProgramTabSearchProgramCombo.getSelectionModel().getSelectedItem().equals(tvSeries)) {
-                    Episode episode = (Episode) program;
-                    episodeNodes.forEach(node -> node.setVisible(true));
-                    seasonNumberUpdateText.setText(String.valueOf(episode.getSeasonNo()));
-                    episodeNumberUpdateText.setText(String.valueOf(episode.getEpisodeNo()));
-                    tvSeriesUpdateSelection.getItems().clear();
-                    for (TVSeries tvSeries : facade.getTvSeriesList()) {
-                        tvSeriesUpdateSelection.getItems().add(tvSeries.getName());
-                    }
-                    tvSeriesUpdateSelection.getSelectionModel().select(facade.getTvSeriesFromEpisode(episode).getName());
-
-                } else if (myProgramTabSearchProgramCombo.getSelectionModel().getSelectedItem().equals(transmission)) {
-                    episodeNodes.forEach(node -> node.setVisible(false));
-                }
-                currentlyUpdatingLabel.setText("Currently editing: " + myProgramTabGetSelectedProgramFromListView().getName());
-                currentlyUpdatingUUID.setText(String.valueOf(myProgramTabGetSelectedProgramFromListView().getUuid()));
             }
         } else {
             System.out.println("You did not create this program - If you wish to change it either contact an admin or the owner of the program");
@@ -409,32 +380,33 @@ public class ProducerController implements Initializable {
     }
 
     @FXML
-    void searchViewTabUpdateCredit(ActionEvent event) {
-        updateCreditBtnForMyProgramTab.setVisible(false);
-        mainTabPane.getSelectionModel().select(updateTab);
+    void updateTabUpdateCredit(ActionEvent event) {
         Program program = getSelectedProgramFromListView();
-        Credit credit = program.getCredits().get(searchListViewCredits.getSelectionModel().getSelectedIndex());
+        Credit credit = null;
+
+        //If the tab is "Search/view/ we get the credit highlighted from there if "My Program" is selected we get from there
+        if (mainTabPane.getSelectionModel().getSelectedItem().getText().equals("Search/view")) {
+            credit = program.getCredits().get(searchListViewCredits.getSelectionModel().getSelectedIndex());
+            creditIndexUpdateSelection.setText(String.valueOf(searchListViewCredits.getSelectionModel().getSelectedIndex()));
+        } else if (mainTabPane.getSelectionModel().getSelectedItem().getText().equals("My Programs")) {
+            credit = program.getCredits().get(myProgramTabSearchListViewCredits.getSelectionModel().getSelectedIndex());
+            creditIndexUpdateSelection.setText(String.valueOf(myProgramTabSearchListViewCredits.getSelectionModel().getSelectedIndex()));
+        }
+
+        //Set the label-text in the update-tab based on the if-statement above
         creditedPersonUpdateLabel.setText(credit.getCreditedPerson().getName() + ": " + credit.getCreditedPerson().getUuid());
         programUpdateSelection.setText(program.getName());
+        programUuidUpdateSelection.setText(String.valueOf(program.getUuid()));
 
+        //We set the function-combobox to the role-value based on the chosen credit
         functionUpdateSelection.getSelectionModel().select(credit.getFunction().role);
-    }
-
-    @FXML
-    void myProgramTabUpdateCredit(ActionEvent event) {
-        updateCreditBtnForMyProgramTab.setVisible(true);
+        //change the view to the update-tab
         mainTabPane.getSelectionModel().select(updateTab);
-        Program program = myProgramTabGetSelectedProgramFromListView();
-        Credit credit = program.getCredits().get(myProgramTabSearchListViewCredits.getSelectionModel().getSelectedIndex());
-        creditedPersonUpdateLabel.setText(credit.getCreditedPerson().getName() + ": " + credit.getCreditedPerson().getUuid());
-        programUpdateSelection.setText(program.getName());
-
-        functionUpdateSelection.getSelectionModel().select(credit.getFunction().role);
     }
 
     @FXML
     void updateUpdateTabPersonOnAction(ActionEvent event) {
-
+        System.out.println("Not yet implemented");
     }
 
     @FXML
@@ -520,8 +492,7 @@ public class ProducerController implements Initializable {
             }
             myProgramTabUpdateTvSeriesButton.setDisable(false);
         } catch (IndexOutOfBoundsException e){
-            System.out.println("Not yet implemented && Not sure why this is happening??? Yikes - " +
-                    "Think it has something to do with the change in combo-box you just made");
+            System.out.println("IndexOutOfBoundsException in myProgramTabSearchSeriesCombo method");
         }
     }
 
@@ -534,7 +505,7 @@ public class ProducerController implements Initializable {
             myProgramTabSearchListView.getItems().clear();
 
             if (myProgramTabSearchSeriesCombo.getSelectionModel().getSelectedIndex() != -1) {
-                TVSeries series = myProgramTabGetSelectedTvSeriesFromComboBox();
+                TVSeries series = getSelectedTvSeriesFromComboBox();
                 for (Episode episode : series.getSeasonMap().get(Integer.parseInt(myProgramTabSearchSeasonCombo.getSelectionModel().getSelectedItem()))) {
                     if (approvedComboBox.equals(approved) && episode.isApproved() && episode.getCreatedBy().equals(loginHandler.getCurrentUser().getUuid())) {
                         myProgramTabSearchListView.getItems().add(episode.getName() + ": " + episode.getUuid() + ": " +
@@ -558,18 +529,17 @@ public class ProducerController implements Initializable {
 
     @FXML
     void myProgramTabSelectedProgramFromListView(MouseEvent event) {
-        myProgramTabUpdateCreditButton.setDisable(true);
-        myProgramTabUpdatePersonButton.setDisable(true);
-        myProgramTabUpdateProgramButton.setDisable(true);
+        ArrayList<Button> buttons = new ArrayList<>(Arrays.asList(myProgramTabUpdateCreditButton, myProgramTabUpdatePersonButton,
+                myProgramTabUpdateProgramButton));
+        buttons.forEach(node -> node.setDisable(true));
 
         myProgramTabSearchListViewCredits.getItems().clear();
-        if(myProgramTabGetSelectedProgramFromListView().getCreatedBy().equals(loginHandler.getCurrentUser().getUuid())){
-            myProgramTabUpdateCreditButton.setDisable(false);
-            myProgramTabUpdatePersonButton.setDisable(false);
-            myProgramTabUpdateProgramButton.setDisable(false);
-        }
 
-        Program selectedProgram = myProgramTabGetSelectedProgramFromListView();
+        if(getSelectedProgramFromListView().getCreatedBy().equals(loginHandler.getCurrentUser().getUuid())){
+            buttons.forEach(node -> node.setDisable(false));
+        }
+        Program selectedProgram = getSelectedProgramFromListView();
+
         if (selectedProgram.getProduction().equals(tv2Logo)){
             myProgramTabCreditedLogoImageView.setImage(tv2LogoImage);
         } else if (selectedProgram.getProduction().equals(nordiskFilmLogo)){
@@ -585,8 +555,6 @@ public class ProducerController implements Initializable {
         }
     }
 
-
-
     @FXML
     void updateCredit(ActionEvent event) {
         try {
@@ -596,20 +564,7 @@ public class ProducerController implements Initializable {
 
             facade.updateCredit(credit, function);
         } catch (IndexOutOfBoundsException e) {
-            System.out.println("Ikke implementeret endnu");
-        }
-    }
-
-    @FXML
-    void updateCreditFromMyProgramTab(ActionEvent event) {
-        try {
-            //Programmet hentes igennem index for vores program drop-down menu
-            Credit credit = myProgramTabGetSelectedCreditFromListView();
-            Credit.Function function = facade.getFunctions().get(functionUpdateSelection.getSelectionModel().getSelectedIndex());
-
-            facade.updateCredit(credit, function);
-        } catch (IndexOutOfBoundsException e) {
-            System.out.println("Ikke implementeret endnu");
+            System.out.println("UpdateCredit metoden får indexOutOfBoundsException");
         }
     }
 
@@ -665,6 +620,7 @@ public class ProducerController implements Initializable {
         episodeNumberText.clear();
         seasonNumberText.clear();
         durationText.clear();
+        productionSelectionCombo.getSelectionModel().clearSelection();
     }
 
     public void updateUpdateUI() {
@@ -673,48 +629,63 @@ public class ProducerController implements Initializable {
         textFields.forEach(node -> node.clear());
         ArrayList<ComboBox> comboBoxes = new ArrayList<>(Arrays.asList(tvSeriesUpdateSelection, functionUpdateSelection));
         comboBoxes.forEach(node -> node.getItems().clear());
-        currentlyUpdatingLabel.setText("Choose program in \"Search/view\" tab");
+        currentlyUpdatingLabel.setText("Choose program in \"Search/view\" or in \"My Programs\" tab");
         currentlyUpdatingUUID.setText("");
 
         facade.getTvSeriesList().forEach(tvSeries -> tvSeriesUpdateSelection.getItems().add(tvSeries.getName()));
     }
 
     private TVSeries getSelectedTvSeriesFromComboBox() {
-        return facade.getTvSeriesList().get(searchSeriesCombo.getSelectionModel().getSelectedIndex());
-    }
+        TVSeries tvSeries = null;
+        if (mainTabPane.getSelectionModel().getSelectedItem().getText().equals("Search/view")) {
+            tvSeries = facade.getTvSeriesList().get(searchSeriesCombo.getSelectionModel().getSelectedIndex());
 
-    private TVSeries myProgramTabGetSelectedTvSeriesFromComboBox() {
-        return facade.getTvSeriesList().get(myProgramTabSearchSeriesCombo.getSelectionModel().getSelectedIndex());
+        } else if (mainTabPane.getSelectionModel().getSelectedItem().getText().equals("My Programs")) {
+            tvSeries = facade.getTvSeriesList().get(myProgramTabSearchSeriesCombo.getSelectionModel().getSelectedIndex());
+        }
+        return tvSeries;
     }
 
     private Program getSelectedProgramFromListView() {
-        //Choose the String-item from the listview instead of the index
-        String viewString = searchListView.getSelectionModel().getSelectedItem();
-        //Split the string to get the UUID
-        String[] viewStringArray = viewString.split(":");
-        //Use the getProgramFromUuid method from the facade to get the program from the string. The trim after the string is to get rid of whitespace
-        return facade.getProgramFromUuid(UUID.fromString(viewStringArray[1].trim()));
-    }
+        String viewString = null;
 
-    private Program myProgramTabGetSelectedProgramFromListView() {
-        //Choose the String-item from the listview instead of the index
-        String viewString = myProgramTabSearchListView.getSelectionModel().getSelectedItem();
+        if (mainTabPane.getSelectionModel().getSelectedItem().getText().equals("Search/view")) {
+            //Choose the String-item from the listview instead of the index
+            viewString = searchListView.getSelectionModel().getSelectedItem();
+
+        } else if (mainTabPane.getSelectionModel().getSelectedItem().getText().equals("My Programs")) {
+            viewString = myProgramTabSearchListView.getSelectionModel().getSelectedItem();
+        }
+
         //Split the string to get the UUID
         String[] viewStringArray = viewString.split(":");
+
         //Use the getProgramFromUuid method from the facade to get the program from the string. The trim after the string is to get rid of whitespace
         return facade.getProgramFromUuid(UUID.fromString(viewStringArray[1].trim()));
     }
 
     private Credit getSelectedCreditFromListView() {
+        Credit credit = null;
+
+        //If the method is called from the update-tab, the following if-statement's value is returned.
+        if (mainTabPane.getSelectionModel().getSelectedItem().getText().equals("Update")){
+            Program program = facade.getProgramFromUuid(UUID.fromString(programUuidUpdateSelection.getText()));
+            program.setApproved(false);
+            return program.getCredits().get(Integer.parseInt(creditIndexUpdateSelection.getText()));
+        }
+
         Program selectedProgram = getSelectedProgramFromListView();
         selectedProgram.setApproved(false);
-        return selectedProgram.getCredits().get(searchListViewCredits.getSelectionModel().getSelectedIndex());
-    }
 
-    private Credit myProgramTabGetSelectedCreditFromListView() {
-        Program selectedProgram = myProgramTabGetSelectedProgramFromListView();
-        selectedProgram.setApproved(false);
-        return selectedProgram.getCredits().get(myProgramTabSearchListViewCredits.getSelectionModel().getSelectedIndex());
+        if (mainTabPane.getSelectionModel().getSelectedItem().getText().equals("Search/view")) {
+            //Choose the String-item from the listview instead of the index
+            credit = selectedProgram.getCredits().get(searchListViewCredits.getSelectionModel().getSelectedIndex());
+
+        } else if (mainTabPane.getSelectionModel().getSelectedItem().getText().equals("My Programs")) {
+            credit = selectedProgram.getCredits().get(myProgramTabSearchListView.getSelectionModel().getSelectedIndex());
+        }
+
+        return credit;
     }
 
     @Override

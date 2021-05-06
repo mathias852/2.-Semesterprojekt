@@ -74,7 +74,7 @@
                         <Button fx:id="exportButton" layoutX="14.0" layoutY="458.0" mnemonicParsing="false" onAction="#exportButtonOnAction" text="Gem til .txt" />
                         <ListView fx:id="searchListViewCredits" layoutX="215.0" layoutY="250.0" prefHeight="233.0" prefWidth="300.0" />
                         <Button fx:id="updateProgramButton" disable="true" layoutX="532.0" layoutY="21.0" mnemonicParsing="false" onAction="#updateUpdateTabProgramOnAction" text="Update program" />
-                        <Button fx:id="updateCreditButton" disable="true" layoutX="532.0" layoutY="251.0" mnemonicParsing="false" onAction="#searchViewTabUpdateCredit" text="Update credit" />
+                        <Button fx:id="updateCreditButton" disable="true" layoutX="532.0" layoutY="251.0" mnemonicParsing="false" onAction="#updateTabUpdateCredit" text="Update credit" />
                         <Button fx:id="updateTvSeriesButton" disable="true" layoutX="14.0" layoutY="152.0" mnemonicParsing="false" onAction="#updateUpdateTabTVSeriesOnAction" text="Update TV-series" />
                         <Button fx:id="updatePersonButton" disable="true" layoutX="532.0" layoutY="287.0" mnemonicParsing="false" onAction="#updateUpdateTabPersonOnAction" text="Update person" />
                     <ImageView fx:id="creditedLogoImageView" fitHeight="139.0" fitWidth="185.0" layoutX="15.0" layoutY="230.0" pickOnBounds="true" preserveRatio="true" />
@@ -131,7 +131,8 @@
                         <Label fx:id="creditedPersonUpdateLabel" layoutX="458.0" layoutY="286.0" text="Credited person" />
                   <ComboBox fx:id="productionSelectionUpdateCombo" layoutX="97.0" layoutY="231.0" prefWidth="150.0" />
                   <Label fx:id="tvSUpdateLabel1" layoutX="26.0" layoutY="235.0" text="Production" />
-                  <Button fx:id="updateCreditBtnForMyProgramTab" layoutX="365.0" layoutY="369.0" mnemonicParsing="false" onAction="#updateCreditFromMyProgramTab" prefHeight="25.0" prefWidth="238.0" text="Update credit" />
+                  <Label fx:id="programUuidUpdateSelection" layoutX="458.0" layoutY="223.0" text="Program UUID" visible="false" />
+                  <Label fx:id="creditIndexUpdateSelection" layoutX="458.0" layoutY="223.0" text="Credit Index" visible="false" />
                     </children>
                 </AnchorPane>
             </content>
@@ -145,12 +146,12 @@
                   <ComboBox fx:id="myProgramTabSearchSeriesCombo" disable="true" editable="true" layoutX="14.0" layoutY="92.0" onAction="#myProgramTabSearchSeriesCombo" prefHeight="25.0" prefWidth="189.0" promptText="Choose TV-series" />
                   <ComboBox fx:id="myProgramTabSearchSeasonCombo" disable="true" editable="true" layoutX="14.0" layoutY="136.0" onAction="#myProgramTabSearchSeasonCombo" prefHeight="25.0" prefWidth="189.0" promptText="Choose season" />
                   <ListView fx:id="myProgramTabSearchListViewCredits" layoutX="215.0" layoutY="250.0" prefHeight="233.0" prefWidth="300.0" />
-                  <Button fx:id="myProgramTabUpdateProgramButton" disable="true" layoutX="532.0" layoutY="21.0" mnemonicParsing="false" onAction="#myProgramTabUpdateUpdateTabProgramOnAction" text="Update program" />
+                  <Button fx:id="myProgramTabUpdateProgramButton" disable="true" layoutX="532.0" layoutY="21.0" mnemonicParsing="false" onAction="#updateUpdateTabProgramOnAction" text="Update program" />
                   <Button fx:id="myProgramTabUpdateTvSeriesButton" disable="true" layoutX="14.0" layoutY="177.0" mnemonicParsing="false" onAction="#updateUpdateTabTVSeriesOnAction" text="Update TV-series" />
                   <Button fx:id="myProgramTabUpdatePersonButton" disable="true" layoutX="532.0" layoutY="287.0" mnemonicParsing="false" onAction="#updateUpdateTabPersonOnAction" text="Update person" />
                   <ImageView fx:id="myProgramTabCreditedLogoImageView" fitHeight="139.0" fitWidth="185.0" layoutX="15.0" layoutY="230.0" pickOnBounds="true" preserveRatio="true" />
                   <ComboBox fx:id="myProgramTabApprovedComboBox" layoutX="14.0" layoutY="9.0" prefHeight="25.0" prefWidth="189.0" />
-                  <Button fx:id="myProgramTabUpdateCreditButton" disable="true" layoutX="532.0" layoutY="251.0" mnemonicParsing="false" onAction="#myProgramTabUpdateCredit" text="Update credit" />
+                  <Button fx:id="myProgramTabUpdateCreditButton" disable="true" layoutX="532.0" layoutY="251.0" mnemonicParsing="false" onAction="#updateTabUpdateCredit" text="Update credit" />
                </children>
             </AnchorPane>
          </content>

@@ -752,6 +752,4 @@ public class SystemAdminController implements Initializable {
 
         updateCreateUI();
     }
-
-
 }

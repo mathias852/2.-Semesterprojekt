@@ -1,4 +1,4 @@
 2a93e924-6638-465a-b5cd-cb8d16f00d69;Top Gun;En skyde film;3c341a86-581c-4bcf-a192-b696234c60b7;124;true;Tv2
 ae880937-b2cd-4206-b8c8-35966165390a;Melodi Gran Prix;Et sang show;3c341a86-581c-4bcf-a192-b696234c60b7;234;false;Nordisk Film
 3129a54d-2d5f-4fbc-a39a-9c478905ff11;Flyvende Farmor;En overskudsfarmor på tur;3c341a86-581c-4bcf-a192-b696234c60b7;234;true;Nordisk Film
-0c4f9e48-fd29-4195-9b69-2d6b8e0b21b0;Skibet fra øst;Skibet fyldt med jøder fra den nazistiske lejr, set ved det østlige Danmark;e3d1fa6e-fa48-489b-9dcb-6dc82e61cb29;123;true;Nordisk Film
+0c4f9e48-fd29-4195-9b69-2d6b8e0b21b0;Skibet fra vest;Skibet fyldt med jøder fra den nazistiske lejr, set ved det østlige Danmark;e3d1fa6e-fa48-489b-9dcb-6dc82e61cb29;123;false;Nordisk Film

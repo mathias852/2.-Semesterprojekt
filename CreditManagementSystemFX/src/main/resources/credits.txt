@@ -9,3 +9,6 @@ af8c0e36-3abf-4f97-99b6-3d7c6d94ce1b;Kapelmester;0ee8bea9-f0f6-41dc-8658-e0e8475
 260f65f3-4110-4fd9-b21e-610fdb18a343;Lydredigering;0ee8bea9-f0f6-41dc-8658-e0e8475553cc
 6cd868ae-2666-408b-8d06-5945bf742d6c;Speciel effects;0ee8bea9-f0f6-41dc-8658-e0e8475553cc
 1e3ccd36-f8d8-40fd-bd88-37b2843c8b72;Uhonoreret og ekstraordinær indsats;0ee8bea9-f0f6-41dc-8658-e0e8475553cc
+267d5f00-7f63-4f6e-87cd-71dda9ace9a4;Cast;aeb33d61-56e5-47d3-bdad-037dbdaec763
+260f65f3-4110-4fd9-b21e-610fdb18a343;Colourgrading;aeb33d61-56e5-47d3-bdad-037dbdaec763
+1e3ccd36-f8d8-40fd-bd88-37b2843c8b72;Dronefører;aeb33d61-56e5-47d3-bdad-037dbdaec763
