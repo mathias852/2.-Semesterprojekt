@@ -96,14 +96,14 @@
                         <TextField fx:id="descriptionUpdateText" layoutX="96.0" layoutY="149.0" prefHeight="25.0" prefWidth="152.0" />
                         <Label fx:id="nameUpdateLabel" layoutX="26.0" layoutY="112.0" text="Name" />
                         <Label fx:id="descriptionUpdateLabel" layoutX="26.0" layoutY="153.0" text="Description" />
-                        <TextField fx:id="seasonNumberUpdateText" layoutX="96.0" layoutY="234.0" prefHeight="25.0" prefWidth="152.0" />
-                        <TextField fx:id="episodeNumberUpdateText" layoutX="96.0" layoutY="274.0" prefHeight="25.0" prefWidth="152.0" />
+                        <TextField fx:id="seasonNumberUpdateText" layoutX="96.0" layoutY="274.0" prefHeight="25.0" prefWidth="152.0" />
+                        <TextField fx:id="episodeNumberUpdateText" layoutX="96.0" layoutY="314.0" prefHeight="25.0" prefWidth="152.0" />
                         <TextField fx:id="durationUpdateText" layoutX="96.0" layoutY="192.0" prefHeight="25.0" prefWidth="152.0" />
-                        <Label fx:id="seasonNoUpdateLabel" layoutX="26.0" layoutY="238.0" text="Season" />
-                        <Label fx:id="episodeNoUpdateLabel" layoutX="26.0" layoutY="277.0" text="Episode" />
+                        <Label fx:id="seasonNoUpdateLabel" layoutX="26.0" layoutY="278.0" text="Season" />
+                        <Label fx:id="episodeNoUpdateLabel" layoutX="26.0" layoutY="317.0" text="Episode" />
                         <Label fx:id="durationUpdateLabel" layoutX="26.0" layoutY="197.0" text="Duration" />
-                        <ComboBox fx:id="tvSeriesUpdateSelection" layoutX="96.0" layoutY="318.0" prefWidth="150.0" />
-                        <Label fx:id="tvSUpdateLabel" layoutX="26.0" layoutY="322.0" text="TV-Series" />
+                        <ComboBox fx:id="tvSeriesUpdateSelection" layoutX="96.0" layoutY="358.0" prefWidth="150.0" />
+                        <Label fx:id="tvSUpdateLabel" layoutX="26.0" layoutY="362.0" text="TV-Series" />
                         <Button fx:id="updateProgramBtn" layoutX="26.0" layoutY="369.0" mnemonicParsing="false" onAction="#updateProgram" prefHeight="25.0" prefWidth="224.0" text="Update program" visible="false" />
                         <ComboBox fx:id="functionUpdateSelection" layoutX="458.0" layoutY="327.0" prefHeight="25.0" prefWidth="139.0" promptText="Function" />
                         <Label layoutX="364.0" layoutY="285.0" text="Credited person" />
@@ -135,6 +135,8 @@
                         <Label fx:id="currentlyUpdatingUUID" layoutX="70.0" layoutY="82.0" prefHeight="17.0" prefWidth="220.0" />
                         <Label fx:id="programUpdateSelection" layoutX="458.0" layoutY="240.0" text="Program" />
                         <Label fx:id="creditedPersonUpdateLabel" layoutX="458.0" layoutY="286.0" text="Credited person" />
+                        <ComboBox fx:id="productionSelectionUpdateCombo" layoutX="95.0" layoutY="231.0" prefWidth="150.0" />
+                        <Label fx:id="tvSUpdateLabel1" layoutX="26.0" layoutY="235.0" text="TV-Series" />
                      </children>
                   </AnchorPane>
                </content>

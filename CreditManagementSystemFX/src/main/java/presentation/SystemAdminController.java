@@ -370,45 +370,58 @@ public class SystemAdminController implements Initializable {
 
     @FXML
     void updateUpdateTabProgramOnAction(ActionEvent event) {
+
+        //Insert related notes to an arrayList
         ArrayList<Node> updateNodes = new ArrayList<>(Arrays.asList(
                 nameUpdateLabel, descriptionUpdateLabel, durationUpdateLabel,
                 nameUpdateText, descriptionUpdateText, durationUpdateText));
         ArrayList<Node> episodeNodes = new ArrayList<>(Arrays.asList(
                 seasonNoUpdateLabel, seasonNumberUpdateText, episodeNoUpdateLabel,
                 episodeNumberUpdateText, tvSUpdateLabel, tvSeriesUpdateSelection));
+
         if (searchListView.getSelectionModel().getSelectedItem() != null) {
+            //Get the chosen program
             Program program = getSelectedProgramFromListView();
+            //Changes the visibility for relevant nodes
             updateNodes.forEach(node -> node.setVisible(true));
             updateProgramBtn.setVisible(true);
             updateTvSeriesBtn.setVisible(false);
+
+            //Updates the text in the update-tab based on the chosen program
             nameUpdateText.setText(program.getName());
             descriptionUpdateText.setText(program.getDescription());
             durationUpdateText.setText(String.valueOf(program.getDuration()));
 
+            //To get the correct logo
             if (program.getProduction().equals(tv2Logo)){
                 productionSelectionUpdateCombo.getSelectionModel().select(0);
             } else if (program.getProduction().equals(nordiskFilmLogo)){
                 productionSelectionUpdateCombo.getSelectionModel().select(1);
             }
 
-            mainTabPane.getSelectionModel().select(updateTab);
 
             if (searchProgramCombo.getSelectionModel().getSelectedItem().equals(tvSeries)) {
+                //Casts the chosen program to an episode
                 Episode episode = (Episode) program;
+                //Changes the visibility for relevant nodes
                 episodeNodes.forEach(node -> node.setVisible(true));
+
+                //Updates the text in the update-tab based on the chosen program
                 seasonNumberUpdateText.setText(String.valueOf(episode.getSeasonNo()));
                 episodeNumberUpdateText.setText(String.valueOf(episode.getEpisodeNo()));
+
                 tvSeriesUpdateSelection.getItems().clear();
                 for (TVSeries tvSeries : facade.getTvSeriesList()) {
                     tvSeriesUpdateSelection.getItems().add(tvSeries.getName());
                 }
                 tvSeriesUpdateSelection.getSelectionModel().select(facade.getTvSeriesFromEpisode(episode).getName());
-
             } else if (searchProgramCombo.getSelectionModel().getSelectedItem().equals(transmission)) {
                 episodeNodes.forEach(node -> node.setVisible(false));
             }
-            currentlyUpdatingLabel.setText("Currently editing: " + getSelectedProgramFromListView().getName());
-            currentlyUpdatingUUID.setText(String.valueOf(getSelectedProgramFromListView().getUuid()));
+            currentlyUpdatingLabel.setText("Currently editing: " + program.getName());
+            currentlyUpdatingUUID.setText(String.valueOf(program.getUuid()));
+
+            mainTabPane.getSelectionModel().select(updateTab);
         }
     }
 
@@ -740,6 +753,9 @@ public class SystemAdminController implements Initializable {
 
         productionSelectionCombo.getItems().add(tv2Logo);
         productionSelectionCombo.getItems().add(nordiskFilmLogo);
+
+        productionSelectionUpdateCombo.getItems().add(tv2Logo);
+        productionSelectionUpdateCombo.getItems().add(nordiskFilmLogo);
 
 
         programTypeSelection.getItems().add(transmission);

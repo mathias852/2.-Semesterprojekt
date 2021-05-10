@@ -10,6 +10,7 @@ public class User {
     private int hashedPassword;
     private ArrayList<User> users;
 
+
     public User(UUID uuid, String username, int password){
         this.uuid = uuid;
         this.username = username;
