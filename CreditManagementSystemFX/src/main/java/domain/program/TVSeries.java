@@ -7,12 +7,10 @@ import java.util.*;
 public class TVSeries {
 
     private Map<Integer, ArrayList<Episode>> seasonMap;
-    private String name;
-    private String description;
-    private String createdBy;
-    private UUID uuid;
+    private String name, description;
+    private UUID uuid, createdBy;
 
-    public TVSeries(UUID uuid, String name, String description, String createdBy) {
+    public TVSeries(UUID uuid, String name, String description, UUID createdBy) {
         this.name = name;
         this.description = description;
         this.createdBy = createdBy;
@@ -51,10 +49,10 @@ public class TVSeries {
     public void setDescription(String description) {
         this.description = description;
     }
-    public String getCreatedBy() {
+    public UUID getCreatedBy() {
         return createdBy;
     }
-    public void setCreatedBy(String createdBy) {
+    public void setCreatedBy(UUID createdBy) {
         this.createdBy = createdBy;
     }
     public void setUuid(UUID uuid) {

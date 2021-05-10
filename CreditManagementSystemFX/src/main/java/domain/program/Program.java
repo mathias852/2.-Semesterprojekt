@@ -8,8 +8,8 @@ import java.util.UUID;
 
 public abstract class Program {
 
-    private UUID uuid;
-    private String name, description, production,createdBy;
+    private UUID uuid, createdBy;
+    private String name, description, production;
 
     private int duration;
     private ArrayList<Credit> credits;
@@ -20,7 +20,7 @@ public abstract class Program {
         this.name = name;
     }
 
-    public Program(UUID uuid, String name, String description, String createdBy, int duration,boolean approved, String production) { // createdBy tager userID fra creator
+    public Program(UUID uuid, String name, String description, UUID createdBy, int duration,boolean approved, String production) { // createdBy tager userID fra creator
         this.uuid = uuid;
         this.name = name;
         this.description = description;
@@ -51,7 +51,7 @@ public abstract class Program {
     public String getDescription() {
         return description;
     }
-    public String getCreatedBy() {
+    public UUID getCreatedBy() {
         return createdBy;
     }
     public int getDuration() {
@@ -69,7 +69,7 @@ public abstract class Program {
     public void setDescription(String description) {
         this.description = description;
     }
-    public void setCreatedBy(String createdBy) {
+    public void setCreatedBy(UUID createdBy) {
         this.createdBy = createdBy;
     }
     public void setDuration(int duration) {
@@ -77,6 +77,9 @@ public abstract class Program {
     }
     public void setApproved(boolean approved){
         this.approved = approved;
+    }
+    public void setProduction(String production) {
+        this.production = production;
     }
 
     @Override

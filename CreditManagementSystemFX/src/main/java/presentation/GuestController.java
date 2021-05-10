@@ -9,6 +9,7 @@ import java.util.ResourceBundle;
 import java.util.UUID;
 
 import domain.Facade;
+import domain.accesscontrol.Producer;
 import domain.credit.Credit;
 import domain.credit.CreditedPerson;
 import domain.program.Episode;
@@ -23,6 +24,8 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+
+import static presentation.LoginController.loginHandler;
 
 public class GuestController implements Initializable {
 
@@ -52,11 +55,11 @@ public class GuestController implements Initializable {
 
     @FXML
     void logOutAction(ActionEvent e) throws IOException{
-        App.setRoot("primary");
+        App.setRoot("logInPage");
     }
 
     @FXML
-    void exportButtonOnAction(ActionEvent event) {
+    void exportButtonOnAction(ActionEvent event) throws IOException {
         facade.exportToTxt();
     }
 
@@ -74,7 +77,7 @@ public class GuestController implements Initializable {
             searchListView.getItems().clear();
             for (Program program : facade.getPrograms()) {
                 if (program instanceof Transmission && program.isApproved()) {
-                    searchListView.getItems().add(program.getName());
+                    searchListView.getItems().add(program.getName() + ": Programansvarlig: " + loginHandler.getUserFromUuid(program.getCreatedBy()).getUsername());
 
                 }
             }
@@ -115,7 +118,7 @@ public class GuestController implements Initializable {
                 TVSeries series = getSelectedTvSeriesFromComboBox();
                 for (Episode episode : series.getSeasonMap().get(Integer.parseInt(searchSeasonCombo.getSelectionModel().getSelectedItem()))) {
                     if (episode.isApproved()) {
-                        searchListView.getItems().add(episode.getName());
+                        searchListView.getItems().add(episode.getName() + ": Programansvarlig: " + loginHandler.getUserFromUuid(episode.getCreatedBy()).getUsername());
                         if (episode.getProduction().equals(tv2Logo)){
                             creditedLogoImageView.setImage(tv2LogoImage);
                         } else if (episode.getProduction().equals(nordiskFilmLogo)){
@@ -133,6 +136,8 @@ public class GuestController implements Initializable {
     @FXML
     void selectedProgramFromListView() {
         searchListViewCredits.getItems().clear();
+
+        //System.out.println(searchListView.getItem);
 
         Program selectedProgram = getSelectedProgramFromListView();
         if (selectedProgram.getProduction().equals(tv2Logo)){
@@ -356,8 +361,9 @@ public class GuestController implements Initializable {
         String viewString = searchListView.getSelectionModel().getSelectedItem();
         //Split the string to get the UUID
         String[] viewStringArray = viewString.split(":");
-        //Use the getProgramFromUuid method from the facade to get the program from the string. The trim after the string is to get rid of whitespace
-        return facade.getProgramFromUuid(UUID.fromString(viewStringArray[1].trim()));
+
+        //Use the getProgramFromCreatedBy method from the facade to get the program from the UUID of the creator. The trim after the string is to get rid of whitespace
+        return facade.getProgramFromCreatedBy(viewStringArray[0], loginHandler.getUserFromUsername(viewStringArray[2].trim()).getUuid());
     }
 
     private Credit getSelectedCreditFromListView() {

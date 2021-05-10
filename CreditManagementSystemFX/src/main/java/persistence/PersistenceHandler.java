@@ -19,6 +19,8 @@ public class PersistenceHandler {
     private File systemAdmin = new File("src/main/resources/systemadmin.txt");
     private File producer = new File("src/main/resources/producer.txt");
 
+    public FileWriter fileWriter;
+
     public PersistenceHandler() {
     }
 
@@ -33,7 +35,7 @@ public class PersistenceHandler {
         }
 
         try {
-            FileWriter fileWriter = new FileWriter(file, true);
+            fileWriter = new FileWriter(file, true);
             PrintWriter printWriter = new PrintWriter(fileWriter);
             printWriter.println(s);
             printWriter.close();
@@ -41,34 +43,6 @@ public class PersistenceHandler {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    //Contains the general read functionality that is used to read the files
-    public ArrayList<String[]> read(File file) {
-        //
-        ArrayList<String[]> list = new ArrayList<>();
-
-        try {
-            Scanner scanner = new Scanner(file);
-            while(scanner.hasNextLine()){
-                String string = scanner.nextLine();
-                String[] data = string.split(";");
-                list.add(data);
-            }
-        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-        }
-        return list;
-    }
-
-    public void deleteFiles() {
-
-        credit.delete();
-        person.delete();
-        tvSeries.delete();
-        transmission.delete();
-        episode.delete();
-
     }
 
     public void writeCredit(String s) {
@@ -99,7 +73,6 @@ public class PersistenceHandler {
         write(producer, s);
     }
 
-
     public ArrayList<String[]> readCredit() {
         return read(credit);
     }
@@ -127,4 +100,51 @@ public class PersistenceHandler {
     public ArrayList<String[]> readProducer() {
         return read(producer);
     }
+
+    //Contains the general read functionality that is used to read the files
+    public ArrayList<String[]> read(File file) {
+        //
+        ArrayList<String[]> list = new ArrayList<>();
+
+        try {
+            Scanner scanner = new Scanner(file);
+            while(scanner.hasNextLine()){
+                String string = scanner.nextLine();
+                String[] data = string.split(";");
+                list.add(data);
+            }
+        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public File getCreditFile() {
+        return credit;
+    }
+
+    public File getEpisode() {
+        return episode;
+    }
+
+    public File getTvSeries() {
+        return tvSeries;
+    }
+
+    public File getPerson() {
+        return person;
+    }
+
+    public File getTransmission() {
+        return transmission;
+    }
+
+    public File getSystemAdmin() {
+        return systemAdmin;
+    }
+
+    public File getProducerFile() {
+        return producer;
+    }
+
 }

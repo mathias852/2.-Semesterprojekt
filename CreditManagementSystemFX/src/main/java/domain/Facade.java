@@ -1,5 +1,7 @@
 package domain;
 
+import domain.accesscontrol.Producer;
+import domain.accesscontrol.SystemAdmin;
 import domain.accesscontrol.User;
 import domain.credit.Credit;
 import domain.credit.CreditedPerson;
@@ -8,8 +10,9 @@ import domain.program.Program;
 import domain.program.TVSeries;
 import domain.program.Transmission;
 import persistence.PersistenceHandler;
-import presentation.LoginController;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 
 public class Facade {
@@ -19,58 +22,43 @@ public class Facade {
 
     PersistenceHandler persistenceHandler = new PersistenceHandler();
 
-    public static void main(String[] args) {
-    }
-
-
-/*    public void createStuff() {
-        TVSeries badehotellet = createTvSeries("Badehotellet", "En serie", 1);
-        Episode ep1 = createEpisode(badehotellet, "Badehotellet 1", "Badehotellet the sequel", 1, 1, 1, 60);
-        Episode ep2 = createEpisode(badehotellet, "Badehotellet 2", "Badehotellet the sequel", 1, 2, 1, 60);
-        CreditedPerson cp = createPerson("Jens Jensen");
-        CreditedPerson cp2 = createPerson("Hans Hansen");
-        Credit c = createCredit(ep1, cp, Credit.Function.VISUALARTIST);
-        Credit c2 = createCredit(ep1, cp2, Credit.Function.EDITOR);
-    }*/
 
     //All create methods are void because we don't use the return-value **Note to ourself
-
     //Create method for episode when it's not stored in the DB(Text-files)
-    public void createEpisode(TVSeries tv, String name, String description, String createdBy, int episodeNo, int seasonNo, int duration, boolean approved, String production) {
+    public void createEpisode(TVSeries tv, String name, String description, UUID createdBy, int episodeNo, int seasonNo, int duration, boolean approved, String production) {
         createEpisode(UUID.randomUUID(), tv, name, description, createdBy, episodeNo, seasonNo, duration, approved, production);
     }
 
     //Create method when read from the DB(Text-file)
-    public void createEpisode(UUID uuid, TVSeries tv, String name, String description, String createdBy, int episodeNo, int seasonNo, int duration, boolean approved, String production) {
+    public void createEpisode(UUID uuid, TVSeries tv, String name, String description, UUID createdBy, int episodeNo, int seasonNo, int duration, boolean approved, String production) {
         Episode program = new Episode(uuid, tv, name, description, createdBy, episodeNo, seasonNo, duration, approved, production);
         tv.addEpisode(program);
         programs.add(program);
     }
 
     //Create method for transmission when it's not stored in the DB(Text-files)
-
-    public void createTransmission(String name, String description, String createdBy, int duration, boolean approved, String production) {
+    public void createTransmission(String name, String description, UUID createdBy, int duration, boolean approved, String production) {
         createTransmission(UUID.randomUUID(), name, description, createdBy, duration, approved, production);
     }
 
     //Create method when read from the DB(Text-file)
-    public void createTransmission(UUID uuid, String name, String description, String createdBy, int duration, boolean approved, String production) {
+    public void createTransmission(UUID uuid, String name, String description, UUID createdBy, int duration, boolean approved, String production) {
         Program program = new Transmission(uuid, name, description, createdBy, duration, approved, production);
         programs.add(program);
     }
 
     //Create method for tv-series when it's not stored in the DB(Text-files)
-    public void createTvSeries(String name, String description, String createdBy) {
+    public void createTvSeries(String name, String description, UUID createdBy) {
         createTvSeries(UUID.randomUUID(), name, description, createdBy);
     }
 
     //Create method when read from the DB(Text-file)
-    public void createTvSeries(UUID uuid, String name, String description, String createdBy) {
+    public void createTvSeries(UUID uuid, String name, String description, UUID createdBy) {
         TVSeries tvSeries = new TVSeries(uuid, name, description, createdBy);
         tvSeriesList.add(tvSeries);
     }
 
-    //Create method when read from the DB(Text-file) **Note: We do not store a UUID which is wuy we don't have two create-methods for credits
+    //Create method when read from the DB(Text-file) **Note: We do not store a UUID which is why we don't have two create-methods for credits
     public void createCredit(CreditedPerson creditedPerson, Credit.Function function, Program creditedProgram) {
         Credit c = new Credit(creditedPerson, function);
         creditedProgram.addCredit(c);
@@ -88,16 +76,26 @@ public class Facade {
     }
 
     //Export/save programs, persons & credits to txt
-    public void exportToTxt() {
+    public void exportToTxt() throws IOException {
         //Strings to be written in the corresponding file
-        String transmissionString = "";
-        String episodeString = "";
-        String CPString = "";
-        String tvSeriesString = "";
-        String creditStringTransmission = "";
-        String creditStringEpisode = "";
+        String transmissionString;
+        String episodeString;
+        String CPString;
+        String tvSeriesString;
+        String creditStringTransmission;
+        String creditStringEpisode;
 
-        persistenceHandler.deleteFiles();
+/*        persistenceHandler.writeTransmission("");
+        persistenceHandler.writeEpisode("");
+        persistenceHandler.writeCredit("");
+        persistenceHandler.writePerson("");
+        persistenceHandler.writeTvSeries("");*/
+
+        persistenceHandler.fileWriter = new FileWriter(persistenceHandler.getCreditFile());
+        persistenceHandler.fileWriter = new FileWriter(persistenceHandler.getTransmission());
+        persistenceHandler.fileWriter = new FileWriter(persistenceHandler.getEpisode());
+        persistenceHandler.fileWriter = new FileWriter(persistenceHandler.getTvSeries());
+        persistenceHandler.fileWriter = new FileWriter(persistenceHandler.getPerson());
 
         //Loop through the programs array - if instance of transmission, we store that instance as a single line in the transmission-file
         for (Program p : programs) {
@@ -137,25 +135,26 @@ public class Facade {
         }
     }
 
+
     //Here we import the text-files and create a new instance of every line from each file
     public void importFromTxt() {
         //Read each file and for every string-array(Corresponding to one line) we call the create-method for the respective file
         ArrayList<String[]> transmissions = persistenceHandler.readTransmission();
         for (String[] transmissionLine : transmissions) {
             createTransmission(UUID.fromString(transmissionLine[0]), transmissionLine[1], transmissionLine[2],
-                    transmissionLine[3], Integer.parseInt(transmissionLine[4]), Boolean.parseBoolean(transmissionLine[5]), transmissionLine[6]);
+                    UUID.fromString(transmissionLine[3]), Integer.parseInt(transmissionLine[4]), Boolean.parseBoolean(transmissionLine[5]), transmissionLine[6]);
 
         }
 
         ArrayList<String[]> tvSeries = persistenceHandler.readTvSeries();
         for (String[] tvLine : tvSeries) {
-            createTvSeries(UUID.fromString(tvLine[0]), tvLine[1], tvLine[2], tvLine[3]);
+            createTvSeries(UUID.fromString(tvLine[0]), tvLine[1], tvLine[2], UUID.fromString(tvLine[3]));
         }
 
         ArrayList<String[]> episodes = persistenceHandler.readEpisode();
         for (String[] episodeLine : episodes) {
             createEpisode(UUID.fromString(episodeLine[0]), getTvSeriesFromUuid(UUID.fromString(episodeLine[1])),
-                    episodeLine[2], episodeLine[3], episodeLine[4], Integer.parseInt(episodeLine[5]),
+                    episodeLine[2], episodeLine[3], UUID.fromString(episodeLine[4]), Integer.parseInt(episodeLine[5]),
                     Integer.parseInt(episodeLine[6]), Integer.parseInt(episodeLine[7]), Boolean.parseBoolean(episodeLine[8]), episodeLine[9]);
         }
 
@@ -225,8 +224,18 @@ public class Facade {
         return null;
     }
 
+    public Program getProgramFromCreatedBy(String programName, UUID uuid) {
+        for (Program program : getPrograms()) {
+            if (program.getName().equals(programName) && program.getCreatedBy().equals(uuid)) {
+                return program;
+            }
+        }
+        return null;
+    }
+
+
     //Update the values of the selected transmission
-    public void updateTransmission(Program program, String name, String description, int duration) {
+    public void updateTransmission(Program program, String name, String description, int duration, String production) {
         Transmission p = (Transmission) program;
         if (name != null) {
             p.setName(name);
@@ -237,10 +246,12 @@ public class Facade {
         if (duration != -1) {
             p.setDuration(duration);
         }
+        p.setProduction(production);
+        p.setApproved(false);
     }
 
     //Update the values of the selected episode
-    public void updateEpisode(Program program, String name, String description, int duration, int seasonNo, int episodeNo, TVSeries tvSeries) {
+    public void updateEpisode(Program program, String name, String description, int duration, int seasonNo, int episodeNo, TVSeries tvSeries, String production) {
         Episode p = (Episode) program;
         int oldSeasonNo = p.getSeasonNo();
         int oldEpisodeNo = p.getEpisodeNo();
@@ -267,6 +278,8 @@ public class Facade {
         if (tvSeries != null) {
             p.setTvSeries(tvSeries);
         }
+        p.setProduction(production);
+        p.setApproved(false);
     }
 
     //Update the values of the selected tv-series
@@ -310,5 +323,4 @@ public class Facade {
     public List<CreditedPerson> getCreditedPeople() {
         return creditedPeople;
     }
-
 }
