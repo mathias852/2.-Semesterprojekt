@@ -1,15 +1,12 @@
 package domain;
 
-import domain.accesscontrol.Producer;
-import domain.accesscontrol.SystemAdmin;
-import domain.accesscontrol.User;
 import domain.credit.Credit;
 import domain.credit.CreditedPerson;
 import domain.program.Episode;
 import domain.program.Program;
 import domain.program.TVSeries;
 import domain.program.Transmission;
-import persistence.PersistenceHandler;
+import persistence.ExportHandler;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -20,7 +17,7 @@ public class Facade {
     private List<TVSeries> tvSeriesList = new ArrayList<>();
     private List<CreditedPerson> creditedPeople = new ArrayList<>();
 
-    PersistenceHandler persistenceHandler = new PersistenceHandler();
+    ExportHandler exportHandler = new ExportHandler();
 
 
     //All create methods are void because we don't use the return-value **Note to ourself
@@ -85,40 +82,40 @@ public class Facade {
         String creditStringTransmission;
         String creditStringEpisode;
 
-/*        persistenceHandler.writeTransmission("");
-        persistenceHandler.writeEpisode("");
-        persistenceHandler.writeCredit("");
-        persistenceHandler.writePerson("");
-        persistenceHandler.writeTvSeries("");*/
+/*        exportHandler.writeTransmission("");
+        exportHandler.writeEpisode("");
+        exportHandler.writeCredit("");
+        exportHandler.writePerson("");
+        exportHandler.writeTvSeries("");*/
 
-        persistenceHandler.fileWriter = new FileWriter(persistenceHandler.getCreditFile());
-        persistenceHandler.fileWriter = new FileWriter(persistenceHandler.getTransmission());
-        persistenceHandler.fileWriter = new FileWriter(persistenceHandler.getEpisode());
-        persistenceHandler.fileWriter = new FileWriter(persistenceHandler.getTvSeries());
-        persistenceHandler.fileWriter = new FileWriter(persistenceHandler.getPerson());
+        exportHandler.fileWriter = new FileWriter(exportHandler.getCreditFile());
+        exportHandler.fileWriter = new FileWriter(exportHandler.getTransmission());
+        exportHandler.fileWriter = new FileWriter(exportHandler.getEpisode());
+        exportHandler.fileWriter = new FileWriter(exportHandler.getTvSeries());
+        exportHandler.fileWriter = new FileWriter(exportHandler.getPerson());
 
         //Loop through the programs array - if instance of transmission, we store that instance as a single line in the transmission-file
         for (Program p : programs) {
             if (p instanceof Transmission) {
                 transmissionString = p.getUuid() + ";" + p.getName() + ";" + p.getDescription() + ";" + p.getCreatedBy() + ";" + p.getDuration() + ";" + p.isApproved() + ";" + p.getProduction();
-                persistenceHandler.writeTransmission(transmissionString);
+                exportHandler.writeTransmission(transmissionString);
                 //If the transmission has credits associated we store them in the credit-file
                 if (p.getCredits() != null) {
                     for (Credit credit : p.getCredits()) {
                         creditStringTransmission = credit.getCreditedPerson().getUuid() + ";" + credit.getFunction().role + ";" + p.getUuid();
-                        persistenceHandler.writeCredit(creditStringTransmission);
+                        exportHandler.writeCredit(creditStringTransmission);
                     }
                 }
                 //If instance of Episode - store in the episode-file
             } else if (p instanceof Episode) {
                 Episode e = (Episode) p;
                 episodeString = e.getUuid() + ";" + getTvSeriesFromEpisode(e).getUuid() + ";" + e.getName() + ";" + e.getDescription() + ";" + e.getCreatedBy() + ";" + e.getEpisodeNo() + ";" + e.getSeasonNo() + ";" + e.getDuration() + ";" + e.isApproved() + ";" + p.getProduction();
-                persistenceHandler.writeEpisode(episodeString);
+                exportHandler.writeEpisode(episodeString);
                 //If the episode has credits associated we store them in the credit-file
                 if (e.getCredits() != null) {
                     for (Credit credit : e.getCredits()) {
                         creditStringEpisode = credit.getCreditedPerson().getUuid() + ";" + credit.getFunction().role + ";" + e.getUuid();
-                        persistenceHandler.writeCredit(creditStringEpisode);
+                        exportHandler.writeCredit(creditStringEpisode);
                     }
                 }
             }
@@ -126,12 +123,12 @@ public class Facade {
         //Loop through every instance of a credited person and store it in the person-file
         for (CreditedPerson cp : creditedPeople) {
             CPString = cp.getUuid() + ";" + cp.getName();
-            persistenceHandler.writePerson(CPString);
+            exportHandler.writePerson(CPString);
         }
         //Loop through every instance of a tv-series and store it in the person-file
         for (TVSeries tvSeries : tvSeriesList) {
             tvSeriesString = tvSeries.getUuid() + ";" + tvSeries.getName() + ";" + tvSeries.getDescription() + ";" + tvSeries.getCreatedBy();
-            persistenceHandler.writeTvSeries(tvSeriesString);
+            exportHandler.writeTvSeries(tvSeriesString);
         }
     }
 
@@ -139,31 +136,31 @@ public class Facade {
     //Here we import the text-files and create a new instance of every line from each file
     public void importFromTxt() {
         //Read each file and for every string-array(Corresponding to one line) we call the create-method for the respective file
-        ArrayList<String[]> transmissions = persistenceHandler.readTransmission();
+        ArrayList<String[]> transmissions = exportHandler.readTransmission();
         for (String[] transmissionLine : transmissions) {
             createTransmission(UUID.fromString(transmissionLine[0]), transmissionLine[1], transmissionLine[2],
                     UUID.fromString(transmissionLine[3]), Integer.parseInt(transmissionLine[4]), Boolean.parseBoolean(transmissionLine[5]), transmissionLine[6]);
 
         }
 
-        ArrayList<String[]> tvSeries = persistenceHandler.readTvSeries();
+        ArrayList<String[]> tvSeries = exportHandler.readTvSeries();
         for (String[] tvLine : tvSeries) {
             createTvSeries(UUID.fromString(tvLine[0]), tvLine[1], tvLine[2], UUID.fromString(tvLine[3]));
         }
 
-        ArrayList<String[]> episodes = persistenceHandler.readEpisode();
+        ArrayList<String[]> episodes = exportHandler.readEpisode();
         for (String[] episodeLine : episodes) {
             createEpisode(UUID.fromString(episodeLine[0]), getTvSeriesFromUuid(UUID.fromString(episodeLine[1])),
                     episodeLine[2], episodeLine[3], UUID.fromString(episodeLine[4]), Integer.parseInt(episodeLine[5]),
                     Integer.parseInt(episodeLine[6]), Integer.parseInt(episodeLine[7]), Boolean.parseBoolean(episodeLine[8]), episodeLine[9]);
         }
 
-        ArrayList<String[]> people = persistenceHandler.readPerson();
+        ArrayList<String[]> people = exportHandler.readPerson();
         for (String[] personLine : people) {
             createPerson(UUID.fromString(personLine[0]), personLine[1]);
         }
 
-        ArrayList<String[]> credit = persistenceHandler.readCredit();
+        ArrayList<String[]> credit = exportHandler.readCredit();
         for (String[] creditLine : credit) {
             createCredit(getPersonFromUuid(UUID.fromString(creditLine[0])), getFunction(creditLine[1]),
                     getProgramFromUuid(UUID.fromString(creditLine[2])));

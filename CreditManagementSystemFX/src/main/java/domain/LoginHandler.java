@@ -3,12 +3,11 @@ package domain;
 import domain.accesscontrol.Producer;
 import domain.accesscontrol.SystemAdmin;
 import domain.accesscontrol.User;
-import persistence.PersistenceHandler;
+import persistence.ExportHandler;
 
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 public class LoginHandler {
@@ -16,7 +15,7 @@ public class LoginHandler {
     private ArrayList<User> users = new ArrayList<>();
     private User currentUser;
 
-    PersistenceHandler persistenceHandler = new PersistenceHandler();
+    ExportHandler exportHandler = new ExportHandler();
 
 
     //Create method for producer when made in the application
@@ -47,28 +46,28 @@ public class LoginHandler {
         String producer = "";
         String sysAdmin = "";
 
-        persistenceHandler.fileWriter = new FileWriter(persistenceHandler.getProducerFile());
-        persistenceHandler.fileWriter = new FileWriter(persistenceHandler.getSystemAdmin());
+        exportHandler.fileWriter = new FileWriter(exportHandler.getProducerFile());
+        exportHandler.fileWriter = new FileWriter(exportHandler.getSystemAdmin());
 
         for (User user : getUsers()) {
             if (user instanceof SystemAdmin) {
                 sysAdmin = user.getUuid() + ";" + user.getUsername() + ";" + user.getHashedPassword();
-                persistenceHandler.writeSystemAdmin(sysAdmin);
+                exportHandler.writeSystemAdmin(sysAdmin);
             } else if (user instanceof Producer) {
                 producer = user.getUuid() + ";" + user.getUsername() + ";" + user.getHashedPassword();
-                persistenceHandler.writeProducer(producer);
+                exportHandler.writeProducer(producer);
             }
         }
     }
 
 
     public void importLogins(){
-        ArrayList<String[]> producers = persistenceHandler.readProducer();
+        ArrayList<String[]> producers = exportHandler.readProducer();
         for(String[] s : producers){
             createProducer(UUID.fromString(s[0]), s[1], Integer.parseInt(s[2]));
         }
 
-        ArrayList<String[]> sysAdmin = persistenceHandler.readSystemAdmin();
+        ArrayList<String[]> sysAdmin = exportHandler.readSystemAdmin();
         for(String[] s : sysAdmin){
             createSystemAdmin(UUID.fromString(s[0]), s[1], Integer.parseInt(s[2]));
         }

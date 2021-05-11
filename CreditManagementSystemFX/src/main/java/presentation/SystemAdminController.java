@@ -2,7 +2,6 @@ package presentation;
 
 import domain.Facade;
 import domain.LoginHandler;
-import domain.accesscontrol.Producer;
 import domain.credit.Credit;
 import domain.credit.CreditedPerson;
 import domain.program.Episode;
@@ -18,7 +17,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import persistence.PersistenceHandler;
 
 import java.io.File;
 import java.io.IOException;
