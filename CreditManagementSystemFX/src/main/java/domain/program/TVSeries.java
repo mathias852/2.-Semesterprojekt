@@ -1,7 +1,5 @@
 package domain.program;
 
-import domain.accesscontrol.User;
-
 import java.util.*;
 
 public class TVSeries {

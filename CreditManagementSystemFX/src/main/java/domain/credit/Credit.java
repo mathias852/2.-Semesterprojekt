@@ -1,12 +1,20 @@
 package domain.credit;
 
+import java.util.UUID;
+
 public class Credit {
 
     private CreditedPerson creditedPerson;
+    private UUID creditedPersonsUuid;
     private Function function;
 
     public Credit(CreditedPerson creditedPerson, Function function) {
         this.creditedPerson = creditedPerson;
+        this.function = function;
+    }
+
+    public Credit(UUID creditedPersonsUuid, Function function) {
+        this.creditedPersonsUuid = creditedPersonsUuid;
         this.function = function;
     }
 

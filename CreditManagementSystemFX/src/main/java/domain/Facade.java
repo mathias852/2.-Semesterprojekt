@@ -132,7 +132,6 @@ public class Facade {
         }
     }
 
-
     //Here we import the text-files and create a new instance of every line from each file
     public void importFromTxt() {
         //Read each file and for every string-array(Corresponding to one line) we call the create-method for the respective file
