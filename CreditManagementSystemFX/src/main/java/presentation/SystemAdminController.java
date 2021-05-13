@@ -86,8 +86,7 @@ public class SystemAdminController implements Initializable {
     private final Image nordiskFilmLogoImage = new Image(nordiskFilmLogoFile.toURI().toString());
     private final Image tv2LogoImage = new Image(tv2LogoFile.toURI().toString());
 
-    private final Facade facade = new Facade();
-    private final LoginHandler loginHandler = new LoginHandler();
+
 
     @FXML
     private void createUserAction(ActionEvent e) {
@@ -109,7 +108,7 @@ public class SystemAdminController implements Initializable {
             //If the userType is equal to producer we call the createProducer()
             if (usertypeCombo.getSelectionModel().getSelectedItem().equals("Producer")) {
 
-                if (loginHandler.createProducer(userName, password)) {
+                if (LoginHandler.getInstance().createProducer(userName, password)) {
                     createUserLabel.setText("Created a producer");
                 } else {
                     createUserLabel.setText("Could not create a producer");
@@ -117,7 +116,7 @@ public class SystemAdminController implements Initializable {
             //If the userType is equal to System Administrator we call the createSystemAdmin()
             } else if (usertypeCombo.getSelectionModel().getSelectedItem().equals("System Administrator")) {
 
-                if (loginHandler.createSystemAdmin(userName, password)) {
+                if (LoginHandler.getInstance().createSystemAdmin(userName, password)) {
                     createUserLabel.setText("Created a System Administrator");
                 } else {
                     createUserLabel.setText("Could not create System Administrator");
@@ -130,8 +129,8 @@ public class SystemAdminController implements Initializable {
 
     @FXML
     void logOutAction(ActionEvent e) throws IOException {
-        loginHandler.exportUsersToTxt();
-        facade.exportToTxt();
+        //loginHandler.exportUsersToTxt();
+        //facade.exportToTxt();
         App.setRoot("logInPage");
     }
 
@@ -140,7 +139,7 @@ public class SystemAdminController implements Initializable {
     void createPerson(ActionEvent event) {
         //Uses the createPerson-method from the facade
         if (!creditedPersonNameText.getText().isEmpty()) {
-            facade.createPerson(creditedPersonNameText.getText());
+            Facade.getInstance().createPerson(creditedPersonNameText.getText());
             updateCreateUI();
             creditedPersonNameText.setText("");
         }
@@ -150,13 +149,13 @@ public class SystemAdminController implements Initializable {
     void createCredit(ActionEvent event) {
         try {
             //Programmet hentes igennem index for vores program drop-down menu
-            Program program = facade.getPrograms().get(programSelection.getSelectionModel().getSelectedIndex());
-            CreditedPerson creditedPerson = facade.getCreditedPeople().get(creditedPersonSelection.getSelectionModel().getSelectedIndex());
-            Credit.Function function = facade.getFunctions().get(functionSelection.getSelectionModel().getSelectedIndex());
+            Program program = Facade.getInstance().getPrograms().get(programSelection.getSelectionModel().getSelectedIndex());
+            CreditedPerson creditedPerson = Facade.getInstance().getCreditedPeople().get(creditedPersonSelection.getSelectionModel().getSelectedIndex());
+            Credit.Function function = Facade.getInstance().getFunctions().get(functionSelection.getSelectionModel().getSelectedIndex());
 
             //Tjekker om credit allerede eksisterer
             if (program.getCredits() == null) {
-                facade.createCredit(creditedPerson, function, program);
+                Facade.getInstance().createCredit(creditedPerson, function, program);
             } else {
                 boolean exists = false;
                 for (Credit credit : program.getCredits()) {
@@ -166,7 +165,7 @@ public class SystemAdminController implements Initializable {
                     }
                 }
                 if (!exists) {
-                    facade.createCredit(creditedPerson, function, program);
+                    Facade.getInstance().createCredit(creditedPerson, function, program);
                 }
             }
         } catch (IndexOutOfBoundsException e) {
@@ -184,25 +183,25 @@ public class SystemAdminController implements Initializable {
         if (programTypeSelection.getValue().equals(transmission)) {
             int duration = durationText.getText().isEmpty() ? -1 : Integer.parseInt(durationText.getText());
             if (!name.isEmpty()) {
-                facade.createTransmission(name, description, LoginController.loginHandler.getCurrentUser().getUuid(), duration,false, production);
+                Facade.getInstance().createTransmission(name, description, LoginHandler.getInstance().getCurrentUser().getUuid(), duration,false, production);
             } else {
                 messageLabel.setText("Cannot create " + transmission + " without a name");
             }
         } else if (programTypeSelection.getValue().equals(tvSeries)) {
             if (!name.isEmpty()) {
-                facade.createTvSeries(name, description, LoginController.loginHandler.getCurrentUser().getUuid());
+                Facade.getInstance().createTvSeries(name, description, LoginHandler.getInstance().getCurrentUser().getUuid());
             } else {
                 messageLabel.setText("Cannot create " + tvSeries + " without a name");
             }
         } else if (programTypeSelection.getValue().equals(episode)) {
             try {
-                TVSeries tvSeries = tvSeriesSelection.getSelectionModel().getSelectedIndex() == -1 ? null : facade.getTvSeriesList().get(tvSeriesSelection.getSelectionModel().getSelectedIndex());
+                TVSeries tvSeries = tvSeriesSelection.getSelectionModel().getSelectedIndex() == -1 ? null : Facade.getInstance().getTvSeriesList().get(tvSeriesSelection.getSelectionModel().getSelectedIndex());
                 int episodeNumber = episodeNumberText.getText().isEmpty() ? -1 : Integer.parseInt(episodeNumberText.getText());
                 int seasonNumber = seasonNumberText.getText().isEmpty() ? -1 : Integer.parseInt(seasonNumberText.getText());
                 int duration = durationText.getText().isEmpty() ? -1 : Integer.parseInt(durationText.getText());
 
                 if (!name.isEmpty() && tvSeries != null) {
-                    facade.createEpisode(tvSeries, name, description, loginHandler.getCurrentUser().getUuid(),
+                    Facade.getInstance().createEpisode(tvSeries, name, description, LoginHandler.getInstance().getCurrentUser().getUuid(),
                             episodeNumber, seasonNumber, duration, false, production);
                 } else {
                     messageLabel.setText("Cannot create " + episode + " without a name & a TV-series");
@@ -246,7 +245,7 @@ public class SystemAdminController implements Initializable {
 
     @FXML
     void exportButtonOnAction(ActionEvent event) throws IOException {
-        facade.exportToTxt();
+        //facade.exportToTxt();
     }
 
     @FXML
@@ -263,10 +262,10 @@ public class SystemAdminController implements Initializable {
 
 
             searchListView.getItems().clear();
-            for (Program program : facade.getPrograms()) {
+            for (Program program : Facade.getInstance().getPrograms()) {
                 if (program instanceof Transmission && program.isApproved()) {
                     searchListView.getItems().add(program.getName() + ": " + program.getUuid() + ": " +
-                            loginHandler.getUserFromUuid(program.getCreatedBy()).getUsername());
+                            LoginHandler.getInstance().getUserFromUuid(program.getCreatedBy()).getUsername());
                 }
             }
 
@@ -274,7 +273,7 @@ public class SystemAdminController implements Initializable {
             searchSeriesCombo.setDisable(false);
             searchSeasonCombo.setDisable(false);
 
-            for (TVSeries tvSeries : facade.getTvSeriesList()) {
+            for (TVSeries tvSeries : Facade.getInstance().getTvSeriesList()) {
                 searchSeriesCombo.getItems().add(tvSeries.getName());
             }
         }
@@ -286,7 +285,7 @@ public class SystemAdminController implements Initializable {
         searchSeasonCombo.getItems().clear();
         //To find the episodes based on a season from a TV-series
         try {
-            TVSeries series = facade.getTvSeriesList().get(searchSeriesCombo.getSelectionModel().getSelectedIndex());
+            TVSeries series = Facade.getInstance().getTvSeriesList().get(searchSeriesCombo.getSelectionModel().getSelectedIndex());
 
             //Enables the delete button when a series has been chosen
             deleteSelectedButton.setDisable(false);
@@ -317,7 +316,7 @@ public class SystemAdminController implements Initializable {
                 for (Episode episode : series.getSeasonMap().get(Integer.parseInt(searchSeasonCombo.getSelectionModel().getSelectedItem()))) {
                     if (episode.isApproved()) {
                         searchListView.getItems().add(episode.getName() + ": " + episode.getUuid() + ": " +
-                                loginHandler.getUserFromUuid(episode.getCreatedBy()).getUsername());
+                                LoginHandler.getInstance().getUserFromUuid(episode.getCreatedBy()).getUsername());
                         if (episode.getProduction().equals(tv2Logo)) {
                             creditedLogoImageView.setImage(tv2LogoImage);
                         } else if (episode.getProduction().equals(nordiskFilmLogo)) {
@@ -409,10 +408,10 @@ public class SystemAdminController implements Initializable {
                 episodeNumberUpdateText.setText(String.valueOf(episode.getEpisodeNo()));
 
                 tvSeriesUpdateSelection.getItems().clear();
-                for (TVSeries tvSeries : facade.getTvSeriesList()) {
+                for (TVSeries tvSeries : Facade.getInstance().getTvSeriesList()) {
                     tvSeriesUpdateSelection.getItems().add(tvSeries.getName());
                 }
-                tvSeriesUpdateSelection.getSelectionModel().select(facade.getTvSeriesFromEpisode(episode).getName());
+                tvSeriesUpdateSelection.getSelectionModel().select(Facade.getInstance().getTvSeriesFromEpisode(episode).getName());
             } else if (searchProgramCombo.getSelectionModel().getSelectedItem().equals(transmission)) {
                 episodeNodes.forEach(node -> node.setVisible(false));
             }
@@ -471,9 +470,9 @@ public class SystemAdminController implements Initializable {
         try {
             //Programmet hentes igennem index for vores program drop-down menu
             Credit credit = getSelectedCreditFromListView();
-            Credit.Function function = facade.getFunctions().get(functionUpdateSelection.getSelectionModel().getSelectedIndex());
+            Credit.Function function = Facade.getInstance().getFunctions().get(functionUpdateSelection.getSelectionModel().getSelectedIndex());
 
-            facade.updateCredit(credit, function);
+            Facade.getInstance().updateCredit(credit, function);
         } catch (IndexOutOfBoundsException e) {
             System.out.println("Ikke implementeret endnu");
         }
@@ -481,7 +480,7 @@ public class SystemAdminController implements Initializable {
 
     @FXML
     void updateProgram(ActionEvent event) {
-        Program program = facade.getProgramFromUuid(UUID.fromString(currentlyUpdatingUUID.getText()));
+        Program program = Facade.getInstance().getProgramFromUuid(UUID.fromString(currentlyUpdatingUUID.getText()));
         String name = nameUpdateText.getText();
         String description = descriptionUpdateText.getText();
         String production = productionSelectionUpdateCombo.getSelectionModel().getSelectedItem();
@@ -490,23 +489,23 @@ public class SystemAdminController implements Initializable {
         int episodeNo = episodeNumberUpdateText.getText().isEmpty() ? -1 : Integer.parseInt(episodeNumberUpdateText.getText());
 
         TVSeries tvSeries = tvSeriesUpdateSelection.getSelectionModel().getSelectedIndex() == -1 ? null :
-                facade.getTvSeriesList().get(tvSeriesUpdateSelection.getSelectionModel().getSelectedIndex());
+                Facade.getInstance().getTvSeriesList().get(tvSeriesUpdateSelection.getSelectionModel().getSelectedIndex());
 
         if (program instanceof Transmission) {
-            facade.updateTransmission(program, name, description, duration, production);
+            Facade.getInstance().updateTransmission(program, name, description, duration, production);
         } else if (program instanceof Episode) {
-            facade.updateEpisode(program, name, description, duration, seasonNo, episodeNo, tvSeries, production);
+            Facade.getInstance().updateEpisode(program, name, description, duration, seasonNo, episodeNo, tvSeries, production);
         }
         updateUpdateUI();
     }
 
     @FXML
     void updateTvSeries(ActionEvent event) {
-        TVSeries tvSeries = facade.getTvSeriesFromUuid(UUID.fromString(currentlyUpdatingUUID.getText()));
+        TVSeries tvSeries = Facade.getInstance().getTvSeriesFromUuid(UUID.fromString(currentlyUpdatingUUID.getText()));
         String name = nameUpdateText.getText();
         String description = descriptionUpdateText.getText();
 
-        facade.updateTvSeries(tvSeries, name, description);
+        Facade.getInstance().updateTvSeries(tvSeries, name, description);
         updateUpdateUI();
     }
 
@@ -515,13 +514,13 @@ public class SystemAdminController implements Initializable {
         tvSeriesSelection.getItems().clear();
         creditedPersonSelection.getItems().clear();
 
-        for (Program program : facade.getPrograms()) {
+        for (Program program : Facade.getInstance().getPrograms()) {
             programSelection.getItems().add(program.getName());
         }
-        for (TVSeries tvSeries : facade.getTvSeriesList()) {
+        for (TVSeries tvSeries : Facade.getInstance().getTvSeriesList()) {
             tvSeriesSelection.getItems().add(tvSeries.getName());
         }
-        for (CreditedPerson creditedPerson : facade.getCreditedPeople()) {
+        for (CreditedPerson creditedPerson : Facade.getInstance().getCreditedPeople()) {
             creditedPersonSelection.getItems().add(creditedPerson.getName() + ": " + creditedPerson.getUuid());
         }
 
@@ -541,7 +540,7 @@ public class SystemAdminController implements Initializable {
         currentlyUpdatingLabel.setText("Choose program in \"Search/view\" tab");
         currentlyUpdatingUUID.setText("");
 
-        facade.getTvSeriesList().forEach(tvSeries -> tvSeriesUpdateSelection.getItems().add(tvSeries.getName()));
+        Facade.getInstance().getTvSeriesList().forEach(tvSeries -> tvSeriesUpdateSelection.getItems().add(tvSeries.getName()));
     }
 
     @FXML
@@ -561,7 +560,7 @@ public class SystemAdminController implements Initializable {
             } else if (getSelectedProgramFromListView() instanceof Episode) {
                 deleteProgramTextArea.setText("Er du sikker på, at du vil slette følgende episode? \n" +
                         searchListView.getSelectionModel().getSelectedItem() + "\nfra tv-serien " +
-                        facade.getTvSeriesFromEpisode((Episode) getSelectedProgramFromListView()).getName() +
+                        Facade.getInstance().getTvSeriesFromEpisode((Episode) getSelectedProgramFromListView()).getName() +
                         "\nMed ID: " + getSelectedProgramFromListView().getUuid());
             }
         }
@@ -579,9 +578,9 @@ public class SystemAdminController implements Initializable {
             System.out.println("This has not been implemented - not sure if we need this option right now?");
             System.out.println("As goes for deleting a season");
         } else if (!searchListViewCredits.getSelectionModel().isEmpty() && !searchListViewCredits.getSelectionModel().getSelectedItem().isEmpty()) {
-            facade.deleteCredit(getSelectedProgramFromListView(), getSelectedCreditFromListView());
+            Facade.getInstance().deleteCredit(getSelectedProgramFromListView(), getSelectedCreditFromListView());
         } else if (getSelectedProgramFromListView() != null) {
-            facade.deleteProgram(getSelectedProgramFromListView());
+            Facade.getInstance().deleteProgram(getSelectedProgramFromListView());
         }
         confirmAnchorPane.setVisible(false);
         deleteSelectedButton.setDisable(true);
@@ -599,7 +598,7 @@ public class SystemAdminController implements Initializable {
             searchApprovedSeasonCombo.setPromptText("Choose season");
 
             searchApprovedListView.getItems().clear();
-            for (Program program : facade.getPrograms()) {
+            for (Program program : Facade.getInstance().getPrograms()) {
                 if (program instanceof Transmission && !program.isApproved()) {
                     searchApprovedListView.getItems().add(program.getName() +  ": " + program.getUuid());
                 }
@@ -609,7 +608,7 @@ public class SystemAdminController implements Initializable {
             searchApprovedSeriesCombo.setDisable(false);
             searchApprovedSeasonCombo.setDisable(false);
 
-            for (TVSeries tvSeries : facade.getTvSeriesList()) {
+            for (TVSeries tvSeries : Facade.getInstance().getTvSeriesList()) {
                 searchApprovedSeriesCombo.getItems().add(tvSeries.getName());
             }
         }
@@ -620,7 +619,7 @@ public class SystemAdminController implements Initializable {
         searchApprovedSeasonCombo.getItems().clear();
         //To find the episodes based on a season from a TV-series
         try {
-            TVSeries series = facade.getTvSeriesList().get(searchApprovedSeriesCombo.getSelectionModel().getSelectedIndex());
+            TVSeries series = Facade.getInstance().getTvSeriesList().get(searchApprovedSeriesCombo.getSelectionModel().getSelectedIndex());
 
             //Enables the delete button when a series has been chosen
             deleteSelectedButton.setDisable(false);
@@ -675,7 +674,7 @@ public class SystemAdminController implements Initializable {
 
     @FXML
     void approveSelectedProgram(ActionEvent event){
-        getSelectedProgramFromApprovedListView().setApproved(true);
+        Facade.getInstance().approveProgram(getSelectedProgramFromApprovedListView());
         System.out.println(getSelectedProgramFromApprovedListView().isApproved());
     }
 
@@ -683,10 +682,10 @@ public class SystemAdminController implements Initializable {
     private TVSeries getSelectedTvSeriesFromComboBox() {
         try{
             if (searchViewTab.isSelected()){
-                return facade.getTvSeriesList().get(searchSeriesCombo.getSelectionModel().getSelectedIndex());
+                return Facade.getInstance().getTvSeriesList().get(searchSeriesCombo.getSelectionModel().getSelectedIndex());
 
             } else if (approvedTab.isSelected()) {
-                return facade.getTvSeriesList().get(searchApprovedSeriesCombo.getSelectionModel().getSelectedIndex());
+                return Facade.getInstance().getTvSeriesList().get(searchApprovedSeriesCombo.getSelectionModel().getSelectedIndex());
             }
         } catch (NullPointerException e) {
             System.out.println("No series in the list - wow");
@@ -720,7 +719,7 @@ public class SystemAdminController implements Initializable {
         //Split the string to get the UUID
         String[] viewStringArray = viewString.split(":");
         //Use the getProgramFromUuid method from the facade to get the program from the string. The trim after the string is to get rid of whitespace
-        return facade.getProgramFromUuid(UUID.fromString(viewStringArray[1].trim()));
+        return Facade.getInstance().getProgramFromUuid(UUID.fromString(viewStringArray[1].trim()));
     }
 
     private Program getSelectedProgramFromApprovedListView() {
@@ -729,7 +728,7 @@ public class SystemAdminController implements Initializable {
         String viewString = searchApprovedListView.getSelectionModel().getSelectedItem();
         String[] viewStringArray = viewString.split(":");
         //Use the getProgramFromUuid method from the facade to get the program from the string. The trim after the string is to get rid of whitespace
-        return facade.getProgramFromUuid(UUID.fromString(viewStringArray[1].trim()));
+        return Facade.getInstance().getProgramFromUuid(UUID.fromString(viewStringArray[1].trim()));
     }
 
     private Credit getSelectedCreditFromListView() {
@@ -738,8 +737,8 @@ public class SystemAdminController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        facade.importFromTxt();
-        loginHandler.importLogins();
+        Facade.getInstance().importFromDatabase();
+        LoginHandler.getInstance().importLogins();
 
         usertypeCombo.getItems().add("Producer");
         usertypeCombo.getItems().add("System Administrator");
@@ -759,7 +758,7 @@ public class SystemAdminController implements Initializable {
         programTypeSelection.getItems().add(transmission);
         programTypeSelection.getItems().add(tvSeries);
         programTypeSelection.getItems().add(episode);
-        for (Credit.Function function : facade.getFunctions()) {
+        for (Credit.Function function : Facade.getInstance().getFunctions()) {
             functionSelection.getItems().add(function.role);
             functionUpdateSelection.getItems().add(function.role);
         }

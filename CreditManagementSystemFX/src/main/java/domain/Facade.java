@@ -7,17 +7,27 @@ import domain.program.Program;
 import domain.program.TVSeries;
 import domain.program.Transmission;
 import persistence.ExportHandler;
+import persistence.PersistenceHandler;
 
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 
 public class Facade {
+    private static Facade instance;
     private List<Program> programs = new ArrayList<>();
     private List<TVSeries> tvSeriesList = new ArrayList<>();
     private List<CreditedPerson> creditedPeople = new ArrayList<>();
 
+    public static Facade getInstance() {
+        if (instance == null) {
+            instance = new Facade();
+        }
+        return instance;
+    }
+
     ExportHandler exportHandler = new ExportHandler();
+    IPersistenceHandler persistenceHandler = PersistenceHandler.getInstance();
 
 
     //All create methods are void because we don't use the return-value **Note to ourself
@@ -31,6 +41,7 @@ public class Facade {
         Episode program = new Episode(uuid, tv, name, description, createdBy, episodeNo, seasonNo, duration, approved, production);
         tv.addEpisode(program);
         programs.add(program);
+        persistenceHandler.storeEpisode(program);
     }
 
     //Create method for transmission when it's not stored in the DB(Text-files)
@@ -40,8 +51,9 @@ public class Facade {
 
     //Create method when read from the DB(Text-file)
     public void createTransmission(UUID uuid, String name, String description, UUID createdBy, int duration, boolean approved, String production) {
-        Program program = new Transmission(uuid, name, description, createdBy, duration, approved, production);
+        Transmission program = new Transmission(uuid, name, description, createdBy, duration, approved, production);
         programs.add(program);
+        persistenceHandler.storeTransmission(program);
     }
 
     //Create method for tv-series when it's not stored in the DB(Text-files)
@@ -53,12 +65,14 @@ public class Facade {
     public void createTvSeries(UUID uuid, String name, String description, UUID createdBy) {
         TVSeries tvSeries = new TVSeries(uuid, name, description, createdBy);
         tvSeriesList.add(tvSeries);
+        persistenceHandler.storeTVSeries(tvSeries);
     }
 
     //Create method when read from the DB(Text-file) **Note: We do not store a UUID which is why we don't have two create-methods for credits
     public void createCredit(CreditedPerson creditedPerson, Credit.Function function, Program creditedProgram) {
         Credit c = new Credit(creditedPerson, function);
         creditedProgram.addCredit(c);
+        persistenceHandler.storeCredit(creditedProgram, c);
     }
 
     //Create method for person when it's not stored in the DB(Text-files)
@@ -70,8 +84,35 @@ public class Facade {
     public void createPerson(UUID uuid, String name) {
         CreditedPerson creditedPerson = new CreditedPerson(uuid, name);
         creditedPeople.add(creditedPerson);
+        persistenceHandler.storeCreditedPerson(creditedPerson);
     }
 
+    public void importFromDatabase() {
+        tvSeriesList.addAll(persistenceHandler.getTVSeries());
+
+        //programs.addAll(persistenceHandler.getEpisodes());
+
+        for (Episode episode : persistenceHandler.getEpisodes()) {
+            programs.add(episode);
+        }
+
+        programs.addAll(persistenceHandler.getTransmissions());
+
+        creditedPeople.addAll(persistenceHandler.getCreditedPeople());
+
+        for (Program p : programs) {
+            if (persistenceHandler.getCredits(p) != null) {
+                for (Credit c : persistenceHandler.getCredits(p)) {
+                    if (c != null) {
+                        p.addCredit(c);
+                    }
+                }
+            }
+        }
+    }
+
+
+/*
     //Export/save programs, persons & credits to txt
     public void exportToTxt() throws IOException {
         //Strings to be written in the corresponding file
@@ -82,11 +123,11 @@ public class Facade {
         String creditStringTransmission;
         String creditStringEpisode;
 
-/*        exportHandler.writeTransmission("");
+       exportHandler.writeTransmission("");
         exportHandler.writeEpisode("");
         exportHandler.writeCredit("");
         exportHandler.writePerson("");
-        exportHandler.writeTvSeries("");*/
+        exportHandler.writeTvSeries("");
 
         exportHandler.fileWriter = new FileWriter(exportHandler.getCreditFile());
         exportHandler.fileWriter = new FileWriter(exportHandler.getTransmission());
@@ -132,6 +173,9 @@ public class Facade {
         }
     }
 
+ */
+
+    /*
     //Here we import the text-files and create a new instance of every line from each file
     public void importFromTxt() {
         //Read each file and for every string-array(Corresponding to one line) we call the create-method for the respective file
@@ -166,6 +210,8 @@ public class Facade {
         }
     }
 
+     */
+
     //To receive the function(Enum) when the string-value is provided
     public Credit.Function getFunction(String string) {
         for (Credit.Function function : Credit.Function.values()) {
@@ -175,6 +221,8 @@ public class Facade {
         }
         return null;
     }
+
+
 
     //Iterates through the tv series in facade and returns the tv series that the episode parameter is in
     public TVSeries getTvSeriesFromEpisode(Episode episode) {
@@ -229,6 +277,17 @@ public class Facade {
         return null;
     }
 
+    public Program getProgramFromCredit(Credit credit) {
+        for (Program program : getPrograms()) {
+            for (Credit c : program.getCredits()) {
+                if (c.equals(credit)) {
+                    return program;
+                }
+            }
+        }
+        return null;
+    }
+
 
     //Update the values of the selected transmission
     public void updateTransmission(Program program, String name, String description, int duration, String production) {
@@ -244,13 +303,14 @@ public class Facade {
         }
         p.setProduction(production);
         p.setApproved(false);
+        persistenceHandler.updateTransmission(p);
     }
 
     //Update the values of the selected episode
     public void updateEpisode(Program program, String name, String description, int duration, int seasonNo, int episodeNo, TVSeries tvSeries, String production) {
         Episode p = (Episode) program;
         int oldSeasonNo = p.getSeasonNo();
-        int oldEpisodeNo = p.getEpisodeNo();
+        int oldEpisodeNo = p.getEpisodeNo(); //not used right now
         if (name != null) {
             p.setName(name);
         }
@@ -276,6 +336,7 @@ public class Facade {
         }
         p.setProduction(production);
         p.setApproved(false);
+        persistenceHandler.updateEpisode(p);
     }
 
     //Update the values of the selected tv-series
@@ -286,22 +347,42 @@ public class Facade {
         if (description != null) {
             tvSeries.setDescription(description);
         }
+        persistenceHandler.updateTVSeries(tvSeries);
+    }
+
+    //To approve a given program
+    public void approveProgram(Program program) {
+        program.setApproved(true);
+        if (program instanceof Episode) {
+            persistenceHandler.updateEpisode((Episode) program);
+        } else if (program instanceof Transmission) {
+            persistenceHandler.updateTransmission((Transmission) program);
+        }
     }
 
     public void updateCredit(Credit credit, Credit.Function function) {
+        String oldRole = credit.getFunction().role;
         credit.setFunction(function);
+        persistenceHandler.updateCredit(getProgramFromCredit(credit), credit, oldRole);
     }
 
     public void updatePerson(CreditedPerson creditedPerson, String name) {
         creditedPerson.setName(name);
+        persistenceHandler.updateCreditedPerson(creditedPerson);
     }
 
     public void deleteCredit(Program program, Credit credit) {
         program.deleteCredit(credit);
+        persistenceHandler.deleteCredit(program, credit);
     }
 
     public void deleteProgram(Program program) {
         programs.remove(program);
+        if (program instanceof Episode) {
+            persistenceHandler.deleteEpisode((Episode) program);
+        } else if (program instanceof Transmission) {
+            persistenceHandler.deleteTransmission((Transmission) program);
+        }
     }
 
     public List<Credit.Function> getFunctions() {

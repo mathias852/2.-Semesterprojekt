@@ -33,11 +33,9 @@ public class LoginController implements Initializable {
     @FXML
     private Button loginButton;
 
-    protected static LoginHandler loginHandler = new LoginHandler();
-
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        loginHandler.importLogins();
+        LoginHandler.getInstance().importLogins();
     }
 
     //Used to login via then ENTER key
@@ -54,16 +52,16 @@ public class LoginController implements Initializable {
         String username = usernameText.getText();
         int password = passwordText.getText().hashCode();
 
-        User user = loginHandler.verifyCredentials(username, password);
+        User user = LoginHandler.getInstance().verifyCredentials(username, password);
 
         if(user instanceof SystemAdmin){
             System.out.println("Logged in as SysAdmin");
             App.setRoot("SystemAdminView");
-            loginHandler.setCurrentUser(user);
+            LoginHandler.getInstance().setCurrentUser(user);
         } else if(user instanceof Producer){
             System.out.println("Logged in as Producer");
             App.setRoot("ProducerView");
-            loginHandler.setCurrentUser(user);
+            LoginHandler.getInstance().setCurrentUser(user);
         } else {
             failedLoginLabel.setVisible(true);
         }

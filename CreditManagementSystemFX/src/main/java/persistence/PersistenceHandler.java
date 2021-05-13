@@ -1,14 +1,13 @@
 package persistence;
 
-import domain.Facade;
 import domain.IPersistenceHandler;
 import domain.accesscontrol.Producer;
 import domain.accesscontrol.SystemAdmin;
 import domain.credit.Credit;
 import domain.credit.Credit.Function;
 import domain.credit.CreditedPerson;
-import domain.program.Program;
 import domain.program.Episode;
+import domain.program.Program;
 import domain.program.TVSeries;
 import domain.program.Transmission;
 
@@ -58,9 +57,9 @@ public class PersistenceHandler implements IPersistenceHandler {
             while (sqlReturnValues.next()) {
                 returnValue.add(new TVSeries(
                         UUID.fromString(sqlReturnValues.getString(1)),
+                        sqlReturnValues.getString(2),
                         sqlReturnValues.getString(3),
-                        sqlReturnValues.getString(4),
-                        UUID.fromString(sqlReturnValues.getString(2))));
+                        UUID.fromString(sqlReturnValues.getString(4))));
             }
             return returnValue;
         } catch (SQLException ex) {
@@ -73,12 +72,12 @@ public class PersistenceHandler implements IPersistenceHandler {
     public boolean storeTVSeries(TVSeries tvSeries) {
         try {
             PreparedStatement insertStatement = connection.prepareStatement(
-                    "INSERT INTO tv_series (id, createdById, name, description) " +
+                    "INSERT INTO tv_series (id, name, description, createdById) " +
                             "VALUES (?,?,?,?)");
             insertStatement.setString(1, String.valueOf(tvSeries.getUuid()));
-            insertStatement.setString(2, String.valueOf(tvSeries.getCreatedBy()));
-            insertStatement.setString(3, tvSeries.getName());
-            insertStatement.setString(4, tvSeries.getDescription());
+            insertStatement.setString(2, tvSeries.getName());
+            insertStatement.setString(3, tvSeries.getDescription());
+            insertStatement.setString(4, String.valueOf(tvSeries.getCreatedBy()));
             insertStatement.execute();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -87,13 +86,13 @@ public class PersistenceHandler implements IPersistenceHandler {
     }
 
     @Override
-    public boolean updateTVSeries(UUID id, String name, String description) {
+    public boolean updateTVSeries(TVSeries tvSeries) {
         try {
             PreparedStatement insertStatement = connection.prepareStatement(
                     "UPDATE tv_series SET name = ?, description = ? WHERE id = ?");
-            insertStatement.setString(1, name);
-            insertStatement.setString(2, description);
-            insertStatement.setString(3, String.valueOf(id));
+            insertStatement.setString(1, tvSeries.getName());
+            insertStatement.setString(2, tvSeries.getDescription());
+            insertStatement.setString(3, String.valueOf(tvSeries.getUuid()));
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -101,10 +100,17 @@ public class PersistenceHandler implements IPersistenceHandler {
     }
 
     @Override
-    public boolean deleteTVSeries(UUID id) {
+    public boolean deleteTVSeries(TVSeries tvSeries) {
         try {
+            //For-loop that deletes all episodes and its credits that connected to a given tvSeries
+            for (Integer i : tvSeries.getSeasonMap().keySet()) {
+                for (Episode episode : tvSeries.getSeasonMap().get(i)) {
+                    deleteEpisode(episode);
+                }
+            }
             PreparedStatement stmt = connection.prepareStatement("DELETE FROM tv_series WHERE id = ?");
-            stmt.setString(1, String.valueOf(id));
+            stmt.setString(1, String.valueOf(tvSeries.getUuid()));
+
             return stmt.execute();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
@@ -123,8 +129,13 @@ public class PersistenceHandler implements IPersistenceHandler {
                 String tvSeriesId = sqlReturnValues.getString(2);
 
                 //Using getTVSeries()-function from this class
-                for(TVSeries tvSeries : getTVSeries()){
-                    if(tvSeries.getUuid().equals(UUID.fromString(tvSeriesId))){
+                for (TVSeries tvSeries : getTVSeries()) {
+                    if (tvSeries.getUuid().equals(UUID.fromString(tvSeriesId))) {
+                        //To get the production name based on the production resultSet
+                        PreparedStatement stmt2 = connection.prepareStatement("SELECT name FROM productions WHERE id = ?");
+                        stmt2.setInt(1, sqlReturnValues.getInt(10));
+                        ResultSet sqlReturnValues2 = stmt2.executeQuery();
+
                         returnValue.add(new Episode(
                                 UUID.fromString(sqlReturnValues.getString(1)),
                                 tvSeries,
@@ -135,10 +146,11 @@ public class PersistenceHandler implements IPersistenceHandler {
                                 sqlReturnValues.getInt(7),
                                 sqlReturnValues.getInt(8),
                                 sqlReturnValues.getBoolean(9),
-                                sqlReturnValues.getString(10)));
-                        }
+                                //To get the production name based on the production resultSet
+                                sqlReturnValues2.getString(1)));
                     }
                 }
+            }
             return returnValue;
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -147,69 +159,73 @@ public class PersistenceHandler implements IPersistenceHandler {
     }
 
     @Override
-    public boolean storeEpisode(Program program, Episode episode) {
-        try{
+    public boolean storeEpisode(Episode episode) {
+        try {
             PreparedStatement stmt = connection.prepareStatement(
                     "INSERT INTO programs (id, name, description, createdById, duration, approved, production) VALUES (?,?,?,?,?,?,?)");
-            stmt.setString(1, String.valueOf(program.getUuid()));
-            stmt.setString(2, program.getName());
-            stmt.setString(3, program.getDescription());
-            stmt.setString(4, String.valueOf(program.getCreatedBy()));
-            stmt.setInt(5, program.getDuration());
-            stmt.setBoolean(6, program.isApproved());
-            stmt.setString(7, program.getProduction());
+            stmt.setString(1, String.valueOf(episode.getUuid()));
+            stmt.setString(2, episode.getName());
+            stmt.setString(3, episode.getDescription());
+            stmt.setString(4, String.valueOf(episode.getCreatedBy()));
+            stmt.setInt(5, episode.getDuration());
+            stmt.setBoolean(6, episode.isApproved());
+            stmt.setInt(7, getProductionId(episode.getProduction()));
 
             PreparedStatement stmt1 = connection.prepareStatement(
                     "INSERT INTO episodes (programsId, tvSeriesId, episodeNo, seasonNo) VALUES (?,?,?,?)");
-            stmt1.setString(1, String.valueOf(program.getUuid()));
+            stmt1.setString(1, String.valueOf(episode.getUuid()));
             stmt1.setString(2, String.valueOf(episode.getTvSeries().getUuid()));
             stmt1.setInt(3, episode.getEpisodeNo());
             stmt1.setInt(4, episode.getSeasonNo());
 
             return stmt.execute() && stmt1.execute();
-        } catch (SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
     }
 
     @Override
-    public boolean updateEpisode(Program program, Episode episode) {
-        try{
+    public boolean updateEpisode(Episode episode) {
+        try {
             PreparedStatement stmt = connection.prepareStatement(
                     "UPDATE programs SET name = ?, description = ?, duration = ?, approved = ?, production = ? WHERE id = ?");
-            stmt.setString(1, program.getName());
-            stmt.setString(2, program.getDescription());
-            stmt.setInt(3, program.getDuration());
-            stmt.setBoolean(4, program.isApproved());
-            stmt.setString(5, program.getProduction());
-            stmt.setString(6, String.valueOf(program.getUuid()));
+            stmt.setString(1, episode.getName());
+            stmt.setString(2, episode.getDescription());
+            stmt.setInt(3, episode.getDuration());
+            stmt.setBoolean(4, episode.isApproved());
+            stmt.setInt(5, getProductionId(episode.getProduction()));
+            stmt.setString(6, String.valueOf(episode.getUuid()));
 
             PreparedStatement stmt1 = connection.prepareStatement(
                     "UPDATE episodes SET episodeNo = ?, seasonNo = ? WHERE programsId = ?");
             stmt1.setInt(1, episode.getEpisodeNo());
             stmt1.setInt(2, episode.getSeasonNo());
-            stmt1.setString(3, String.valueOf(program.getUuid()));
+            stmt1.setString(3, String.valueOf(episode.getUuid()));
 
             return stmt.execute() && stmt1.execute();
-        } catch (SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
     }
 
     @Override
-    public boolean deleteEpisode(UUID id) {
+    public boolean deleteEpisode(Episode episode) {
+        //Note: id, programId & programsId have the same ID
         try {
-            PreparedStatement stmt = connection.prepareStatement("DELETE FROM episodes WHERE programsId = ?");
-            stmt.setString(1, String.valueOf(id));
+            PreparedStatement stmt1 = connection.prepareStatement("DELETE FROM credits WHERE programid = ?");
+            stmt1.setString(1, String.valueOf(episode.getUuid()));
 
-            PreparedStatement stmt1 = connection.prepareStatement("DELETE FROM programs WHERE id = ?");
-            stmt1.setString(1, String.valueOf(id));
+            PreparedStatement stmt2 = connection.prepareStatement("DELETE FROM episodes WHERE programsId = ?");
+            stmt2.setString(1, String.valueOf(episode.getUuid()));
 
-            return stmt.execute() && stmt.execute();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+            PreparedStatement stmt3 = connection.prepareStatement("DELETE FROM programs WHERE id = ?");
+            stmt3.setString(1, String.valueOf(episode.getUuid()));
+
+            return stmt1.execute() && stmt2.execute() && stmt3.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
             return false;
         }
     }
@@ -221,6 +237,10 @@ public class PersistenceHandler implements IPersistenceHandler {
             ResultSet sqlReturnValues = stmt.executeQuery();
             List<Transmission> returnValue = new ArrayList<>();
             while (sqlReturnValues.next()) {
+                PreparedStatement stmt2 = connection.prepareStatement("SELECT name FROM productions WHERE id = ?");
+                stmt2.setInt(1, sqlReturnValues.getInt(7));
+                ResultSet sqlReturnValues2 = stmt2.executeQuery();
+
                 returnValue.add(new Transmission(
                         UUID.fromString(sqlReturnValues.getString(1)),
                         sqlReturnValues.getString(2),
@@ -228,7 +248,7 @@ public class PersistenceHandler implements IPersistenceHandler {
                         UUID.fromString(sqlReturnValues.getString(4)),
                         sqlReturnValues.getInt(5),
                         sqlReturnValues.getBoolean(6),
-                        sqlReturnValues.getString(7))); //This line for production
+                        sqlReturnValues2.getString(1))); //This line for production
             }
             return returnValue;
         } catch (SQLException ex) {
@@ -239,13 +259,23 @@ public class PersistenceHandler implements IPersistenceHandler {
 
     @Override
     public boolean storeTransmission(Transmission transmission) {
-        try{
+        try {
             PreparedStatement stmt = connection.prepareStatement(
                     "INSERT INTO transmissions (programsid) VALUES (?) ");
             stmt.setString(1, String.valueOf(transmission.getUuid()));
-            return stmt.execute();
 
-        } catch (SQLException e){
+            PreparedStatement stmt2 = connection.prepareStatement(
+                    "INSERT INTO programs (id, name, description, createdById, duration, approved, production) VALUES (?,?,?,?,?,?,?)");
+            stmt2.setString(1, String.valueOf(transmission.getUuid()));
+            stmt2.setString(2, transmission.getName());
+            stmt2.setString(3, transmission.getDescription());
+            stmt2.setString(4, String.valueOf(transmission.getCreatedBy()));
+            stmt2.setInt(5, transmission.getDuration());
+            stmt2.setBoolean(6, transmission.isApproved());
+            stmt2.setInt(7, getProductionId(transmission.getProduction()));
+
+            return stmt.execute() && stmt2.execute();
+        } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
@@ -253,8 +283,7 @@ public class PersistenceHandler implements IPersistenceHandler {
 
     @Override
     public boolean updateTransmission(Transmission transmission) {
-        try{
-
+        try {
             PreparedStatement stmt = connection.prepareStatement(
                     "UPDATE programs SET name = ?, description = ?, duration = ?, approved = ?, production = ? WHERE id = ?");
             stmt.setString(1, transmission.getName());
@@ -265,24 +294,27 @@ public class PersistenceHandler implements IPersistenceHandler {
             stmt.setString(6, String.valueOf(transmission.getUuid()));
 
             return stmt.execute();
-        } catch (SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
     }
 
     @Override
-    public boolean deleteTransmission(UUID id) {
+    public boolean deleteTransmission(Transmission transmission) {
         try {
-            PreparedStatement stmt = connection.prepareStatement("DELETE FROM transmissions WHERE programsid = ?");
-            stmt.setString(1, String.valueOf(id));
+            PreparedStatement stmt = connection.prepareStatement("DELETE FROM credits WHERE programid = ?");
+            stmt.setString(1, String.valueOf(transmission.getUuid()));
 
-            PreparedStatement stmt1 = connection.prepareStatement("DELETE FROM programs WHERE id = ?");
-            stmt1.setString(1, String.valueOf(id));
+            PreparedStatement stmt2 = connection.prepareStatement("DELETE FROM transmissions WHERE programsid = ?");
+            stmt2.setString(1, String.valueOf(transmission.getUuid()));
 
-            return stmt.execute();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+            PreparedStatement stmt3 = connection.prepareStatement("DELETE FROM programs WHERE id = ?");
+            stmt3.setString(1, String.valueOf(transmission.getUuid()));
+
+            return stmt.execute() && stmt2.execute() && stmt3.execute();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
             return false;
         }
     }
@@ -296,8 +328,9 @@ public class PersistenceHandler implements IPersistenceHandler {
             while (sqlReturnValues.next()) {
                 returnValue.add(new Producer(
                         UUID.fromString(sqlReturnValues.getString(1)),
-                        sqlReturnValues.getString(3),
-                        sqlReturnValues.getInt(4)));
+                        sqlReturnValues.getString(2),
+                        sqlReturnValues.getInt(3)
+                ));
             }
             return returnValue;
         } catch (SQLException ex) {
@@ -306,31 +339,30 @@ public class PersistenceHandler implements IPersistenceHandler {
         }
     }
 
-
     @Override
     public boolean storeProducer(Producer producer) {
         try {
             PreparedStatement stmt = connection.prepareStatement("INSERT INTO users (id, username, password, type) VALUES (?,?,?,?) ");
             stmt.setString(1, String.valueOf(producer.getUuid()));
             stmt.setString(2, producer.getUsername());
-            stmt.setString(3, String.valueOf(producer.getHashedPassword()));
-            stmt.setString(4, "Producer"); //GOT NO IDEA IF THIS WORKS TBH ______________________________
-            return stmt.execute();
+            stmt.setInt(3, producer.getHashedPassword());
+            stmt.setString(4, "Producer");
 
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+            return stmt.execute();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
             return false;
         }
     }
 
     @Override
-    public boolean deleteProducer(UUID id) {
+    public boolean deleteProducer(Producer producer) {
         try {
             PreparedStatement stmt = connection.prepareStatement("DELETE FROM users WHERE id = ?");
-            stmt.setString(1, String.valueOf(id));
+            stmt.setString(1, String.valueOf(producer.getUuid()));
             return stmt.execute();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
             return false;
         }
     }
@@ -345,7 +377,8 @@ public class PersistenceHandler implements IPersistenceHandler {
                 returnValue.add(new SystemAdmin(
                         UUID.fromString(sqlReturnValues.getString(1)),
                         sqlReturnValues.getString(2),
-                        Integer.parseInt(sqlReturnValues.getString(3))));
+                        sqlReturnValues.getInt(3)
+                ));
             }
             return returnValue;
         } catch (SQLException ex) {
@@ -360,23 +393,25 @@ public class PersistenceHandler implements IPersistenceHandler {
             PreparedStatement stmt = connection.prepareStatement("INSERT INTO users (id, username, password, type) VALUES (?,?,?,?) ");
             stmt.setString(1, String.valueOf(systemAdmin.getUuid()));
             stmt.setString(2, systemAdmin.getUsername());
-            stmt.setString(3, String.valueOf(systemAdmin.getHashedPassword()));
+            stmt.setInt(3, systemAdmin.getHashedPassword());
             stmt.setString(4, "Admin");
+
             return stmt.execute();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
             return false;
         }
     }
 
     @Override
-    public boolean deleteSystemAdmin(UUID id) {
+    public boolean deleteSystemAdmin(SystemAdmin systemAdmin) {
         try {
             PreparedStatement stmt = connection.prepareStatement("DELETE FROM users WHERE id = ?");
-            stmt.setString(1, String.valueOf(id));
+            stmt.setString(1, String.valueOf(systemAdmin.getUuid()));
+
             return stmt.execute();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
             return false;
         }
     }
@@ -392,6 +427,7 @@ public class PersistenceHandler implements IPersistenceHandler {
                         UUID.fromString(sqlReturnValues.getString(1)),
                         sqlReturnValues.getString(2)));
             }
+
             return returnValue;
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -403,44 +439,62 @@ public class PersistenceHandler implements IPersistenceHandler {
     public boolean storeCreditedPerson(CreditedPerson creditedPerson) {
 
         try {
-            PreparedStatement stmt = connection.prepareStatement("INSERT INTO users (id, username) VALUES (?,?) ");
+            PreparedStatement stmt = connection.prepareStatement("INSERT INTO creditedPeople (id, name) VALUES (?,?) ");
             stmt.setString(1, String.valueOf(creditedPerson.getUuid()));
             stmt.setString(2, creditedPerson.getName());
+
             return stmt.execute();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
             return false;
         }
     }
 
     @Override
-    public boolean updateCreditedPerson(UUID id) {
-        return false;
-    }
-
-    @Override
-    public boolean deleteCreditedPerson(UUID id) {
+    public boolean updateCreditedPerson(CreditedPerson creditedPerson) {
         try {
-            PreparedStatement stmt = connection.prepareStatement("DELETE FROM creditedPeople WHERE id = ?");
-            stmt.setString(1, String.valueOf(id));
+            PreparedStatement stmt = connection.prepareStatement(
+                    "UPDATE creditedPeople SET name = ? WHERE id = ?");
+            stmt.setString(1, creditedPerson.getName());
+            stmt.setString(2, String.valueOf(creditedPerson.getUuid()));
+
             return stmt.execute();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
             return false;
         }
     }
 
     @Override
-    public List<Credit> getCredits(UUID uuid) {
+    public boolean deleteCreditedPerson(CreditedPerson creditedPerson) {
+        try {
+            PreparedStatement stmt = connection.prepareStatement("DELETE FROM credits WHERE creditedPersonId = ?");
+            stmt.setString(1, String.valueOf(creditedPerson.getUuid()));
+
+            PreparedStatement stmt2 = connection.prepareStatement("DELETE FROM creditedPeople WHERE id = ?");
+            stmt2.setString(1, String.valueOf(creditedPerson.getUuid()));
+
+
+            return stmt.execute() && stmt2.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public List<Credit> getCredits(Program program) {
         try {
             PreparedStatement stmt = connection.prepareStatement("SELECT * FROM credits WHERE programId = ?");
-            stmt.setString(1, String.valueOf(uuid));
+            stmt.setString(1, String.valueOf(program.getUuid()));
             ResultSet sqlReturnValues = stmt.executeQuery();
             List<Credit> returnValue = new ArrayList<>();
             while (sqlReturnValues.next()) {
+                //Select a creditedPersonsId from the credits-table
                 String creditedPersonID = sqlReturnValues.getString(1);
-                for(CreditedPerson cp : getCreditedPeople()){ //Using getCreditedPeople()-function from this class
-                    if(cp.getUuid().equals(UUID.fromString(creditedPersonID))){
+
+                for (CreditedPerson cp : getCreditedPeople()) { //Using getCreditedPeople()-function from this class
+                    if (cp.getUuid().equals(UUID.fromString(creditedPersonID))) {
                         returnValue.add(new Credit(cp, Function.valueOf(sqlReturnValues.getString(2))));
                     }
                 }
@@ -459,16 +513,29 @@ public class PersistenceHandler implements IPersistenceHandler {
             stmt.setString(1, String.valueOf(credit.getCreditedPerson().getUuid()));
             stmt.setString(2, credit.getFunction().role);
             stmt.setString(3, String.valueOf(program.getUuid()));
+
             return stmt.execute();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
             return false;
         }
     }
 
     @Override
-    public boolean updateCredit(UUID programID, UUID personID, String oldRole, String newRole) {
-        return false;
+    public boolean updateCredit(Program program, Credit credit, String oldRole) {
+        try {
+            PreparedStatement stmt = connection.prepareStatement(
+                    "UPDATE credits SET role = ? WHERE creditedPersonId = ? AND programid = ? AND role = ?");
+            stmt.setString(1, credit.getFunction().role);
+            stmt.setString(2, String.valueOf(credit.getCreditedPerson().getUuid()));
+            stmt.setString(3, String.valueOf(program.getUuid()));
+            stmt.setString(4, oldRole);
+
+            return stmt.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     @Override
@@ -478,10 +545,24 @@ public class PersistenceHandler implements IPersistenceHandler {
             stmt.setString(1, String.valueOf(credit.getCreditedPerson().getUuid()));
             stmt.setString(2, credit.getFunction().role);
             stmt.setString(3, String.valueOf(program.getUuid()));
+
             return stmt.execute();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
             return false;
         }
+    }
+
+    private int getProductionId(String name) {
+        int productionId = 0;
+        try {
+            PreparedStatement productionStmt = connection.prepareStatement("SELECT id FROM productions WHERE name = ?");
+            productionStmt.setString(1, name);
+            ResultSet productionResultSet = productionStmt.executeQuery();
+            productionId = productionResultSet.getInt(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return productionId;
     }
 }

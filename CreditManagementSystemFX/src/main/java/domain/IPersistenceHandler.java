@@ -16,40 +16,40 @@ public interface IPersistenceHandler {
     //TVSeries
     List<TVSeries> getTVSeries();
     boolean storeTVSeries(TVSeries tvSeries);
-    boolean updateTVSeries(UUID id, String name, String description);
-    boolean deleteTVSeries(UUID id);
+    boolean updateTVSeries(TVSeries tvSeries);
+    boolean deleteTVSeries(TVSeries tvSeries);
 
     //Episode
     List<Episode> getEpisodes();
-    boolean storeEpisode(Program program, Episode episode);
-    boolean updateEpisode(Program program, Episode episode);
-    boolean deleteEpisode(UUID id);
+    boolean storeEpisode(Episode episode);
+    boolean updateEpisode(Episode episode);
+    boolean deleteEpisode(Episode episode);
 
     //Transmission
     List<Transmission> getTransmissions();
     boolean storeTransmission(Transmission transmission);
     boolean updateTransmission(Transmission transmission);
-    boolean deleteTransmission(UUID id);
+    boolean deleteTransmission(Transmission transmission);
 
     //Producer
     List<Producer> getProducers();
     boolean storeProducer(Producer producer);
-    boolean deleteProducer(UUID id);
+    boolean deleteProducer(Producer producer);
 
     //SystemAdmin
     List<SystemAdmin> getSystemAdmins();
     boolean storeSystemAdmin(SystemAdmin systemAdmin);
-    boolean deleteSystemAdmin(UUID id);
+    boolean deleteSystemAdmin(SystemAdmin systemAdmin);
 
     //CreditedPerson
     List<CreditedPerson> getCreditedPeople();
     boolean storeCreditedPerson(CreditedPerson creditedPerson);
-    boolean updateCreditedPerson(UUID id);
-    boolean deleteCreditedPerson(UUID id);
+    boolean updateCreditedPerson(CreditedPerson creditedPerson);
+    boolean deleteCreditedPerson(CreditedPerson creditedPerson);
 
     //Credit
-    List<Credit> getCredits(UUID uuid);
+    List<Credit> getCredits(Program program);
     boolean storeCredit(Program program, Credit credit);
-    boolean updateCredit(UUID programID, UUID personID, String oldRole, String newRole);
+    boolean updateCredit(Program program, Credit credit, String oldRole);
     boolean deleteCredit(Program program, Credit credit);
 }

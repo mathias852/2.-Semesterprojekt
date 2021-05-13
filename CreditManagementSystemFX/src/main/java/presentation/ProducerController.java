@@ -27,8 +27,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 
-import static presentation.LoginController.loginHandler;
-
 public class ProducerController implements Initializable {
     @FXML
     private TextField durationText, descriptionText, seasonNumberText, episodeNumberText, nameText,
@@ -77,11 +75,9 @@ public class ProducerController implements Initializable {
     private final Image nordiskFilmLogoImage = new Image(nordiskFilmLogoFile.toURI().toString());
     private final Image tv2LogoImage = new Image(tv2LogoFile.toURI().toString());
 
-    private Facade facade = new Facade();
-
     @FXML
     void logOutAction(ActionEvent e) throws IOException{
-        facade.exportToTxt();
+        //facade.exportToTxt();
         App.setRoot("logInPage");
     }
 
@@ -90,7 +86,7 @@ public class ProducerController implements Initializable {
     void createPerson(ActionEvent event) {
         //Uses the createPerson-method from the facade
         if (!creditedPersonNameText.getText().isEmpty()) {
-            facade.createPerson(creditedPersonNameText.getText());
+            Facade.getInstance().createPerson(creditedPersonNameText.getText());
             updateCreateUI();
             creditedPersonNameText.setText("");
         }
@@ -100,14 +96,14 @@ public class ProducerController implements Initializable {
     void createCredit(ActionEvent event) {
         try {
             //Programmet hentes igennem index for vores program drop-down menu
-            Program program = facade.getPrograms().get(programSelection.getSelectionModel().getSelectedIndex());
-            CreditedPerson creditedPerson = facade.getCreditedPeople().get(creditedPersonSelection.getSelectionModel().getSelectedIndex());
-            Credit.Function function = facade.getFunctions().get(functionSelection.getSelectionModel().getSelectedIndex());
+            Program program = Facade.getInstance().getPrograms().get(programSelection.getSelectionModel().getSelectedIndex());
+            CreditedPerson creditedPerson = Facade.getInstance().getCreditedPeople().get(creditedPersonSelection.getSelectionModel().getSelectedIndex());
+            Credit.Function function = Facade.getInstance().getFunctions().get(functionSelection.getSelectionModel().getSelectedIndex());
 
-            if(program.getCreatedBy().equals(loginHandler.getCurrentUser().getUuid())){
+            if(program.getCreatedBy().equals(LoginHandler.getInstance().getCurrentUser().getUuid())){
                 //Tjekker om credit allerede eksisterer
                 if (program.getCredits() == null) {
-                    facade.createCredit(creditedPerson, function, program);
+                    Facade.getInstance().createCredit(creditedPerson, function, program);
                 } else {
                     boolean exists = false;
                     for (Credit credit : program.getCredits()) {
@@ -117,7 +113,7 @@ public class ProducerController implements Initializable {
                         }
                     }
                     if (!exists) {
-                        facade.createCredit(creditedPerson, function, program);
+                        Facade.getInstance().createCredit(creditedPerson, function, program);
                     }
                 }
             } else {
@@ -141,26 +137,26 @@ public class ProducerController implements Initializable {
         if (programTypeSelection.getValue().equals(transmission)) {
             int duration = durationText.getText().isEmpty() ? -1 : Integer.parseInt(durationText.getText());
             if (!name.isEmpty()) {
-                facade.createTransmission(name, description, loginHandler.getCurrentUser().getUuid(), duration, false, production);
+                Facade.getInstance().createTransmission(name, description, LoginHandler.getInstance().getCurrentUser().getUuid(), duration, false, production);
 
             } else {
                 messageLabel.setText("Cannot create " + transmission + " without a name");
             }
         } else if (programTypeSelection.getValue().equals(tvSeries)) {
             if (!name.isEmpty()) {
-                facade.createTvSeries(name, description, loginHandler.getCurrentUser().getUuid());
+                Facade.getInstance().createTvSeries(name, description, LoginHandler.getInstance().getCurrentUser().getUuid());
             } else {
                 messageLabel.setText("Cannot create " + tvSeries + " without a name");
             }
         } else if (programTypeSelection.getValue().equals(episode)) {
             try {
-                TVSeries tvSeries = tvSeriesSelection.getSelectionModel().getSelectedIndex() == -1 ? null : facade.getTvSeriesList().get(tvSeriesSelection.getSelectionModel().getSelectedIndex());
+                TVSeries tvSeries = tvSeriesSelection.getSelectionModel().getSelectedIndex() == -1 ? null : Facade.getInstance().getTvSeriesList().get(tvSeriesSelection.getSelectionModel().getSelectedIndex());
                 int episodeNumber = episodeNumberText.getText().isEmpty() ? -1 : Integer.parseInt(episodeNumberText.getText());
                 int seasonNumber = seasonNumberText.getText().isEmpty() ? -1 : Integer.parseInt(seasonNumberText.getText());
                 int duration = durationText.getText().isEmpty() ? -1 : Integer.parseInt(durationText.getText());
 
                 if (!name.isEmpty() && tvSeries != null) {
-                    facade.createEpisode(tvSeries, name, description, loginHandler.getCurrentUser().getUuid(), episodeNumber, seasonNumber, duration, false, production);
+                      Facade.getInstance().createEpisode(tvSeries, name, description, LoginHandler.getInstance().getCurrentUser().getUuid(), episodeNumber, seasonNumber, duration, false, production);
                 } else {
                     messageLabel.setText("Cannot create " + episode + " without a name & a TV-series");
                 }
@@ -203,7 +199,7 @@ public class ProducerController implements Initializable {
     @FXML
     void exportButtonOnAction(ActionEvent event) throws IOException {
         //Export to txt
-        facade.exportToTxt();
+        //facade.exportToTxt();
     }
 
     @FXML
@@ -228,9 +224,9 @@ public class ProducerController implements Initializable {
             searchListView.getItems().clear();
 
             //Gets all approved transmissions and add them to the listview
-            for (Program program : facade.getPrograms()) {
+            for (Program program : Facade.getInstance().getPrograms()) {
                 if (program instanceof Transmission && program.isApproved()) {
-                    searchListView.getItems().add(program.getName() +  ": " + program.getUuid() + ": " + loginHandler.getUserFromUuid(program.getCreatedBy()).getUsername());
+                    searchListView.getItems().add(program.getName() +  ": " + program.getUuid() + ": " + LoginHandler.getInstance().getUserFromUuid(program.getCreatedBy()).getUsername());
                 }
             }
         } else if (searchProgramCombo.getSelectionModel().getSelectedItem().equals(tvSeries)){
@@ -239,7 +235,7 @@ public class ProducerController implements Initializable {
             searchSeasonCombo.setDisable(false);
 
             //Add all tvSeries to the comboBox
-            for (TVSeries tvSeries : facade.getTvSeriesList()) {
+            for (TVSeries tvSeries : Facade.getInstance().getTvSeriesList()) {
                 searchSeriesCombo.getItems().add(tvSeries.getName());
             }
         }
@@ -250,7 +246,7 @@ public class ProducerController implements Initializable {
         searchSeasonCombo.getItems().clear();
         //To find the episodes based on a season from a TV-series
         try {
-            TVSeries series = facade.getTvSeriesList().get(searchSeriesCombo.getSelectionModel().getSelectedIndex());
+            TVSeries series = Facade.getInstance().getTvSeriesList().get(searchSeriesCombo.getSelectionModel().getSelectedIndex());
             if (series.getSeasonMap() != null) {
                 for (Integer i : series.getSeasonMap().keySet()) {
                     searchSeasonCombo.getItems().add(String.valueOf(i));
@@ -274,7 +270,7 @@ public class ProducerController implements Initializable {
                 for (Episode episode : series.getSeasonMap().get(Integer.parseInt(searchSeasonCombo.getSelectionModel().getSelectedItem()))) {
                     if(episode.isApproved()) {
                         searchListView.getItems().add(episode.getName() + ": " + episode.getUuid() + ": " +
-                                loginHandler.getUserFromUuid(episode.getCreatedBy()).getUsername());
+                                LoginHandler.getInstance().getUserFromUuid(episode.getCreatedBy()).getUsername());
                         if (episode.getProduction().equals(tv2Logo)){
                             creditedLogoImageView.setImage(tv2LogoImage);
                         } else if (episode.getProduction().equals(nordiskFilmLogo)){
@@ -297,7 +293,7 @@ public class ProducerController implements Initializable {
 
         searchListViewCredits.getItems().clear();
         //If the user who created the program is the current user, the update-buttons are enables
-        if(getSelectedProgramFromListView().getCreatedBy().equals(loginHandler.getCurrentUser().getUuid())){
+        if(getSelectedProgramFromListView().getCreatedBy().equals(LoginHandler.getInstance().getCurrentUser().getUuid())){
             buttons.forEach(button -> button.setDisable(false));
         }
 
@@ -319,7 +315,7 @@ public class ProducerController implements Initializable {
 
     @FXML
     void updateUpdateTabProgramOnAction(ActionEvent event) {
-        if(loginHandler.getCurrentUser().getUuid().equals(getSelectedProgramFromListView().getCreatedBy())){
+        if(LoginHandler.getInstance().getCurrentUser().getUuid().equals(getSelectedProgramFromListView().getCreatedBy())){
 
             //Insert related notes to an arrayList
             ArrayList<Node> updateNodes = new ArrayList<>(Arrays.asList(
@@ -361,10 +357,10 @@ public class ProducerController implements Initializable {
                     episodeNumberUpdateText.setText(String.valueOf(episode.getEpisodeNo()));
 
                     tvSeriesUpdateSelection.getItems().clear();
-                    for (TVSeries tvSeries : facade.getTvSeriesList()) {
+                    for (TVSeries tvSeries : Facade.getInstance().getTvSeriesList()) {
                         tvSeriesUpdateSelection.getItems().add(tvSeries.getName());
                     }
-                    tvSeriesUpdateSelection.getSelectionModel().select(facade.getTvSeriesFromEpisode(episode).getName());
+                    tvSeriesUpdateSelection.getSelectionModel().select(Facade.getInstance().getTvSeriesFromEpisode(episode).getName());
                 } else if (searchProgramCombo.getSelectionModel().getSelectedItem().equals(transmission)) {
                     episodeNodes.forEach(node -> node.setVisible(false));
                 }
@@ -454,16 +450,16 @@ public class ProducerController implements Initializable {
 
 
             myProgramTabSearchListView.getItems().clear();
-            for (Program program : facade.getPrograms()) {
-                if (approvedComboBox.equals(approved) && program.getCreatedBy().equals(loginHandler.getCurrentUser().getUuid())) {
+            for (Program program : Facade.getInstance().getPrograms()) {
+                if (approvedComboBox.equals(approved) && program.getCreatedBy().equals(LoginHandler.getInstance().getCurrentUser().getUuid())) {
                     if (program instanceof Transmission && program.isApproved()) {
                         myProgramTabSearchListView.getItems().add(program.getName() + ": " + program.getUuid() + ": " +
-                                loginHandler.getUserFromUuid(program.getCreatedBy()).getUsername());
+                                LoginHandler.getInstance().getUserFromUuid(program.getCreatedBy()).getUsername());
                     }
-                } else if (approvedComboBox.equals(pending) && program.getCreatedBy().equals(loginHandler.getCurrentUser().getUuid())) {
+                } else if (approvedComboBox.equals(pending) && program.getCreatedBy().equals(LoginHandler.getInstance().getCurrentUser().getUuid())) {
                     if (program instanceof Transmission && !program.isApproved()){
                         myProgramTabSearchListView.getItems().add(program.getName() + ": " + program.getUuid() + ": " +
-                                loginHandler.getUserFromUuid(program.getCreatedBy()).getUsername());
+                                LoginHandler.getInstance().getUserFromUuid(program.getCreatedBy()).getUsername());
 
                     }
                 }
@@ -472,7 +468,7 @@ public class ProducerController implements Initializable {
             myProgramTabSearchSeriesCombo.setDisable(false);
             myProgramTabSearchSeasonCombo.setDisable(false);
 
-            for (TVSeries tvSeries : facade.getTvSeriesList()) {
+            for (TVSeries tvSeries : Facade.getInstance().getTvSeriesList()) {
                 myProgramTabSearchSeriesCombo.getItems().add(tvSeries.getName());
             }
         }
@@ -484,7 +480,7 @@ public class ProducerController implements Initializable {
         myProgramTabSearchSeasonCombo.getItems().clear();
         //To find the episodes based on a season from a TV-series
         try {
-            TVSeries series = facade.getTvSeriesList().get(myProgramTabSearchSeriesCombo.getSelectionModel().getSelectedIndex());
+            TVSeries series = Facade.getInstance().getTvSeriesList().get(myProgramTabSearchSeriesCombo.getSelectionModel().getSelectedIndex());
             if (series.getSeasonMap() != null) {
                 for (Integer i : series.getSeasonMap().keySet()) {
                     myProgramTabSearchSeasonCombo.getItems().add(String.valueOf(i));
@@ -507,12 +503,12 @@ public class ProducerController implements Initializable {
             if (myProgramTabSearchSeriesCombo.getSelectionModel().getSelectedIndex() != -1) {
                 TVSeries series = getSelectedTvSeriesFromComboBox();
                 for (Episode episode : series.getSeasonMap().get(Integer.parseInt(myProgramTabSearchSeasonCombo.getSelectionModel().getSelectedItem()))) {
-                    if (approvedComboBox.equals(approved) && episode.isApproved() && episode.getCreatedBy().equals(loginHandler.getCurrentUser().getUuid())) {
+                    if (approvedComboBox.equals(approved) && episode.isApproved() && episode.getCreatedBy().equals(LoginHandler.getInstance().getCurrentUser().getUuid())) {
                         myProgramTabSearchListView.getItems().add(episode.getName() + ": " + episode.getUuid() + ": " +
-                                loginHandler.getUserFromUuid(episode.getCreatedBy()).getUsername());
-                    } else if (approvedComboBox.equals(pending) && !episode.isApproved() && episode.getCreatedBy().equals(loginHandler.getCurrentUser().getUuid())) {
+                                LoginHandler.getInstance().getUserFromUuid(episode.getCreatedBy()).getUsername());
+                    } else if (approvedComboBox.equals(pending) && !episode.isApproved() && episode.getCreatedBy().equals(LoginHandler.getInstance().getCurrentUser().getUuid())) {
                         myProgramTabSearchListView.getItems().add(episode.getName() + ": " + episode.getUuid() + ": " +
-                                loginHandler.getUserFromUuid(episode.getCreatedBy()).getUsername());
+                                LoginHandler.getInstance().getUserFromUuid(episode.getCreatedBy()).getUsername());
                     }
                     if (episode.getProduction().equals(tv2Logo)) {
                         myProgramTabCreditedLogoImageView.setImage(tv2LogoImage);
@@ -535,7 +531,7 @@ public class ProducerController implements Initializable {
 
         myProgramTabSearchListViewCredits.getItems().clear();
 
-        if(getSelectedProgramFromListView().getCreatedBy().equals(loginHandler.getCurrentUser().getUuid())){
+        if(getSelectedProgramFromListView().getCreatedBy().equals(LoginHandler.getInstance().getCurrentUser().getUuid())){
             buttons.forEach(node -> node.setDisable(false));
         }
         Program selectedProgram = getSelectedProgramFromListView();
@@ -560,9 +556,9 @@ public class ProducerController implements Initializable {
         try {
             //Programmet hentes igennem index for vores program drop-down menu
             Credit credit = getSelectedCreditFromListView();
-            Credit.Function function = facade.getFunctions().get(functionUpdateSelection.getSelectionModel().getSelectedIndex());
+            Credit.Function function = Facade.getInstance().getFunctions().get(functionUpdateSelection.getSelectionModel().getSelectedIndex());
 
-            facade.updateCredit(credit, function);
+            Facade.getInstance().updateCredit(credit, function);
         } catch (IndexOutOfBoundsException e) {
             System.out.println("UpdateCredit metoden får indexOutOfBoundsException");
         }
@@ -570,7 +566,7 @@ public class ProducerController implements Initializable {
 
     @FXML
     void updateProgram(ActionEvent event) {
-        Program program = facade.getProgramFromUuid(UUID.fromString(currentlyUpdatingUUID.getText()));
+        Program program = Facade.getInstance().getProgramFromUuid(UUID.fromString(currentlyUpdatingUUID.getText()));
         String name = nameUpdateText.getText();
         String description = descriptionUpdateText.getText();
         String production = productionSelectionUpdateCombo.getSelectionModel().getSelectedItem();
@@ -579,24 +575,24 @@ public class ProducerController implements Initializable {
         int episodeNo = episodeNumberUpdateText.getText().isEmpty() ? -1 : Integer.parseInt(episodeNumberUpdateText.getText());
 
         TVSeries tvSeries = tvSeriesUpdateSelection.getSelectionModel().getSelectedIndex() == -1 ? null :
-                facade.getTvSeriesList().get(tvSeriesUpdateSelection.getSelectionModel().getSelectedIndex());
+                Facade.getInstance().getTvSeriesList().get(tvSeriesUpdateSelection.getSelectionModel().getSelectedIndex());
 
         if (program instanceof Transmission) {
-            facade.updateTransmission(program, name, description, duration, production);
+            Facade.getInstance().updateTransmission(program, name, description, duration, production);
         }
         else if (program instanceof Episode) {
-            facade.updateEpisode(program, name, description, duration, seasonNo, episodeNo, tvSeries, production);
+            Facade.getInstance().updateEpisode(program, name, description, duration, seasonNo, episodeNo, tvSeries, production);
         }
         updateUpdateUI();
     }
 
     @FXML
     void updateTvSeries(ActionEvent event) {
-        TVSeries tvSeries = facade.getTvSeriesFromUuid(UUID.fromString(currentlyUpdatingUUID.getText()));
+        TVSeries tvSeries = Facade.getInstance().getTvSeriesFromUuid(UUID.fromString(currentlyUpdatingUUID.getText()));
         String name = nameUpdateText.getText();
         String description = descriptionUpdateText.getText();
 
-        facade.updateTvSeries(tvSeries, name, description);
+        Facade.getInstance().updateTvSeries(tvSeries, name, description);
         updateUpdateUI();
     }
 
@@ -605,13 +601,13 @@ public class ProducerController implements Initializable {
         tvSeriesSelection.getItems().clear();
         creditedPersonSelection.getItems().clear();
 
-        for (Program program : facade.getPrograms()) {
+        for (Program program : Facade.getInstance().getPrograms()) {
             programSelection.getItems().add(program.getName());
         }
-        for (TVSeries tvSeries : facade.getTvSeriesList()) {
+        for (TVSeries tvSeries : Facade.getInstance().getTvSeriesList()) {
             tvSeriesSelection.getItems().add(tvSeries.getName());
         }
-        for (CreditedPerson creditedPerson : facade.getCreditedPeople()) {
+        for (CreditedPerson creditedPerson : Facade.getInstance().getCreditedPeople()) {
             creditedPersonSelection.getItems().add(creditedPerson.getName() + ": " + creditedPerson.getUuid());
         }
 
@@ -632,16 +628,16 @@ public class ProducerController implements Initializable {
         currentlyUpdatingLabel.setText("Choose program in \"Search/view\" or in \"My Programs\" tab");
         currentlyUpdatingUUID.setText("");
 
-        facade.getTvSeriesList().forEach(tvSeries -> tvSeriesUpdateSelection.getItems().add(tvSeries.getName()));
+        Facade.getInstance().getTvSeriesList().forEach(tvSeries -> tvSeriesUpdateSelection.getItems().add(tvSeries.getName()));
     }
 
     private TVSeries getSelectedTvSeriesFromComboBox() {
         TVSeries tvSeries = null;
         if (mainTabPane.getSelectionModel().getSelectedItem().getText().equals("Search/view")) {
-            tvSeries = facade.getTvSeriesList().get(searchSeriesCombo.getSelectionModel().getSelectedIndex());
+            tvSeries = Facade.getInstance().getTvSeriesList().get(searchSeriesCombo.getSelectionModel().getSelectedIndex());
 
         } else if (mainTabPane.getSelectionModel().getSelectedItem().getText().equals("My Programs")) {
-            tvSeries = facade.getTvSeriesList().get(myProgramTabSearchSeriesCombo.getSelectionModel().getSelectedIndex());
+            tvSeries = Facade.getInstance().getTvSeriesList().get(myProgramTabSearchSeriesCombo.getSelectionModel().getSelectedIndex());
         }
         return tvSeries;
     }
@@ -661,7 +657,7 @@ public class ProducerController implements Initializable {
         String[] viewStringArray = viewString.split(":");
 
         //Use the getProgramFromUuid method from the facade to get the program from the string. The trim after the string is to get rid of whitespace
-        return facade.getProgramFromUuid(UUID.fromString(viewStringArray[1].trim()));
+        return Facade.getInstance().getProgramFromUuid(UUID.fromString(viewStringArray[1].trim()));
     }
 
     private Credit getSelectedCreditFromListView() {
@@ -669,7 +665,7 @@ public class ProducerController implements Initializable {
 
         //If the method is called from the update-tab, the following if-statement's value is returned.
         if (mainTabPane.getSelectionModel().getSelectedItem().getText().equals("Update")){
-            Program program = facade.getProgramFromUuid(UUID.fromString(programUuidUpdateSelection.getText()));
+            Program program = Facade.getInstance().getProgramFromUuid(UUID.fromString(programUuidUpdateSelection.getText()));
             program.setApproved(false);
             return program.getCredits().get(Integer.parseInt(creditIndexUpdateSelection.getText()));
         }
@@ -690,10 +686,10 @@ public class ProducerController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        facade.importFromTxt();
-        loginHandler.importLogins();
+        Facade.getInstance().importFromDatabase();
+        LoginHandler.getInstance().importLogins();
 
-        System.out.println(loginHandler.getCurrentUser());
+        System.out.println(LoginHandler.getInstance().getCurrentUser());
 
         searchProgramCombo.getItems().add(transmission);
         searchProgramCombo.getItems().add(tvSeries);
@@ -716,7 +712,7 @@ public class ProducerController implements Initializable {
         programTypeSelection.getItems().add(tvSeries);
         programTypeSelection.getItems().add(episode);
 
-        for (Credit.Function function : facade.getFunctions()) {
+        for (Credit.Function function : Facade.getInstance().getFunctions()) {
             functionSelection.getItems().add(function.role);
             functionUpdateSelection.getItems().add(function.role);
         }
