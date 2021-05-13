@@ -1,5 +1,6 @@
 package persistence;
 
+import domain.Facade;
 import domain.IPersistenceHandler;
 import domain.accesscontrol.Producer;
 import domain.accesscontrol.SystemAdmin;
@@ -74,10 +75,10 @@ public class PersistenceHandler implements IPersistenceHandler {
             PreparedStatement insertStatement = connection.prepareStatement(
                     "INSERT INTO tv_series (id, name, description, createdById) " +
                             "VALUES (?,?,?,?)");
-            insertStatement.setString(1, String.valueOf(tvSeries.getUuid()));
+            insertStatement.setString(1, tvSeries.getUuid().toString());
             insertStatement.setString(2, tvSeries.getName());
             insertStatement.setString(3, tvSeries.getDescription());
-            insertStatement.setString(4, String.valueOf(tvSeries.getCreatedBy()));
+            insertStatement.setString(4, tvSeries.getCreatedBy().toString());
             insertStatement.execute();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -92,7 +93,7 @@ public class PersistenceHandler implements IPersistenceHandler {
                     "UPDATE tv_series SET name = ?, description = ? WHERE id = ?");
             insertStatement.setString(1, tvSeries.getName());
             insertStatement.setString(2, tvSeries.getDescription());
-            insertStatement.setString(3, String.valueOf(tvSeries.getUuid()));
+            insertStatement.setString(3, tvSeries.getUuid().toString());
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -109,11 +110,11 @@ public class PersistenceHandler implements IPersistenceHandler {
                 }
             }
             PreparedStatement stmt = connection.prepareStatement("DELETE FROM tv_series WHERE id = ?");
-            stmt.setString(1, String.valueOf(tvSeries.getUuid()));
+            stmt.setString(1, tvSeries.getUuid().toString());
 
             return stmt.execute();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
             return false;
         }
     }
@@ -136,18 +137,21 @@ public class PersistenceHandler implements IPersistenceHandler {
                         stmt2.setInt(1, sqlReturnValues.getInt(10));
                         ResultSet sqlReturnValues2 = stmt2.executeQuery();
 
-                        returnValue.add(new Episode(
-                                UUID.fromString(sqlReturnValues.getString(1)),
-                                tvSeries,
-                                sqlReturnValues.getString(3),
-                                sqlReturnValues.getString(4),
-                                UUID.fromString(sqlReturnValues.getString(5)),
-                                sqlReturnValues.getInt(6),
-                                sqlReturnValues.getInt(7),
-                                sqlReturnValues.getInt(8),
-                                sqlReturnValues.getBoolean(9),
-                                //To get the production name based on the production resultSet
-                                sqlReturnValues2.getString(1)));
+                        while (sqlReturnValues2.next()) {
+
+                            returnValue.add(new Episode(
+                                    UUID.fromString(sqlReturnValues.getString(1)),
+                                    tvSeries,
+                                    sqlReturnValues.getString(3),
+                                    sqlReturnValues.getString(4),
+                                    UUID.fromString(sqlReturnValues.getString(5)),
+                                    sqlReturnValues.getInt(6),
+                                    sqlReturnValues.getInt(7),
+                                    sqlReturnValues.getInt(8),
+                                    sqlReturnValues.getBoolean(9),
+                                    //To get the production name based on the production resultSet
+                                    sqlReturnValues2.getString(1)));
+                        }
                     }
                 }
             }
@@ -178,7 +182,10 @@ public class PersistenceHandler implements IPersistenceHandler {
             stmt1.setInt(3, episode.getEpisodeNo());
             stmt1.setInt(4, episode.getSeasonNo());
 
-            return stmt.execute() && stmt1.execute();
+            stmt.execute();
+            stmt1.execute();
+
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
@@ -203,7 +210,10 @@ public class PersistenceHandler implements IPersistenceHandler {
             stmt1.setInt(2, episode.getSeasonNo());
             stmt1.setString(3, String.valueOf(episode.getUuid()));
 
-            return stmt.execute() && stmt1.execute();
+            stmt.execute();
+            stmt1.execute();
+
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
@@ -223,7 +233,11 @@ public class PersistenceHandler implements IPersistenceHandler {
             PreparedStatement stmt3 = connection.prepareStatement("DELETE FROM programs WHERE id = ?");
             stmt3.setString(1, String.valueOf(episode.getUuid()));
 
-            return stmt1.execute() && stmt2.execute() && stmt3.execute();
+            stmt1.execute();
+            stmt2.execute();
+            stmt3.execute();
+
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
@@ -241,14 +255,17 @@ public class PersistenceHandler implements IPersistenceHandler {
                 stmt2.setInt(1, sqlReturnValues.getInt(7));
                 ResultSet sqlReturnValues2 = stmt2.executeQuery();
 
-                returnValue.add(new Transmission(
-                        UUID.fromString(sqlReturnValues.getString(1)),
-                        sqlReturnValues.getString(2),
-                        sqlReturnValues.getString(3),
-                        UUID.fromString(sqlReturnValues.getString(4)),
-                        sqlReturnValues.getInt(5),
-                        sqlReturnValues.getBoolean(6),
-                        sqlReturnValues2.getString(1))); //This line for production
+                while (sqlReturnValues2.next()) {
+
+                    returnValue.add(new Transmission(
+                            UUID.fromString(sqlReturnValues.getString(1)),
+                            sqlReturnValues.getString(2),
+                            sqlReturnValues.getString(3),
+                            UUID.fromString(sqlReturnValues.getString(4)),
+                            sqlReturnValues.getInt(5),
+                            sqlReturnValues.getBoolean(6),
+                            sqlReturnValues2.getString(1))); //This line for production
+                }
             }
             return returnValue;
         } catch (SQLException ex) {
@@ -260,21 +277,23 @@ public class PersistenceHandler implements IPersistenceHandler {
     @Override
     public boolean storeTransmission(Transmission transmission) {
         try {
-            PreparedStatement stmt = connection.prepareStatement(
-                    "INSERT INTO transmissions (programsid) VALUES (?) ");
-            stmt.setString(1, String.valueOf(transmission.getUuid()));
-
             PreparedStatement stmt2 = connection.prepareStatement(
                     "INSERT INTO programs (id, name, description, createdById, duration, approved, production) VALUES (?,?,?,?,?,?,?)");
-            stmt2.setString(1, String.valueOf(transmission.getUuid()));
+            stmt2.setObject(1, transmission.getUuid());
             stmt2.setString(2, transmission.getName());
             stmt2.setString(3, transmission.getDescription());
-            stmt2.setString(4, String.valueOf(transmission.getCreatedBy()));
+            stmt2.setObject(4,transmission.getCreatedBy());
             stmt2.setInt(5, transmission.getDuration());
             stmt2.setBoolean(6, transmission.isApproved());
             stmt2.setInt(7, getProductionId(transmission.getProduction()));
 
-            return stmt.execute() && stmt2.execute();
+            PreparedStatement stmt = connection.prepareStatement(
+                    "INSERT INTO transmissions (programsid) VALUES (?) ");
+            stmt.setObject(1, transmission.getUuid());
+            stmt2.execute();
+            stmt.execute();
+
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
@@ -290,10 +309,10 @@ public class PersistenceHandler implements IPersistenceHandler {
             stmt.setString(2, transmission.getDescription());
             stmt.setInt(3, transmission.getDuration());
             stmt.setBoolean(4, transmission.isApproved());
-            stmt.setString(5, transmission.getProduction());
-            stmt.setString(6, String.valueOf(transmission.getUuid()));
-
-            return stmt.execute();
+            stmt.setInt(5, getProductionId(transmission.getProduction()));
+            stmt.setObject(6, transmission.getUuid());
+            stmt.execute();
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
@@ -304,15 +323,19 @@ public class PersistenceHandler implements IPersistenceHandler {
     public boolean deleteTransmission(Transmission transmission) {
         try {
             PreparedStatement stmt = connection.prepareStatement("DELETE FROM credits WHERE programid = ?");
-            stmt.setString(1, String.valueOf(transmission.getUuid()));
+            stmt.setObject(1, transmission.getUuid());
 
             PreparedStatement stmt2 = connection.prepareStatement("DELETE FROM transmissions WHERE programsid = ?");
-            stmt2.setString(1, String.valueOf(transmission.getUuid()));
+            stmt2.setObject(1, transmission.getUuid());
 
             PreparedStatement stmt3 = connection.prepareStatement("DELETE FROM programs WHERE id = ?");
-            stmt3.setString(1, String.valueOf(transmission.getUuid()));
+            stmt3.setObject(1, transmission.getUuid());
 
-            return stmt.execute() && stmt2.execute() && stmt3.execute();
+            stmt.execute();
+            stmt2.execute();
+            stmt3.execute();
+
+            return true;
         } catch (SQLException ex) {
             ex.printStackTrace();
             return false;
@@ -473,9 +496,9 @@ public class PersistenceHandler implements IPersistenceHandler {
 
             PreparedStatement stmt2 = connection.prepareStatement("DELETE FROM creditedPeople WHERE id = ?");
             stmt2.setString(1, String.valueOf(creditedPerson.getUuid()));
-
-
-            return stmt.execute() && stmt2.execute();
+            stmt.execute();
+            stmt2.execute();
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
@@ -486,16 +509,17 @@ public class PersistenceHandler implements IPersistenceHandler {
     public List<Credit> getCredits(Program program) {
         try {
             PreparedStatement stmt = connection.prepareStatement("SELECT * FROM credits WHERE programId = ?");
-            stmt.setString(1, String.valueOf(program.getUuid()));
+            //stmt.setString(1, program.getUuid().toString());
+            stmt.setObject(1, program.getUuid());
             ResultSet sqlReturnValues = stmt.executeQuery();
             List<Credit> returnValue = new ArrayList<>();
             while (sqlReturnValues.next()) {
                 //Select a creditedPersonsId from the credits-table
-                String creditedPersonID = sqlReturnValues.getString(1);
-
+                //String creditedPersonID = sqlReturnValues.getString(1);
+                UUID creditedPersonID =  sqlReturnValues.getObject(1, java.util.UUID.class);
                 for (CreditedPerson cp : getCreditedPeople()) { //Using getCreditedPeople()-function from this class
-                    if (cp.getUuid().equals(UUID.fromString(creditedPersonID))) {
-                        returnValue.add(new Credit(cp, Function.valueOf(sqlReturnValues.getString(2))));
+                    if (cp.getUuid().equals(creditedPersonID)) {
+                        returnValue.add(new Credit(cp, Facade.getInstance().getFunction(sqlReturnValues.getString(2))));
                     }
                 }
             }
@@ -510,9 +534,9 @@ public class PersistenceHandler implements IPersistenceHandler {
     public boolean storeCredit(Program program, Credit credit) {
         try {
             PreparedStatement stmt = connection.prepareStatement("INSERT INTO credits (creditedPersonId, role, programId) VALUES (?,?,?)");
-            stmt.setString(1, String.valueOf(credit.getCreditedPerson().getUuid()));
+            stmt.setString(1, credit.getCreditedPerson().getUuid().toString());
             stmt.setString(2, credit.getFunction().role);
-            stmt.setString(3, String.valueOf(program.getUuid()));
+            stmt.setString(3, program.getUuid().toString());
 
             return stmt.execute();
         } catch (SQLException e) {
@@ -542,9 +566,9 @@ public class PersistenceHandler implements IPersistenceHandler {
     public boolean deleteCredit(Program program, Credit credit) {
         try {
             PreparedStatement stmt = connection.prepareStatement("DELETE FROM credits WHERE creditedpersonid = ? AND role = ? AND programid = ?");
-            stmt.setString(1, String.valueOf(credit.getCreditedPerson().getUuid()));
+            stmt.setObject(1, credit.getCreditedPerson().getUuid());
             stmt.setString(2, credit.getFunction().role);
-            stmt.setString(3, String.valueOf(program.getUuid()));
+            stmt.setObject(3, program.getUuid());
 
             return stmt.execute();
         } catch (SQLException e) {
@@ -559,7 +583,9 @@ public class PersistenceHandler implements IPersistenceHandler {
             PreparedStatement productionStmt = connection.prepareStatement("SELECT id FROM productions WHERE name = ?");
             productionStmt.setString(1, name);
             ResultSet productionResultSet = productionStmt.executeQuery();
-            productionId = productionResultSet.getInt(1);
+            while (productionResultSet.next()) {
+                productionId = productionResultSet.getInt(1);
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }

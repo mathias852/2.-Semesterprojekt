@@ -35,7 +35,6 @@ public class LoginController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        LoginHandler.getInstance().importLogins();
     }
 
     //Used to login via then ENTER key

@@ -789,7 +789,7 @@ false Zulu
     <database id="2" parent="1" name="CreditManagementSystem">
       <ObjectId>20947</ObjectId>
       <Owner>postgres</Owner>
-      <IntrospectionStateNumber>917</IntrospectionStateNumber>
+      <IntrospectionStateNumber>952</IntrospectionStateNumber>
       <Current>1</Current>
       <Relations>sequence|table|21040|21042|1
 </Relations>
@@ -903,7 +903,7 @@ UC/10
 </Acl>
       <StateNumber>287</StateNumber>
       <Owner>postgres</Owner>
-      <IntrospectionStateNumber>918</IntrospectionStateNumber>
+      <IntrospectionStateNumber>953</IntrospectionStateNumber>
       <Current>1</Current>
     </schema>
     <extension id="27" parent="2" name="plpgsql">

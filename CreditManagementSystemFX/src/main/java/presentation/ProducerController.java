@@ -65,7 +65,7 @@ public class ProducerController implements Initializable {
 
     private final String transmission = "Transmission", tvSeries = "TV-Series", episode = "Episode";
 
-    private final String tv2Logo = "Tv2", nordiskFilmLogo = "Nordisk Film";
+    private final String tv2Logo = "TV2", nordiskFilmLogo = "Nordisk Film";
 
     private final String approved = "Approved", pending = "Pending approval";
 
@@ -686,11 +686,6 @@ public class ProducerController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        Facade.getInstance().importFromDatabase();
-        LoginHandler.getInstance().importLogins();
-
-        System.out.println(LoginHandler.getInstance().getCurrentUser());
-
         searchProgramCombo.getItems().add(transmission);
         searchProgramCombo.getItems().add(tvSeries);
 

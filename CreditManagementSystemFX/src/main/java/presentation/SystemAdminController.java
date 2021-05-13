@@ -737,9 +737,6 @@ public class SystemAdminController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        Facade.getInstance().importFromDatabase();
-        LoginHandler.getInstance().importLogins();
-
         usertypeCombo.getItems().add("Producer");
         usertypeCombo.getItems().add("System Administrator");
 

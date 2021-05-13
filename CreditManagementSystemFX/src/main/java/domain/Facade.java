@@ -91,13 +91,16 @@ public class Facade {
         tvSeriesList.addAll(persistenceHandler.getTVSeries());
 
         //programs.addAll(persistenceHandler.getEpisodes());
-
-        for (Episode episode : persistenceHandler.getEpisodes()) {
+        for (Episode episode : persistenceHandler.getEpisodes()){
+            for (TVSeries tvSeries : tvSeriesList){
+                if(episode.getTvSeries().getUuid().equals(tvSeries.getUuid())){
+                    tvSeries.addEpisode(episode);
+                }
+            }
             programs.add(episode);
         }
 
         programs.addAll(persistenceHandler.getTransmissions());
-
         creditedPeople.addAll(persistenceHandler.getCreditedPeople());
 
         for (Program p : programs) {

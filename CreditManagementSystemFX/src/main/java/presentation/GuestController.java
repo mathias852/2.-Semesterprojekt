@@ -96,6 +96,7 @@ public class GuestController implements Initializable {
         try {
             TVSeries series = Facade.getInstance().getTvSeriesList().get(searchSeriesCombo.getSelectionModel().getSelectedIndex());
             if (series.getSeasonMap() != null) {
+                System.out.println("Vi kom ind");
                 for (Integer i : series.getSeasonMap().keySet()) {
                     searchSeasonCombo.getItems().add(String.valueOf(i));
                 }
@@ -369,9 +370,6 @@ public class GuestController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        //facade.importFromTxt();
-        Facade.getInstance().importFromDatabase();
-
         searchProgramCombo.getItems().add(transmission);
         searchProgramCombo.getItems().add(tvSeries);
         for (Credit.Function function : Facade.getInstance().getFunctions()) {

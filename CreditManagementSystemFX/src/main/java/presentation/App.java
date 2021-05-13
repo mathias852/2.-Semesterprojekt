@@ -1,10 +1,13 @@
 package presentation;
 
+import domain.LoginHandler;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import domain.Facade;
+import domain.LoginHandler;
 
 import java.io.IOException;
 
@@ -20,6 +23,8 @@ public class App extends Application {
         scene = new Scene(loadFXML("logInPage"), 645, 531);
         stage.setScene(scene);
         stage.show();
+        Facade.getInstance().importFromDatabase();
+        LoginHandler.getInstance().importLogins();
     }
 
     static void setRoot(String fxml) throws IOException {
