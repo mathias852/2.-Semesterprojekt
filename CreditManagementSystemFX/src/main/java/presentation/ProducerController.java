@@ -70,7 +70,7 @@ public class ProducerController implements Initializable {
     private final String approved = "Approved", pending = "Pending approval";
 
     private final File nordiskFilmLogoFile = new File("src/main/resources/presentation/NF-Logo.png");
-    private final File tv2LogoFile = new File("src/main/resources/presentation/tv2creditslogo.png");
+    private final File tv2LogoFile = new File("src/main/resources/presentation/TV2Logo.png");
 
     private final Image nordiskFilmLogoImage = new Image(nordiskFilmLogoFile.toURI().toString());
     private final Image tv2LogoImage = new Image(tv2LogoFile.toURI().toString());
