@@ -8,6 +8,7 @@ DROP TABLE IF EXISTS tv_series CASCADE;
 DROP TABLE IF EXISTS admins CASCADE;
 DROP TABLE IF EXISTS producers CASCADE;
 DROP TABLE IF EXISTS creditedPeople CASCADE;
+DROP TABLE IF EXISTS notifications CASCADE;
 
 BEGIN;
 CREATE TABLE creditedPeople(
@@ -60,6 +61,11 @@ CREATE TABLE tv_series(
   name VARCHAR(128) NOT NULL,
   description VARCHAR(1024),
   createdById UUID NOT NULL REFERENCES users(id)
+);
+
+CREATE TABLE notifications(
+  notificationTitle VARCHAR(1024) NOT NULL,
+  seen BOOLEAN NOT NULL
 );
 
 COMMIT;
@@ -124,3 +130,8 @@ INSERT INTO credits (creditedPersonId, role, programId) VALUES
   ('2685807d-a300-46fa-b087-8abd995befa6', 'Efter ide af', '3129a54d-2d5f-4fbc-a39a-9c478905ff11'),
   ('6cd868ae-2666-408b-8d06-5945bf742d6c', 'Dronefører', 'f85a5a3a-dd0e-4943-a54c-940eead342eb'),
   ('1e3ccd36-f8d8-40fd-bd88-37b2843c8b72', 'Danske undertekster', 'f85a5a3a-dd0e-4943-a54c-940eead342eb');
+
+
+INSERT INTO notifications (notificationTitle, seen) VALUES
+  ('This is just a test for a notification which has been seen', true),
+  ('This is just a test for a notification which has not been seen', false);
