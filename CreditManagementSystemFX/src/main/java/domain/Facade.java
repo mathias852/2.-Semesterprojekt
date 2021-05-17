@@ -381,8 +381,12 @@ public class Facade {
 
     public void deleteProgram(Program program) {
         programs.remove(program);
+
         if (program instanceof Episode) {
-            persistenceHandler.deleteEpisode((Episode) program);
+            Episode episode = (Episode) program;
+            persistenceHandler.deleteEpisode(episode);
+
+            getTvSeriesFromEpisode(episode).getSeasonMap().get(episode.getSeasonNo()).remove(episode);
         } else if (program instanceof Transmission) {
             persistenceHandler.deleteTransmission((Transmission) program);
         }

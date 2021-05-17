@@ -5,7 +5,6 @@ import domain.IPersistenceHandler;
 import domain.accesscontrol.Producer;
 import domain.accesscontrol.SystemAdmin;
 import domain.credit.Credit;
-import domain.credit.Credit.Function;
 import domain.credit.CreditedPerson;
 import domain.program.Episode;
 import domain.program.Program;
@@ -75,10 +74,10 @@ public class PersistenceHandler implements IPersistenceHandler {
             PreparedStatement insertStatement = connection.prepareStatement(
                     "INSERT INTO tv_series (id, name, description, createdById) " +
                             "VALUES (?,?,?,?)");
-            insertStatement.setString(1, tvSeries.getUuid().toString());
+            insertStatement.setObject(1, tvSeries.getUuid());
             insertStatement.setString(2, tvSeries.getName());
             insertStatement.setString(3, tvSeries.getDescription());
-            insertStatement.setString(4, tvSeries.getCreatedBy().toString());
+            insertStatement.setObject(4, tvSeries.getCreatedBy());
             insertStatement.execute();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -93,7 +92,7 @@ public class PersistenceHandler implements IPersistenceHandler {
                     "UPDATE tv_series SET name = ?, description = ? WHERE id = ?");
             insertStatement.setString(1, tvSeries.getName());
             insertStatement.setString(2, tvSeries.getDescription());
-            insertStatement.setString(3, tvSeries.getUuid().toString());
+            insertStatement.setObject(3, tvSeries.getUuid());
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -110,7 +109,7 @@ public class PersistenceHandler implements IPersistenceHandler {
                 }
             }
             PreparedStatement stmt = connection.prepareStatement("DELETE FROM tv_series WHERE id = ?");
-            stmt.setString(1, tvSeries.getUuid().toString());
+            stmt.setObject(1, tvSeries.getUuid());
 
             return stmt.execute();
         } catch (SQLException e) {
@@ -167,18 +166,18 @@ public class PersistenceHandler implements IPersistenceHandler {
         try {
             PreparedStatement stmt = connection.prepareStatement(
                     "INSERT INTO programs (id, name, description, createdById, duration, approved, production) VALUES (?,?,?,?,?,?,?)");
-            stmt.setString(1, String.valueOf(episode.getUuid()));
+            stmt.setObject(1, episode.getUuid());
             stmt.setString(2, episode.getName());
             stmt.setString(3, episode.getDescription());
-            stmt.setString(4, String.valueOf(episode.getCreatedBy()));
+            stmt.setObject(4, episode.getCreatedBy());
             stmt.setInt(5, episode.getDuration());
             stmt.setBoolean(6, episode.isApproved());
             stmt.setInt(7, getProductionId(episode.getProduction()));
 
             PreparedStatement stmt1 = connection.prepareStatement(
                     "INSERT INTO episodes (programsId, tvSeriesId, episodeNo, seasonNo) VALUES (?,?,?,?)");
-            stmt1.setString(1, String.valueOf(episode.getUuid()));
-            stmt1.setString(2, String.valueOf(episode.getTvSeries().getUuid()));
+            stmt1.setObject(1, episode.getUuid());
+            stmt1.setObject(2, episode.getTvSeries().getUuid());
             stmt1.setInt(3, episode.getEpisodeNo());
             stmt1.setInt(4, episode.getSeasonNo());
 
@@ -202,13 +201,13 @@ public class PersistenceHandler implements IPersistenceHandler {
             stmt.setInt(3, episode.getDuration());
             stmt.setBoolean(4, episode.isApproved());
             stmt.setInt(5, getProductionId(episode.getProduction()));
-            stmt.setString(6, String.valueOf(episode.getUuid()));
+            stmt.setObject(6, episode.getUuid());
 
             PreparedStatement stmt1 = connection.prepareStatement(
                     "UPDATE episodes SET episodeNo = ?, seasonNo = ? WHERE programsId = ?");
             stmt1.setInt(1, episode.getEpisodeNo());
             stmt1.setInt(2, episode.getSeasonNo());
-            stmt1.setString(3, String.valueOf(episode.getUuid()));
+            stmt1.setObject(3, episode.getUuid());
 
             stmt.execute();
             stmt1.execute();
@@ -225,13 +224,13 @@ public class PersistenceHandler implements IPersistenceHandler {
         //Note: id, programId & programsId have the same ID
         try {
             PreparedStatement stmt1 = connection.prepareStatement("DELETE FROM credits WHERE programid = ?");
-            stmt1.setString(1, String.valueOf(episode.getUuid()));
+            stmt1.setObject(1, episode.getUuid());
 
             PreparedStatement stmt2 = connection.prepareStatement("DELETE FROM episodes WHERE programsId = ?");
-            stmt2.setString(1, String.valueOf(episode.getUuid()));
+            stmt2.setObject(1, episode.getUuid());
 
             PreparedStatement stmt3 = connection.prepareStatement("DELETE FROM programs WHERE id = ?");
-            stmt3.setString(1, String.valueOf(episode.getUuid()));
+            stmt3.setObject(1, episode.getUuid());
 
             stmt1.execute();
             stmt2.execute();
@@ -366,7 +365,7 @@ public class PersistenceHandler implements IPersistenceHandler {
     public boolean storeProducer(Producer producer) {
         try {
             PreparedStatement stmt = connection.prepareStatement("INSERT INTO users (id, username, password, type) VALUES (?,?,?,?) ");
-            stmt.setString(1, String.valueOf(producer.getUuid()));
+            stmt.setObject(1, producer.getUuid());
             stmt.setString(2, producer.getUsername());
             stmt.setInt(3, producer.getHashedPassword());
             stmt.setString(4, "Producer");
@@ -382,7 +381,7 @@ public class PersistenceHandler implements IPersistenceHandler {
     public boolean deleteProducer(Producer producer) {
         try {
             PreparedStatement stmt = connection.prepareStatement("DELETE FROM users WHERE id = ?");
-            stmt.setString(1, String.valueOf(producer.getUuid()));
+            stmt.setObject(1, producer.getUuid());
             return stmt.execute();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -414,7 +413,7 @@ public class PersistenceHandler implements IPersistenceHandler {
     public boolean storeSystemAdmin(SystemAdmin systemAdmin) {
         try {
             PreparedStatement stmt = connection.prepareStatement("INSERT INTO users (id, username, password, type) VALUES (?,?,?,?) ");
-            stmt.setString(1, String.valueOf(systemAdmin.getUuid()));
+            stmt.setObject(1, systemAdmin.getUuid());
             stmt.setString(2, systemAdmin.getUsername());
             stmt.setInt(3, systemAdmin.getHashedPassword());
             stmt.setString(4, "Admin");
@@ -430,7 +429,7 @@ public class PersistenceHandler implements IPersistenceHandler {
     public boolean deleteSystemAdmin(SystemAdmin systemAdmin) {
         try {
             PreparedStatement stmt = connection.prepareStatement("DELETE FROM users WHERE id = ?");
-            stmt.setString(1, String.valueOf(systemAdmin.getUuid()));
+            stmt.setObject(1, systemAdmin.getUuid());
 
             return stmt.execute();
         } catch (SQLException e) {
@@ -463,7 +462,7 @@ public class PersistenceHandler implements IPersistenceHandler {
 
         try {
             PreparedStatement stmt = connection.prepareStatement("INSERT INTO creditedPeople (id, name) VALUES (?,?) ");
-            stmt.setString(1, String.valueOf(creditedPerson.getUuid()));
+            stmt.setObject(1, creditedPerson.getUuid());
             stmt.setString(2, creditedPerson.getName());
 
             return stmt.execute();
@@ -479,7 +478,7 @@ public class PersistenceHandler implements IPersistenceHandler {
             PreparedStatement stmt = connection.prepareStatement(
                     "UPDATE creditedPeople SET name = ? WHERE id = ?");
             stmt.setString(1, creditedPerson.getName());
-            stmt.setString(2, String.valueOf(creditedPerson.getUuid()));
+            stmt.setObject(2, creditedPerson.getUuid());
 
             return stmt.execute();
         } catch (SQLException e) {
@@ -492,10 +491,10 @@ public class PersistenceHandler implements IPersistenceHandler {
     public boolean deleteCreditedPerson(CreditedPerson creditedPerson) {
         try {
             PreparedStatement stmt = connection.prepareStatement("DELETE FROM credits WHERE creditedPersonId = ?");
-            stmt.setString(1, String.valueOf(creditedPerson.getUuid()));
+            stmt.setObject(1, creditedPerson.getUuid());
 
             PreparedStatement stmt2 = connection.prepareStatement("DELETE FROM creditedPeople WHERE id = ?");
-            stmt2.setString(1, String.valueOf(creditedPerson.getUuid()));
+            stmt2.setObject(1, creditedPerson.getUuid());
             stmt.execute();
             stmt2.execute();
             return true;
@@ -534,9 +533,9 @@ public class PersistenceHandler implements IPersistenceHandler {
     public boolean storeCredit(Program program, Credit credit) {
         try {
             PreparedStatement stmt = connection.prepareStatement("INSERT INTO credits (creditedPersonId, role, programId) VALUES (?,?,?)");
-            stmt.setString(1, credit.getCreditedPerson().getUuid().toString());
+            stmt.setObject(1, credit.getCreditedPerson().getUuid());
             stmt.setString(2, credit.getFunction().role);
-            stmt.setString(3, program.getUuid().toString());
+            stmt.setObject(3, program.getUuid());
 
             return stmt.execute();
         } catch (SQLException e) {
@@ -551,8 +550,8 @@ public class PersistenceHandler implements IPersistenceHandler {
             PreparedStatement stmt = connection.prepareStatement(
                     "UPDATE credits SET role = ? WHERE creditedPersonId = ? AND programid = ? AND role = ?");
             stmt.setString(1, credit.getFunction().role);
-            stmt.setString(2, String.valueOf(credit.getCreditedPerson().getUuid()));
-            stmt.setString(3, String.valueOf(program.getUuid()));
+            stmt.setObject(2, credit.getCreditedPerson().getUuid());
+            stmt.setObject(3, program.getUuid());
             stmt.setString(4, oldRole);
 
             return stmt.execute();

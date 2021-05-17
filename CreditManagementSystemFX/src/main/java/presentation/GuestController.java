@@ -41,7 +41,7 @@ public class GuestController implements Initializable {
     private final String tvSeries = "TV-Series";
     private final String episode = "Episode";
 
-    private final String tv2Logo = "Tv2";
+    private final String tv2Logo = "TV2";
     private final String nordiskFilmLogo = "Nordisk Film";
 
     private final File nordiskFilmLogoFile = new File("src/main/resources/presentation/NF-Logo.png");
