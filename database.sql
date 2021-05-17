@@ -64,6 +64,7 @@ CREATE TABLE tv_series(
 );
 
 CREATE TABLE notifications(
+  id SERIAL NOT NULL,
   notificationTitle VARCHAR(1024) NOT NULL,
   seen BOOLEAN NOT NULL
 );
