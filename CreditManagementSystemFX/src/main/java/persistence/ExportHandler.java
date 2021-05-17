@@ -1,25 +1,16 @@
 package persistence;
 
+import java.awt.Desktop;
 import java.io.*;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Scanner;
 import java.util.ArrayList;
-
+import java.util.Scanner;
 
 
 public class ExportHandler {
-    //Files representing a temporary DB
+    //File representing the export document
+    private File krediteringDanmarkReport = new File("src/main/resources/krediteringDanmarkReport.txt");
 
-    private File credit = new File("src/main/resources/credits.txt");
-    private File episode = new File("src/main/resources/episode.txt");
-    private File tvSeries = new File("src/main/resources/TvSeries.txt");
-    private File person = new File("src/main/resources/person.txt");
-    private File transmission = new File("src/main/resources/transmission.txt");
-    private File systemAdmin = new File("src/main/resources/systemadmin.txt");
-    private File producer = new File("src/main/resources/producer.txt");
-
-    public FileWriter fileWriter;
+    public Writer fileWriter;
 
     public ExportHandler() {
     }
@@ -35,71 +26,28 @@ public class ExportHandler {
         }
 
         try {
-            fileWriter = new FileWriter(file, true);
-            PrintWriter printWriter = new PrintWriter(fileWriter);
-            printWriter.println(s);
-            printWriter.close();
+            fileWriter = new FileWriter(file, false);
+            fileWriter.write(s);
+            fileWriter.close();
+        } catch(FileNotFoundException ex) {
+            ex.printStackTrace();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
 
+    }
+
+    public void exportKrediteringDanmarkReport(String s) {
+        write(krediteringDanmarkReport, s);
+        Desktop desktop = Desktop.getDesktop();
+        //opens the file in the OS default text editor
+        try {
+            desktop.open(krediteringDanmarkReport);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void writeCredit(String s) {
-        write(credit, s);
-    }
-
-    public void writePerson(String s) {
-        write(person, s);
-    }
-
-    public void writeTvSeries(String s) {
-        write(tvSeries, s);
-    }
-
-    public void writeTransmission(String s) {
-        write(transmission, s);
-    }
-
-    public void writeEpisode(String s) {
-        write(episode, s);
-    }
-
-    public void writeSystemAdmin(String s) {
-        write(systemAdmin, s);
-    }
-
-    public void writeProducer(String s) {
-        write(producer, s);
-    }
-
-    public ArrayList<String[]> readCredit() {
-        return read(credit);
-    }
-
-    public ArrayList<String[]> readEpisode() {
-        return read(episode);
-    }
-
-    public ArrayList<String[]> readPerson() {
-        return read(person);
-    }
-
-    public ArrayList<String[]> readTvSeries() {
-        return read(tvSeries);
-    }
-
-    public ArrayList<String[]> readTransmission() {
-        return read(transmission);
-    }
-
-    public ArrayList<String[]> readSystemAdmin() {
-        return read(systemAdmin);
-    }
-
-    public ArrayList<String[]> readProducer() {
-        return read(producer);
-    }
 
     //Contains the general read functionality that is used to read the files
     public ArrayList<String[]> read(File file) {
@@ -117,34 +65,6 @@ public class ExportHandler {
 //            e.printStackTrace();
         }
         return list;
-    }
-
-    public File getCreditFile() {
-        return credit;
-    }
-
-    public File getEpisode() {
-        return episode;
-    }
-
-    public File getTvSeries() {
-        return tvSeries;
-    }
-
-    public File getPerson() {
-        return person;
-    }
-
-    public File getTransmission() {
-        return transmission;
-    }
-
-    public File getSystemAdmin() {
-        return systemAdmin;
-    }
-
-    public File getProducerFile() {
-        return producer;
     }
 
 }

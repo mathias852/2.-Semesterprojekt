@@ -45,14 +45,14 @@ false Africa/Blantyre
 false Africa/Brazzaville
 false Africa/Bujumbura
 false Africa/Cairo
-true Africa/Casablanca
+false Africa/Casablanca
 true Africa/Ceuta
 false Africa/Conakry
 false Africa/Dakar
 false Africa/Dar_es_Salaam
 false Africa/Djibouti
 false Africa/Douala
-true Africa/El_Aaiun
+false Africa/El_Aaiun
 false Africa/Freetown
 false Africa/Gaborone
 false Africa/Harare
@@ -784,14 +784,15 @@ false YEKT
 false Z
 false Zulu
 </TimeZones>
-      <StartupTime>1620893008</StartupTime>
+      <StartupTime>1621234426</StartupTime>
     </root>
     <database id="2" parent="1" name="CreditManagementSystem">
       <ObjectId>20947</ObjectId>
       <Owner>postgres</Owner>
-      <IntrospectionStateNumber>952</IntrospectionStateNumber>
+      <IntrospectionStateNumber>1606</IntrospectionStateNumber>
       <Current>1</Current>
-      <Relations>sequence|table|21040|21042|1
+      <Relations>sequence|table|21141|21143|1
+sequence|table|21215|21217|1
 </Relations>
     </database>
     <database id="3" parent="1" name="DBTest">
@@ -903,7 +904,7 @@ UC/10
 </Acl>
       <StateNumber>287</StateNumber>
       <Owner>postgres</Owner>
-      <IntrospectionStateNumber>953</IntrospectionStateNumber>
+      <IntrospectionStateNumber>1607</IntrospectionStateNumber>
       <Current>1</Current>
     </schema>
     <extension id="27" parent="2" name="plpgsql">
@@ -1003,81 +1004,92 @@ UC/10
       <HandlerId>335</HandlerId>
       <Type>index</Type>
     </access-method>
-    <sequence id="39" parent="26" name="productions_id_seq">
-      <ObjectId>21040</ObjectId>
+    <sequence id="39" parent="26" name="notifications_id_seq">
+      <ObjectId>21215</ObjectId>
       <Owner>postgres</Owner>
-      <StateNumber>906</StateNumber>
+      <StateNumber>1594</StateNumber>
       <DataType>integer|0s</DataType>
     </sequence>
-    <table id="40" parent="26" name="creditedpeople">
-      <ObjectId>21035</ObjectId>
+    <sequence id="40" parent="26" name="productions_id_seq">
+      <ObjectId>21141</ObjectId>
       <Owner>postgres</Owner>
-      <StateNumber>906</StateNumber>
-    </table>
-    <table id="41" parent="26" name="credits">
-      <ObjectId>21091</ObjectId>
+      <StateNumber>1594</StateNumber>
+      <DataType>integer|0s</DataType>
+    </sequence>
+    <table id="41" parent="26" name="creditedpeople">
+      <ObjectId>21136</ObjectId>
       <Owner>postgres</Owner>
-      <StateNumber>906</StateNumber>
+      <StateNumber>1594</StateNumber>
     </table>
-    <table id="42" parent="26" name="episodes">
-      <ObjectId>21081</ObjectId>
+    <table id="42" parent="26" name="credits">
+      <ObjectId>21192</ObjectId>
       <Owner>postgres</Owner>
-      <StateNumber>906</StateNumber>
+      <StateNumber>1594</StateNumber>
     </table>
-    <table id="43" parent="26" name="productions">
-      <ObjectId>21042</ObjectId>
+    <table id="43" parent="26" name="episodes">
+      <ObjectId>21182</ObjectId>
       <Owner>postgres</Owner>
-      <StateNumber>906</StateNumber>
+      <StateNumber>1594</StateNumber>
     </table>
-    <table id="44" parent="26" name="programs">
-      <ObjectId>21053</ObjectId>
+    <table id="44" parent="26" name="notifications">
+      <ObjectId>21217</ObjectId>
       <Owner>postgres</Owner>
-      <StateNumber>906</StateNumber>
+      <StateNumber>1594</StateNumber>
     </table>
-    <table id="45" parent="26" name="transmissions">
-      <ObjectId>21071</ObjectId>
+    <table id="45" parent="26" name="productions">
+      <ObjectId>21143</ObjectId>
       <Owner>postgres</Owner>
-      <StateNumber>906</StateNumber>
+      <StateNumber>1594</StateNumber>
     </table>
-    <table id="46" parent="26" name="tv_series">
-      <ObjectId>21101</ObjectId>
+    <table id="46" parent="26" name="programs">
+      <ObjectId>21154</ObjectId>
       <Owner>postgres</Owner>
-      <StateNumber>906</StateNumber>
+      <StateNumber>1594</StateNumber>
     </table>
-    <table id="47" parent="26" name="users">
-      <ObjectId>21048</ObjectId>
+    <table id="47" parent="26" name="transmissions">
+      <ObjectId>21172</ObjectId>
       <Owner>postgres</Owner>
-      <StateNumber>906</StateNumber>
+      <StateNumber>1594</StateNumber>
     </table>
-    <view id="48" parent="26" name="episodesview">
-      <ObjectId>21118</ObjectId>
+    <table id="48" parent="26" name="tv_series">
+      <ObjectId>21202</ObjectId>
+      <Owner>postgres</Owner>
+      <StateNumber>1594</StateNumber>
+    </table>
+    <table id="49" parent="26" name="users">
+      <ObjectId>21149</ObjectId>
+      <Owner>postgres</Owner>
+      <StateNumber>1594</StateNumber>
+    </table>
+    <view id="50" parent="26" name="episodesview">
+      <ObjectId>21232</ObjectId>
       <SourceTextLength>305</SourceTextLength>
       <Owner>postgres</Owner>
-      <StateNumber>908</StateNumber>
+      <StateNumber>1596</StateNumber>
     </view>
-    <view id="49" parent="26" name="transmissionsview">
-      <ObjectId>21114</ObjectId>
+    <view id="51" parent="26" name="transmissionsview">
+      <ObjectId>21228</ObjectId>
       <SourceTextLength>243</SourceTextLength>
       <Owner>postgres</Owner>
-      <StateNumber>907</StateNumber>
+      <StateNumber>1595</StateNumber>
     </view>
-    <column id="50" parent="40" name="id">
+    <column id="52" parent="41" name="id">
       <Position>1</Position>
       <DataType>uuid|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>906</StateNumber>
+      <StateNumber>1594</StateNumber>
       <TypeId>2950</TypeId>
     </column>
-    <column id="51" parent="40" name="name">
+    <column id="53" parent="41" name="name">
       <Position>2</Position>
       <DataType>varchar(128)|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>906</StateNumber>
+      <StateNumber>1594</StateNumber>
       <TypeId>1043</TypeId>
     </column>
-    <index id="52" parent="40" name="creditedpeople_pkey">
-      <ObjectId>21038</ObjectId>
-      <StateNumber>906</StateNumber>
+    <index id="54" parent="41" name="creditedpeople_pkey">
+      <ObjectId>21139</ObjectId>
+      <StateNumber>1594</StateNumber>
       <ColNames>id</ColNames>
       <Unique>1</Unique>
       <Primary>1</Primary>
@@ -1085,37 +1097,37 @@ UC/10
       <CollationIds>0</CollationIds>
       <ClassIds>10064</ClassIds>
     </index>
-    <key id="53" parent="40" name="creditedpeople_pkey">
-      <ObjectId>21039</ObjectId>
-      <StateNumber>906</StateNumber>
+    <key id="55" parent="41" name="creditedpeople_pkey">
+      <ObjectId>21140</ObjectId>
+      <StateNumber>1594</StateNumber>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
       <UnderlyingIndexName>creditedpeople_pkey</UnderlyingIndexName>
     </key>
-    <column id="54" parent="41" name="creditedpersonid">
+    <column id="56" parent="42" name="creditedpersonid">
       <Position>1</Position>
       <DataType>uuid|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>906</StateNumber>
+      <StateNumber>1594</StateNumber>
       <TypeId>2950</TypeId>
     </column>
-    <column id="55" parent="41" name="role">
+    <column id="57" parent="42" name="role">
       <Position>2</Position>
       <DataType>varchar(128)|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>906</StateNumber>
+      <StateNumber>1594</StateNumber>
       <TypeId>1043</TypeId>
     </column>
-    <column id="56" parent="41" name="programid">
+    <column id="58" parent="42" name="programid">
       <Position>3</Position>
       <DataType>uuid|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>906</StateNumber>
+      <StateNumber>1594</StateNumber>
       <TypeId>2950</TypeId>
     </column>
-    <index id="57" parent="41" name="credits_pkey">
-      <ObjectId>21094</ObjectId>
-      <StateNumber>906</StateNumber>
+    <index id="59" parent="42" name="credits_pkey">
+      <ObjectId>21195</ObjectId>
+      <StateNumber>1594</StateNumber>
       <ColNames>creditedpersonid
 role
 programid</ColNames>
@@ -1126,56 +1138,56 @@ programid</ColNames>
       <CollationNames>default</CollationNames>
       <ClassIds>10064,3126,10064</ClassIds>
     </index>
-    <key id="58" parent="41" name="credits_pkey">
-      <ObjectId>21095</ObjectId>
-      <StateNumber>906</StateNumber>
+    <key id="60" parent="42" name="credits_pkey">
+      <ObjectId>21196</ObjectId>
+      <StateNumber>1594</StateNumber>
       <ColNames>creditedpersonid
 role
 programid</ColNames>
       <Primary>1</Primary>
       <UnderlyingIndexName>credits_pkey</UnderlyingIndexName>
     </key>
-    <foreign-key id="59" parent="41" name="credits_creditedpersonid_fkey">
-      <ObjectId>21096</ObjectId>
-      <StateNumber>906</StateNumber>
+    <foreign-key id="61" parent="42" name="credits_creditedpersonid_fkey">
+      <ObjectId>21197</ObjectId>
+      <StateNumber>1594</StateNumber>
       <ColNames>creditedpersonid</ColNames>
-      <RefTableId>21035</RefTableId>
+      <RefTableId>21136</RefTableId>
       <RefColPositions>1</RefColPositions>
       <RefTableName>creditedpeople</RefTableName>
       <RefKeyName>creditedpeople_pkey</RefKeyName>
       <RefColNames>id</RefColNames>
     </foreign-key>
-    <column id="60" parent="42" name="programsid">
+    <column id="62" parent="43" name="programsid">
       <Position>1</Position>
       <DataType>uuid|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>906</StateNumber>
+      <StateNumber>1594</StateNumber>
       <TypeId>2950</TypeId>
     </column>
-    <column id="61" parent="42" name="tvseriesid">
+    <column id="63" parent="43" name="tvseriesid">
       <Position>2</Position>
       <DataType>uuid|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>906</StateNumber>
+      <StateNumber>1594</StateNumber>
       <TypeId>2950</TypeId>
     </column>
-    <column id="62" parent="42" name="episodeno">
+    <column id="64" parent="43" name="episodeno">
       <Position>3</Position>
       <DataType>integer|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>906</StateNumber>
+      <StateNumber>1594</StateNumber>
       <TypeId>23</TypeId>
     </column>
-    <column id="63" parent="42" name="seasonno">
+    <column id="65" parent="43" name="seasonno">
       <Position>4</Position>
       <DataType>integer|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>906</StateNumber>
+      <StateNumber>1594</StateNumber>
       <TypeId>23</TypeId>
     </column>
-    <index id="64" parent="42" name="episodes_pkey">
-      <ObjectId>21084</ObjectId>
-      <StateNumber>906</StateNumber>
+    <index id="66" parent="43" name="episodes_pkey">
+      <ObjectId>21185</ObjectId>
+      <StateNumber>1594</StateNumber>
       <ColNames>programsid</ColNames>
       <Unique>1</Unique>
       <Primary>1</Primary>
@@ -1183,41 +1195,48 @@ programid</ColNames>
       <CollationIds>0</CollationIds>
       <ClassIds>10064</ClassIds>
     </index>
-    <key id="65" parent="42" name="episodes_pkey">
-      <ObjectId>21085</ObjectId>
-      <StateNumber>906</StateNumber>
+    <key id="67" parent="43" name="episodes_pkey">
+      <ObjectId>21186</ObjectId>
+      <StateNumber>1594</StateNumber>
       <ColNames>programsid</ColNames>
       <Primary>1</Primary>
       <UnderlyingIndexName>episodes_pkey</UnderlyingIndexName>
     </key>
-    <foreign-key id="66" parent="42" name="episodes_programsid_fkey">
-      <ObjectId>21086</ObjectId>
-      <StateNumber>906</StateNumber>
+    <foreign-key id="68" parent="43" name="episodes_programsid_fkey">
+      <ObjectId>21187</ObjectId>
+      <StateNumber>1594</StateNumber>
       <ColNames>programsid</ColNames>
-      <RefTableId>21053</RefTableId>
+      <RefTableId>21154</RefTableId>
       <RefColPositions>1</RefColPositions>
       <RefTableName>programs</RefTableName>
       <RefKeyName>programs_pkey</RefKeyName>
       <RefColNames>id</RefColNames>
     </foreign-key>
-    <column id="67" parent="43" name="id">
+    <column id="69" parent="44" name="id">
       <Position>1</Position>
       <DataType>integer|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>906</StateNumber>
-      <DefaultExpression>nextval(&apos;productions_id_seq&apos;::regclass)</DefaultExpression>
+      <StateNumber>1594</StateNumber>
+      <DefaultExpression>nextval(&apos;notifications_id_seq&apos;::regclass)</DefaultExpression>
       <TypeId>23</TypeId>
     </column>
-    <column id="68" parent="43" name="name">
+    <column id="70" parent="44" name="title">
       <Position>2</Position>
-      <DataType>varchar(128)|0s</DataType>
+      <DataType>varchar(1024)|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>906</StateNumber>
+      <StateNumber>1594</StateNumber>
       <TypeId>1043</TypeId>
     </column>
-    <index id="69" parent="43" name="productions_pkey">
-      <ObjectId>21046</ObjectId>
-      <StateNumber>906</StateNumber>
+    <column id="71" parent="44" name="seen">
+      <Position>3</Position>
+      <DataType>boolean|0s</DataType>
+      <NotNull>1</NotNull>
+      <StateNumber>1594</StateNumber>
+      <TypeId>16</TypeId>
+    </column>
+    <index id="72" parent="44" name="notifications_pkey">
+      <ObjectId>21224</ObjectId>
+      <StateNumber>1594</StateNumber>
       <ColNames>id</ColNames>
       <Unique>1</Unique>
       <Primary>1</Primary>
@@ -1225,65 +1244,113 @@ programid</ColNames>
       <CollationIds>0</CollationIds>
       <ClassIds>1978</ClassIds>
     </index>
-    <key id="70" parent="43" name="productions_pkey">
-      <ObjectId>21047</ObjectId>
-      <StateNumber>906</StateNumber>
+    <index id="73" parent="44" name="notifications_title_key">
+      <ObjectId>21226</ObjectId>
+      <StateNumber>1594</StateNumber>
+      <ColNames>title</ColNames>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+      <CollationIds>100</CollationIds>
+      <CollationNames>default</CollationNames>
+      <ClassIds>3126</ClassIds>
+    </index>
+    <key id="74" parent="44" name="notifications_pkey">
+      <ObjectId>21225</ObjectId>
+      <StateNumber>1594</StateNumber>
+      <ColNames>id</ColNames>
+      <Primary>1</Primary>
+      <UnderlyingIndexName>notifications_pkey</UnderlyingIndexName>
+    </key>
+    <key id="75" parent="44" name="notifications_title_key">
+      <ObjectId>21227</ObjectId>
+      <StateNumber>1594</StateNumber>
+      <ColNames>title</ColNames>
+      <UnderlyingIndexName>notifications_title_key</UnderlyingIndexName>
+    </key>
+    <column id="76" parent="45" name="id">
+      <Position>1</Position>
+      <DataType>integer|0s</DataType>
+      <NotNull>1</NotNull>
+      <StateNumber>1594</StateNumber>
+      <DefaultExpression>nextval(&apos;productions_id_seq&apos;::regclass)</DefaultExpression>
+      <TypeId>23</TypeId>
+    </column>
+    <column id="77" parent="45" name="name">
+      <Position>2</Position>
+      <DataType>varchar(128)|0s</DataType>
+      <NotNull>1</NotNull>
+      <StateNumber>1594</StateNumber>
+      <TypeId>1043</TypeId>
+    </column>
+    <index id="78" parent="45" name="productions_pkey">
+      <ObjectId>21147</ObjectId>
+      <StateNumber>1594</StateNumber>
+      <ColNames>id</ColNames>
+      <Unique>1</Unique>
+      <Primary>1</Primary>
+      <AccessMethodId>403</AccessMethodId>
+      <CollationIds>0</CollationIds>
+      <ClassIds>1978</ClassIds>
+    </index>
+    <key id="79" parent="45" name="productions_pkey">
+      <ObjectId>21148</ObjectId>
+      <StateNumber>1594</StateNumber>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
       <UnderlyingIndexName>productions_pkey</UnderlyingIndexName>
     </key>
-    <column id="71" parent="44" name="id">
+    <column id="80" parent="46" name="id">
       <Position>1</Position>
       <DataType>uuid|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>906</StateNumber>
+      <StateNumber>1594</StateNumber>
       <TypeId>2950</TypeId>
     </column>
-    <column id="72" parent="44" name="name">
+    <column id="81" parent="46" name="name">
       <Position>2</Position>
       <DataType>varchar(128)|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>906</StateNumber>
+      <StateNumber>1594</StateNumber>
       <TypeId>1043</TypeId>
     </column>
-    <column id="73" parent="44" name="description">
+    <column id="82" parent="46" name="description">
       <Position>3</Position>
       <DataType>varchar(1024)|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>906</StateNumber>
+      <StateNumber>1594</StateNumber>
       <TypeId>1043</TypeId>
     </column>
-    <column id="74" parent="44" name="createdbyid">
+    <column id="83" parent="46" name="createdbyid">
       <Position>4</Position>
       <DataType>uuid|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>906</StateNumber>
+      <StateNumber>1594</StateNumber>
       <TypeId>2950</TypeId>
     </column>
-    <column id="75" parent="44" name="duration">
+    <column id="84" parent="46" name="duration">
       <Position>5</Position>
       <DataType>integer|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>906</StateNumber>
+      <StateNumber>1594</StateNumber>
       <TypeId>23</TypeId>
     </column>
-    <column id="76" parent="44" name="approved">
+    <column id="85" parent="46" name="approved">
       <Position>6</Position>
       <DataType>boolean|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>906</StateNumber>
+      <StateNumber>1594</StateNumber>
       <TypeId>16</TypeId>
     </column>
-    <column id="77" parent="44" name="production">
+    <column id="86" parent="46" name="production">
       <Position>7</Position>
       <DataType>integer|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>906</StateNumber>
+      <StateNumber>1594</StateNumber>
       <TypeId>23</TypeId>
     </column>
-    <index id="78" parent="44" name="programs_pkey">
-      <ObjectId>21059</ObjectId>
-      <StateNumber>906</StateNumber>
+    <index id="87" parent="46" name="programs_pkey">
+      <ObjectId>21160</ObjectId>
+      <StateNumber>1594</StateNumber>
       <ColNames>id</ColNames>
       <Unique>1</Unique>
       <Primary>1</Primary>
@@ -1291,43 +1358,43 @@ programid</ColNames>
       <CollationIds>0</CollationIds>
       <ClassIds>10064</ClassIds>
     </index>
-    <key id="79" parent="44" name="programs_pkey">
-      <ObjectId>21060</ObjectId>
-      <StateNumber>906</StateNumber>
+    <key id="88" parent="46" name="programs_pkey">
+      <ObjectId>21161</ObjectId>
+      <StateNumber>1594</StateNumber>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
       <UnderlyingIndexName>programs_pkey</UnderlyingIndexName>
     </key>
-    <foreign-key id="80" parent="44" name="programs_createdbyid_fkey">
-      <ObjectId>21061</ObjectId>
-      <StateNumber>906</StateNumber>
+    <foreign-key id="89" parent="46" name="programs_createdbyid_fkey">
+      <ObjectId>21162</ObjectId>
+      <StateNumber>1594</StateNumber>
       <ColNames>createdbyid</ColNames>
-      <RefTableId>21048</RefTableId>
+      <RefTableId>21149</RefTableId>
       <RefColPositions>1</RefColPositions>
       <RefTableName>users</RefTableName>
       <RefKeyName>users_pkey</RefKeyName>
       <RefColNames>id</RefColNames>
     </foreign-key>
-    <foreign-key id="81" parent="44" name="programs_production_fkey">
-      <ObjectId>21066</ObjectId>
-      <StateNumber>906</StateNumber>
+    <foreign-key id="90" parent="46" name="programs_production_fkey">
+      <ObjectId>21167</ObjectId>
+      <StateNumber>1594</StateNumber>
       <ColNames>production</ColNames>
-      <RefTableId>21042</RefTableId>
+      <RefTableId>21143</RefTableId>
       <RefColPositions>1</RefColPositions>
       <RefTableName>productions</RefTableName>
       <RefKeyName>productions_pkey</RefKeyName>
       <RefColNames>id</RefColNames>
     </foreign-key>
-    <column id="82" parent="45" name="programsid">
+    <column id="91" parent="47" name="programsid">
       <Position>1</Position>
       <DataType>uuid|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>906</StateNumber>
+      <StateNumber>1594</StateNumber>
       <TypeId>2950</TypeId>
     </column>
-    <index id="83" parent="45" name="transmissions_pkey">
-      <ObjectId>21074</ObjectId>
-      <StateNumber>906</StateNumber>
+    <index id="92" parent="47" name="transmissions_pkey">
+      <ObjectId>21175</ObjectId>
+      <StateNumber>1594</StateNumber>
       <ColNames>programsid</ColNames>
       <Unique>1</Unique>
       <Primary>1</Primary>
@@ -1335,53 +1402,53 @@ programid</ColNames>
       <CollationIds>0</CollationIds>
       <ClassIds>10064</ClassIds>
     </index>
-    <key id="84" parent="45" name="transmissions_pkey">
-      <ObjectId>21075</ObjectId>
-      <StateNumber>906</StateNumber>
+    <key id="93" parent="47" name="transmissions_pkey">
+      <ObjectId>21176</ObjectId>
+      <StateNumber>1594</StateNumber>
       <ColNames>programsid</ColNames>
       <Primary>1</Primary>
       <UnderlyingIndexName>transmissions_pkey</UnderlyingIndexName>
     </key>
-    <foreign-key id="85" parent="45" name="transmissions_programsid_fkey">
-      <ObjectId>21076</ObjectId>
-      <StateNumber>906</StateNumber>
+    <foreign-key id="94" parent="47" name="transmissions_programsid_fkey">
+      <ObjectId>21177</ObjectId>
+      <StateNumber>1594</StateNumber>
       <ColNames>programsid</ColNames>
-      <RefTableId>21053</RefTableId>
+      <RefTableId>21154</RefTableId>
       <RefColPositions>1</RefColPositions>
       <RefTableName>programs</RefTableName>
       <RefKeyName>programs_pkey</RefKeyName>
       <RefColNames>id</RefColNames>
     </foreign-key>
-    <column id="86" parent="46" name="id">
+    <column id="95" parent="48" name="id">
       <Position>1</Position>
       <DataType>uuid|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>906</StateNumber>
+      <StateNumber>1594</StateNumber>
       <TypeId>2950</TypeId>
     </column>
-    <column id="87" parent="46" name="name">
+    <column id="96" parent="48" name="name">
       <Position>2</Position>
       <DataType>varchar(128)|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>906</StateNumber>
+      <StateNumber>1594</StateNumber>
       <TypeId>1043</TypeId>
     </column>
-    <column id="88" parent="46" name="description">
+    <column id="97" parent="48" name="description">
       <Position>3</Position>
       <DataType>varchar(1024)|0s</DataType>
-      <StateNumber>906</StateNumber>
+      <StateNumber>1594</StateNumber>
       <TypeId>1043</TypeId>
     </column>
-    <column id="89" parent="46" name="createdbyid">
+    <column id="98" parent="48" name="createdbyid">
       <Position>4</Position>
       <DataType>uuid|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>906</StateNumber>
+      <StateNumber>1594</StateNumber>
       <TypeId>2950</TypeId>
     </column>
-    <index id="90" parent="46" name="tv_series_pkey">
-      <ObjectId>21107</ObjectId>
-      <StateNumber>906</StateNumber>
+    <index id="99" parent="48" name="tv_series_pkey">
+      <ObjectId>21208</ObjectId>
+      <StateNumber>1594</StateNumber>
       <ColNames>id</ColNames>
       <Unique>1</Unique>
       <Primary>1</Primary>
@@ -1389,54 +1456,54 @@ programid</ColNames>
       <CollationIds>0</CollationIds>
       <ClassIds>10064</ClassIds>
     </index>
-    <key id="91" parent="46" name="tv_series_pkey">
-      <ObjectId>21108</ObjectId>
-      <StateNumber>906</StateNumber>
+    <key id="100" parent="48" name="tv_series_pkey">
+      <ObjectId>21209</ObjectId>
+      <StateNumber>1594</StateNumber>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
       <UnderlyingIndexName>tv_series_pkey</UnderlyingIndexName>
     </key>
-    <foreign-key id="92" parent="46" name="tv_series_createdbyid_fkey">
-      <ObjectId>21109</ObjectId>
-      <StateNumber>906</StateNumber>
+    <foreign-key id="101" parent="48" name="tv_series_createdbyid_fkey">
+      <ObjectId>21210</ObjectId>
+      <StateNumber>1594</StateNumber>
       <ColNames>createdbyid</ColNames>
-      <RefTableId>21048</RefTableId>
+      <RefTableId>21149</RefTableId>
       <RefColPositions>1</RefColPositions>
       <RefTableName>users</RefTableName>
       <RefKeyName>users_pkey</RefKeyName>
       <RefColNames>id</RefColNames>
     </foreign-key>
-    <column id="93" parent="47" name="id">
+    <column id="102" parent="49" name="id">
       <Position>1</Position>
       <DataType>uuid|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>906</StateNumber>
+      <StateNumber>1594</StateNumber>
       <TypeId>2950</TypeId>
     </column>
-    <column id="94" parent="47" name="username">
+    <column id="103" parent="49" name="username">
       <Position>2</Position>
       <DataType>varchar(20)|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>906</StateNumber>
+      <StateNumber>1594</StateNumber>
       <TypeId>1043</TypeId>
     </column>
-    <column id="95" parent="47" name="password">
+    <column id="104" parent="49" name="password">
       <Position>3</Position>
       <DataType>integer|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>906</StateNumber>
+      <StateNumber>1594</StateNumber>
       <TypeId>23</TypeId>
     </column>
-    <column id="96" parent="47" name="type">
+    <column id="105" parent="49" name="type">
       <Position>4</Position>
       <DataType>varchar(128)|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>906</StateNumber>
+      <StateNumber>1594</StateNumber>
       <TypeId>1043</TypeId>
     </column>
-    <index id="97" parent="47" name="users_pkey">
-      <ObjectId>21051</ObjectId>
-      <StateNumber>906</StateNumber>
+    <index id="106" parent="49" name="users_pkey">
+      <ObjectId>21152</ObjectId>
+      <StateNumber>1594</StateNumber>
       <ColNames>id</ColNames>
       <Unique>1</Unique>
       <Primary>1</Primary>
@@ -1444,97 +1511,97 @@ programid</ColNames>
       <CollationIds>0</CollationIds>
       <ClassIds>10064</ClassIds>
     </index>
-    <key id="98" parent="47" name="users_pkey">
-      <ObjectId>21052</ObjectId>
-      <StateNumber>906</StateNumber>
+    <key id="107" parent="49" name="users_pkey">
+      <ObjectId>21153</ObjectId>
+      <StateNumber>1594</StateNumber>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
       <UnderlyingIndexName>users_pkey</UnderlyingIndexName>
     </key>
-    <column id="99" parent="48" name="id">
+    <column id="108" parent="50" name="id">
       <Position>1</Position>
       <DataType>uuid|0s</DataType>
-      <StateNumber>908</StateNumber>
+      <StateNumber>1596</StateNumber>
     </column>
-    <column id="100" parent="48" name="tvseriesid">
+    <column id="109" parent="50" name="tvseriesid">
       <Position>2</Position>
       <DataType>uuid|0s</DataType>
-      <StateNumber>908</StateNumber>
+      <StateNumber>1596</StateNumber>
     </column>
-    <column id="101" parent="48" name="name">
+    <column id="110" parent="50" name="name">
       <Position>3</Position>
       <DataType>varchar(128)|0s</DataType>
-      <StateNumber>908</StateNumber>
+      <StateNumber>1596</StateNumber>
     </column>
-    <column id="102" parent="48" name="description">
+    <column id="111" parent="50" name="description">
       <Position>4</Position>
       <DataType>varchar(1024)|0s</DataType>
-      <StateNumber>908</StateNumber>
+      <StateNumber>1596</StateNumber>
     </column>
-    <column id="103" parent="48" name="createdbyid">
+    <column id="112" parent="50" name="createdbyid">
       <Position>5</Position>
       <DataType>uuid|0s</DataType>
-      <StateNumber>908</StateNumber>
+      <StateNumber>1596</StateNumber>
     </column>
-    <column id="104" parent="48" name="episodeno">
+    <column id="113" parent="50" name="episodeno">
       <Position>6</Position>
       <DataType>integer|0s</DataType>
-      <StateNumber>908</StateNumber>
+      <StateNumber>1596</StateNumber>
     </column>
-    <column id="105" parent="48" name="seasonno">
+    <column id="114" parent="50" name="seasonno">
       <Position>7</Position>
       <DataType>integer|0s</DataType>
-      <StateNumber>908</StateNumber>
+      <StateNumber>1596</StateNumber>
     </column>
-    <column id="106" parent="48" name="duration">
+    <column id="115" parent="50" name="duration">
       <Position>8</Position>
       <DataType>integer|0s</DataType>
-      <StateNumber>908</StateNumber>
+      <StateNumber>1596</StateNumber>
     </column>
-    <column id="107" parent="48" name="approved">
+    <column id="116" parent="50" name="approved">
       <Position>9</Position>
       <DataType>boolean|0s</DataType>
-      <StateNumber>908</StateNumber>
+      <StateNumber>1596</StateNumber>
     </column>
-    <column id="108" parent="48" name="production">
+    <column id="117" parent="50" name="production">
       <Position>10</Position>
       <DataType>integer|0s</DataType>
-      <StateNumber>908</StateNumber>
+      <StateNumber>1596</StateNumber>
     </column>
-    <column id="109" parent="49" name="id">
+    <column id="118" parent="51" name="id">
       <Position>1</Position>
       <DataType>uuid|0s</DataType>
-      <StateNumber>907</StateNumber>
+      <StateNumber>1595</StateNumber>
     </column>
-    <column id="110" parent="49" name="name">
+    <column id="119" parent="51" name="name">
       <Position>2</Position>
       <DataType>varchar(128)|0s</DataType>
-      <StateNumber>907</StateNumber>
+      <StateNumber>1595</StateNumber>
     </column>
-    <column id="111" parent="49" name="description">
+    <column id="120" parent="51" name="description">
       <Position>3</Position>
       <DataType>varchar(1024)|0s</DataType>
-      <StateNumber>907</StateNumber>
+      <StateNumber>1595</StateNumber>
     </column>
-    <column id="112" parent="49" name="createdbyid">
+    <column id="121" parent="51" name="createdbyid">
       <Position>4</Position>
       <DataType>uuid|0s</DataType>
-      <StateNumber>907</StateNumber>
+      <StateNumber>1595</StateNumber>
     </column>
-    <column id="113" parent="49" name="duration">
+    <column id="122" parent="51" name="duration">
       <Position>5</Position>
       <DataType>integer|0s</DataType>
-      <StateNumber>907</StateNumber>
+      <StateNumber>1595</StateNumber>
     </column>
-    <column id="114" parent="49" name="approved">
+    <column id="123" parent="51" name="approved">
       <Position>6</Position>
       <DataType>boolean|0s</DataType>
-      <StateNumber>907</StateNumber>
+      <StateNumber>1595</StateNumber>
     </column>
-    <column id="115" parent="49" name="production">
+    <column id="124" parent="51" name="production">
       <Position>7</Position>
       <DataType>integer|0s</DataType>
-      <StateNumber>907</StateNumber>
+      <StateNumber>1595</StateNumber>
     </column>
   </database-model>
 </dataSource>

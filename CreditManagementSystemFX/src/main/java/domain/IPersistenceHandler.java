@@ -52,4 +52,9 @@ public interface IPersistenceHandler {
     boolean storeCredit(Program program, Credit credit);
     boolean updateCredit(Program program, Credit credit, String oldRole);
     boolean deleteCredit(Program program, Credit credit);
+
+    //Notification
+    List<Notification> getNotifications();
+    boolean storeNotification(Notification notification);
+    boolean updateNotification(Notification notification);
 }

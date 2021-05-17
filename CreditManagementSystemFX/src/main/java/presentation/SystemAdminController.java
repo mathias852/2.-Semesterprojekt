@@ -2,6 +2,7 @@ package presentation;
 
 import domain.Facade;
 import domain.LoginHandler;
+import domain.Notification;
 import domain.credit.Credit;
 import domain.credit.CreditedPerson;
 import domain.program.Episode;
@@ -61,7 +62,7 @@ public class SystemAdminController implements Initializable {
             createUserButton, confirmDeleteButton, declineDeleteButton, approveSelectedButton;
 
     @FXML
-    private ListView<String> searchListView, searchListViewCredits,searchApprovedListView, searchApprovedListViewCredits;
+    private ListView<String> searchListView, searchListViewCredits,searchApprovedListView, searchApprovedListViewCredits, systemLogLV;
 
     @FXML
     private TableView<String> searchTableView;
@@ -169,7 +170,6 @@ public class SystemAdminController implements Initializable {
                 }
             }
         } catch (IndexOutOfBoundsException e) {
-            System.out.println("Ikke implementeret endnu");
         }
     }
 
@@ -221,21 +221,18 @@ public class SystemAdminController implements Initializable {
                 episodeNumberText, tvSLabel, seasonNoLabel, episodeNoLabel));
 
         if (programTypeSelection.getValue().equals(transmission)) {
-            System.out.println(programTypeSelection.getValue());
             //Episode nodes
             episodeNodes.forEach(node -> node.setVisible(false));
             //Duration nodes
             durationNodes.forEach(node -> node.setVisible(true));
 
         } else if (programTypeSelection.getValue().equals(tvSeries)) {
-            System.out.println(programTypeSelection.getValue());
             //Episode nodes
             episodeNodes.forEach(node -> node.setVisible(false));
             //Duration nodes
             durationNodes.forEach(node -> node.setVisible(false));
 
         } else if (programTypeSelection.getValue().equals(episode)) {
-            System.out.println(programTypeSelection.getValue());
             //Episode nodes
             episodeNodes.forEach(node -> node.setVisible(true));
             //Duration nodes
@@ -245,7 +242,7 @@ public class SystemAdminController implements Initializable {
 
     @FXML
     void exportButtonOnAction(ActionEvent event) throws IOException {
-        //facade.exportToTxt();
+        Facade.getInstance().exportToTxt();
     }
 
     @FXML
@@ -298,8 +295,6 @@ public class SystemAdminController implements Initializable {
             }
             updateTvSeriesButton.setDisable(false);
         } catch (IndexOutOfBoundsException e) {
-            System.out.println("Not yet implemented && Not sure why this is happening??? Yikes - " +
-                    "Think it has something to do with the change in combo-box you just made");
         }
     }
 
@@ -326,8 +321,6 @@ public class SystemAdminController implements Initializable {
                 }
             }
         } catch (NumberFormatException e) {
-            System.out.println("This just happens because we parse the value 'null' as an integer. And we do that because" +
-                    " we clear the season-combobox");
         }
     }
 
@@ -424,13 +417,13 @@ public class SystemAdminController implements Initializable {
 
     @FXML
     void updateUpdateTabCreditOnAction(ActionEvent event) {
-        mainTabPane.getSelectionModel().select(updateTab);
         Program program = getSelectedProgramFromListView();
         Credit credit = program.getCredits().get(searchListViewCredits.getSelectionModel().getSelectedIndex());
         creditedPersonUpdateLabel.setText(credit.getCreditedPerson().getName() + ": " + credit.getCreditedPerson().getUuid());
         programUpdateSelection.setText(program.getName());
 
         functionUpdateSelection.getSelectionModel().select(credit.getFunction().role);
+        mainTabPane.getSelectionModel().select(updateTab);
     }
 
     @FXML
@@ -474,7 +467,6 @@ public class SystemAdminController implements Initializable {
 
             Facade.getInstance().updateCredit(credit, function);
         } catch (IndexOutOfBoundsException e) {
-            System.out.println("Ikke implementeret endnu");
         }
     }
 
@@ -575,8 +567,6 @@ public class SystemAdminController implements Initializable {
     void deleteSelected(ActionEvent event) {
         // Deletes selected program
         if (!searchSeriesCombo.getSelectionModel().isEmpty() && searchSeasonCombo.getSelectionModel().isEmpty()) {
-            System.out.println("This has not been implemented - not sure if we need this option right now?");
-            System.out.println("As goes for deleting a season");
         } else if (!searchListViewCredits.getSelectionModel().isEmpty() && !searchListViewCredits.getSelectionModel().getSelectedItem().isEmpty()) {
             Facade.getInstance().deleteCredit(getSelectedProgramFromListView(), getSelectedCreditFromListView());
         } else if (getSelectedProgramFromListView() != null) {
@@ -632,8 +622,6 @@ public class SystemAdminController implements Initializable {
             }
             updateTvSeriesButton.setDisable(false);
         } catch (IndexOutOfBoundsException e){
-            System.out.println("Not yet implemented && Not sure why this is happening??? Yikes - " +
-                    "Think it has something to do with the change in combo-box you just made");
         }
     }
 
@@ -651,8 +639,6 @@ public class SystemAdminController implements Initializable {
                 }
             }
         } catch (NumberFormatException e) {
-            System.out.println("This just happens because we parse the value 'null' as an integer. And we do that because" +
-                    " we clear the season-combobox");
         }
     }
 
@@ -675,7 +661,32 @@ public class SystemAdminController implements Initializable {
     @FXML
     void approveSelectedProgram(ActionEvent event){
         Facade.getInstance().approveProgram(getSelectedProgramFromApprovedListView());
-        System.out.println(getSelectedProgramFromApprovedListView().isApproved());
+    }
+
+    @FXML
+    void markNotificationsAsSeen(MouseEvent event) {
+        String title = systemLogLV.getSelectionModel().getSelectedItem();
+        Facade.getInstance().setNotificationAsSeen(Facade.getInstance().getNotificationFromTitle(title.substring(5)));
+        refreshSystemLogs();
+    }
+    @FXML
+    void markAllNotificationsAsSeen() {
+         for (String title : systemLogLV.getItems()) {
+             Facade.getInstance().setNotificationAsSeen(Facade.getInstance().getNotificationFromTitle(title.substring(5)));
+         }
+        refreshSystemLogs();
+    }
+
+    @FXML
+    void refreshSystemLogs() {
+        systemLogLV.getItems().clear();
+        for (Notification notification : Facade.getInstance().getNotifications()) {
+            if (notification.getSeen()) {
+                systemLogLV.getItems().add("Old: " + notification.getTitle());
+            } else  {
+                systemLogLV.getItems().add("New: " + notification.getTitle());
+            }
+        }
     }
 
 
@@ -688,7 +699,6 @@ public class SystemAdminController implements Initializable {
                 return Facade.getInstance().getTvSeriesList().get(searchApprovedSeriesCombo.getSelectionModel().getSelectedIndex());
             }
         } catch (NullPointerException e) {
-            System.out.println("No series in the list - wow");
         }
         return null;
     }
@@ -735,6 +745,9 @@ public class SystemAdminController implements Initializable {
         return getSelectedProgramFromListView().getCredits().get(searchListViewCredits.getSelectionModel().getSelectedIndex());
     }
 
+
+
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         usertypeCombo.getItems().add("Producer");
@@ -755,6 +768,7 @@ public class SystemAdminController implements Initializable {
         programTypeSelection.getItems().add(transmission);
         programTypeSelection.getItems().add(tvSeries);
         programTypeSelection.getItems().add(episode);
+
         for (Credit.Function function : Facade.getInstance().getFunctions()) {
             functionSelection.getItems().add(function.role);
             functionUpdateSelection.getItems().add(function.role);

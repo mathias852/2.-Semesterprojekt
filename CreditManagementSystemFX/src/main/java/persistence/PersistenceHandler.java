@@ -2,6 +2,7 @@ package persistence;
 
 import domain.Facade;
 import domain.IPersistenceHandler;
+import domain.Notification;
 import domain.accesscontrol.Producer;
 import domain.accesscontrol.SystemAdmin;
 import domain.credit.Credit;
@@ -569,6 +570,53 @@ public class PersistenceHandler implements IPersistenceHandler {
             stmt.setString(2, credit.getFunction().role);
             stmt.setObject(3, program.getUuid());
 
+            return stmt.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public List<Notification> getNotifications() {
+        try {
+            PreparedStatement stmt = connection.prepareStatement("SELECT * FROM notifications");
+            ResultSet sqlReturnValues = stmt.executeQuery();
+            List<Notification> returnValue = new ArrayList<>();
+            while (sqlReturnValues.next()) {
+
+                Notification notification = new Notification(
+                        sqlReturnValues.getString(2));
+                notification.setSeen(sqlReturnValues.getBoolean(3));
+                returnValue.add(notification);
+            }
+            return returnValue;
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public boolean storeNotification(Notification notification) {
+        try {
+            PreparedStatement stmt = connection.prepareStatement("INSERT INTO notifications (title, seen) VALUES (?, ?)");
+            stmt.setString(1, notification.getTitle());
+            stmt.setBoolean(2, notification.getSeen());
+            return stmt.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public boolean updateNotification(Notification notification) {
+        try {
+            PreparedStatement stmt = connection.prepareStatement(
+                    "UPDATE notifications SET seen = ? WHERE title = ?");
+            stmt.setBoolean(1, notification.getSeen());
+            stmt.setString(2, notification.getTitle());
             return stmt.execute();
         } catch (SQLException e) {
             e.printStackTrace();

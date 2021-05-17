@@ -116,13 +116,10 @@ public class ProducerController implements Initializable {
                         Facade.getInstance().createCredit(creditedPerson, function, program);
                     }
                 }
-            } else {
-                System.out.println("Sorry, but you cannot add credits to a program you didn't create");
             }
 
 
         } catch (IndexOutOfBoundsException e) {
-            System.out.println("IndexOutOfBoundsException in createCredit createCredit method");
         }
     }
 
@@ -174,21 +171,18 @@ public class ProducerController implements Initializable {
                 episodeNumberText, tvSLabel, seasonNoLabel, episodeNoLabel));
 
         if (programTypeSelection.getValue().equals(transmission)) {
-            System.out.println(programTypeSelection.getValue());
             //Episode nodes
             episodeNodes.forEach(node -> node.setVisible(false));
             //Duration nodes
             durationNodes.forEach(node -> node.setVisible(true));
 
         } else if (programTypeSelection.getValue().equals(tvSeries)) {
-            System.out.println(programTypeSelection.getValue());
             //Episode nodes
             episodeNodes.forEach(node -> node.setVisible(false));
             //Duration nodes
             durationNodes.forEach(node -> node.setVisible(false));
 
         } else if (programTypeSelection.getValue().equals(episode)) {
-            System.out.println(programTypeSelection.getValue());
             //Episode nodes
             episodeNodes.forEach(node -> node.setVisible(true));
             //Duration nodes
@@ -254,7 +248,6 @@ public class ProducerController implements Initializable {
             }
             updateTvSeriesButton.setDisable(false);
         } catch (IndexOutOfBoundsException e){
-            System.out.println("IndexOutOfBoundsException in searchSeriesComboAction Method");
         }
     }
 
@@ -280,7 +273,6 @@ public class ProducerController implements Initializable {
                 }
             }
         } catch (NumberFormatException e) {
-            System.out.println("A numberFormatException in the searchSeasonComboAction method");
         }
     }
 
@@ -371,7 +363,6 @@ public class ProducerController implements Initializable {
 
             }
         } else {
-            System.out.println("You did not create this program - If you wish to change it either contact an admin or the owner of the program");
         }
     }
 
@@ -488,7 +479,6 @@ public class ProducerController implements Initializable {
             }
             myProgramTabUpdateTvSeriesButton.setDisable(false);
         } catch (IndexOutOfBoundsException e){
-            System.out.println("IndexOutOfBoundsException in myProgramTabSearchSeriesCombo method");
         }
     }
 
@@ -518,8 +508,7 @@ public class ProducerController implements Initializable {
                 }
             }
         } catch (NumberFormatException e) {
-            System.out.println("This is just happening because we parse the value 'null' as an integer. And we do that because" +
-                    " we clear the season-combobox");
+
         }
     }
 
@@ -560,7 +549,6 @@ public class ProducerController implements Initializable {
 
             Facade.getInstance().updateCredit(credit, function);
         } catch (IndexOutOfBoundsException e) {
-            System.out.println("UpdateCredit metoden får indexOutOfBoundsException");
         }
     }
 

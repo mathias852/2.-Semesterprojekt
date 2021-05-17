@@ -11,13 +11,17 @@ import persistence.PersistenceHandler;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.*;
+import java.time.format.DateTimeFormatter;
 
 public class Facade {
     private static Facade instance;
     private List<Program> programs = new ArrayList<>();
     private List<TVSeries> tvSeriesList = new ArrayList<>();
     private List<CreditedPerson> creditedPeople = new ArrayList<>();
+    private List<Notification> notifications = new ArrayList<>();
 
     public static Facade getInstance() {
         if (instance == null) {
@@ -42,6 +46,10 @@ public class Facade {
         tv.addEpisode(program);
         programs.add(program);
         persistenceHandler.storeEpisode(program);
+        Notification notification = new Notification(String.format("%s created an episode with the title \"%s\" on %s",
+                LoginHandler.getInstance().getCurrentUser().getUsername(), name, currentTime()));
+        notifications.add(notification);
+        persistenceHandler.storeNotification(notification);
     }
 
     //Create method for transmission when it's not stored in the DB(Text-files)
@@ -54,6 +62,10 @@ public class Facade {
         Transmission program = new Transmission(uuid, name, description, createdBy, duration, approved, production);
         programs.add(program);
         persistenceHandler.storeTransmission(program);
+        Notification notification = new Notification(String.format("%s created a transmission with the title \"%s\" on %s",
+                LoginHandler.getInstance().getCurrentUser().getUsername(), name, currentTime()));
+        notifications.add(notification);
+        persistenceHandler.storeNotification(notification);
     }
 
     //Create method for tv-series when it's not stored in the DB(Text-files)
@@ -66,6 +78,10 @@ public class Facade {
         TVSeries tvSeries = new TVSeries(uuid, name, description, createdBy);
         tvSeriesList.add(tvSeries);
         persistenceHandler.storeTVSeries(tvSeries);
+        Notification notification = new Notification(String.format("%s created a TV-series with the name \"%s\" on %s",
+                LoginHandler.getInstance().getCurrentUser().getUsername(), name, currentTime()));
+        notifications.add(notification);
+        persistenceHandler.storeNotification(notification);
     }
 
     //Create method when read from the DB(Text-file) **Note: We do not store a UUID which is why we don't have two create-methods for credits
@@ -73,6 +89,11 @@ public class Facade {
         Credit c = new Credit(creditedPerson, function);
         creditedProgram.addCredit(c);
         persistenceHandler.storeCredit(creditedProgram, c);
+        Notification notification = new Notification(String.format("%s added %s as a credit to the program %s with the role %s on %s",
+                LoginHandler.getInstance().getCurrentUser().getUsername(),
+                creditedPerson.getName(), creditedProgram.getName(), function.role, currentTime()));
+        notifications.add(notification);
+        persistenceHandler.storeNotification(notification);
     }
 
     //Create method for person when it's not stored in the DB(Text-files)
@@ -85,15 +106,19 @@ public class Facade {
         CreditedPerson creditedPerson = new CreditedPerson(uuid, name);
         creditedPeople.add(creditedPerson);
         persistenceHandler.storeCreditedPerson(creditedPerson);
+        Notification notification = new Notification(String.format("%s created a person with the name \"%s\" on %s",
+                LoginHandler.getInstance().getCurrentUser().getUsername(), name, currentTime()));
+        notifications.add(notification);
+        persistenceHandler.storeNotification(notification);
     }
 
     public void importFromDatabase() {
         tvSeriesList.addAll(persistenceHandler.getTVSeries());
 
         //programs.addAll(persistenceHandler.getEpisodes());
-        for (Episode episode : persistenceHandler.getEpisodes()){
-            for (TVSeries tvSeries : tvSeriesList){
-                if(episode.getTvSeries().getUuid().equals(tvSeries.getUuid())){
+        for (Episode episode : persistenceHandler.getEpisodes()) {
+            for (TVSeries tvSeries : tvSeriesList) {
+                if (episode.getTvSeries().getUuid().equals(tvSeries.getUuid())) {
                     tvSeries.addEpisode(episode);
                 }
             }
@@ -112,71 +137,47 @@ public class Facade {
                 }
             }
         }
+        notifications.addAll(persistenceHandler.getNotifications());
     }
 
 
-/*
     //Export/save programs, persons & credits to txt
     public void exportToTxt() throws IOException {
-        //Strings to be written in the corresponding file
-        String transmissionString;
-        String episodeString;
-        String CPString;
-        String tvSeriesString;
-        String creditStringTransmission;
-        String creditStringEpisode;
-
-       exportHandler.writeTransmission("");
-        exportHandler.writeEpisode("");
-        exportHandler.writeCredit("");
-        exportHandler.writePerson("");
-        exportHandler.writeTvSeries("");
-
-        exportHandler.fileWriter = new FileWriter(exportHandler.getCreditFile());
-        exportHandler.fileWriter = new FileWriter(exportHandler.getTransmission());
-        exportHandler.fileWriter = new FileWriter(exportHandler.getEpisode());
-        exportHandler.fileWriter = new FileWriter(exportHandler.getTvSeries());
-        exportHandler.fileWriter = new FileWriter(exportHandler.getPerson());
+        String krediteringDanmarkReport = "";
 
         //Loop through the programs array - if instance of transmission, we store that instance as a single line in the transmission-file
         for (Program p : programs) {
             if (p instanceof Transmission) {
-                transmissionString = p.getUuid() + ";" + p.getName() + ";" + p.getDescription() + ";" + p.getCreatedBy() + ";" + p.getDuration() + ";" + p.isApproved() + ";" + p.getProduction();
-                exportHandler.writeTransmission(transmissionString);
+                krediteringDanmarkReport += "Program ID: " + p.getUuid() + "\nName: " + p.getName() + "\nCredits: ";
                 //If the transmission has credits associated we store them in the credit-file
                 if (p.getCredits() != null) {
                     for (Credit credit : p.getCredits()) {
-                        creditStringTransmission = credit.getCreditedPerson().getUuid() + ";" + credit.getFunction().role + ";" + p.getUuid();
-                        exportHandler.writeCredit(creditStringTransmission);
+                        krediteringDanmarkReport += "\n\tPerson ID: " + credit.getCreditedPerson().getUuid() + "\n\t\tName: " +
+                                credit.getCreditedPerson().getName() + "\n\t\tCredited role: " + credit.getFunction().role;
                     }
+                } else {
+                    krediteringDanmarkReport += "\n\t<None>";
                 }
+                krediteringDanmarkReport += "\n\n";
                 //If instance of Episode - store in the episode-file
             } else if (p instanceof Episode) {
                 Episode e = (Episode) p;
-                episodeString = e.getUuid() + ";" + getTvSeriesFromEpisode(e).getUuid() + ";" + e.getName() + ";" + e.getDescription() + ";" + e.getCreatedBy() + ";" + e.getEpisodeNo() + ";" + e.getSeasonNo() + ";" + e.getDuration() + ";" + e.isApproved() + ";" + p.getProduction();
-                exportHandler.writeEpisode(episodeString);
+                krediteringDanmarkReport += "Program ID: " + p.getUuid() + "\nName: " + p.getName()
+                        + "\nSeason number: " + e.getSeasonNo() + "\nEpisode number: " + e.getEpisodeNo() + "\nCredits: ";
                 //If the episode has credits associated we store them in the credit-file
                 if (e.getCredits() != null) {
                     for (Credit credit : e.getCredits()) {
-                        creditStringEpisode = credit.getCreditedPerson().getUuid() + ";" + credit.getFunction().role + ";" + e.getUuid();
-                        exportHandler.writeCredit(creditStringEpisode);
+                        krediteringDanmarkReport += "\n\tPerson ID: " + credit.getCreditedPerson().getUuid() + "\n\t\tName: " +
+                                credit.getCreditedPerson().getName() + "\n\t\tCredited role: " + credit.getFunction().role;
                     }
+                } else {
+                    krediteringDanmarkReport += "\n\t<None>";
                 }
+                krediteringDanmarkReport += "\n\n";
             }
         }
-        //Loop through every instance of a credited person and store it in the person-file
-        for (CreditedPerson cp : creditedPeople) {
-            CPString = cp.getUuid() + ";" + cp.getName();
-            exportHandler.writePerson(CPString);
-        }
-        //Loop through every instance of a tv-series and store it in the person-file
-        for (TVSeries tvSeries : tvSeriesList) {
-            tvSeriesString = tvSeries.getUuid() + ";" + tvSeries.getName() + ";" + tvSeries.getDescription() + ";" + tvSeries.getCreatedBy();
-            exportHandler.writeTvSeries(tvSeriesString);
-        }
+        exportHandler.exportKrediteringDanmarkReport(krediteringDanmarkReport);
     }
-
- */
 
     /*
     //Here we import the text-files and create a new instance of every line from each file
@@ -224,7 +225,6 @@ public class Facade {
         }
         return null;
     }
-
 
 
     //Iterates through the tv series in facade and returns the tv series that the episode parameter is in
@@ -291,10 +291,25 @@ public class Facade {
         return null;
     }
 
+    public Notification getNotificationFromTitle(String title) {
+        for (Notification n : getNotifications()) {
+            if (n.getTitle().equals(title)) {
+                return n;
+            }
+        }
+        return null;
+    }
+
 
     //Update the values of the selected transmission
     public void updateTransmission(Program program, String name, String description, int duration, String production) {
         Transmission p = (Transmission) program;
+
+        Notification notification = new Notification(String.format("%s updated a transmission with the UUID %s and (new) name %s on %s",
+                LoginHandler.getInstance().getCurrentUser().getUsername(), program.getUuid().toString(), name, currentTime()));
+        notifications.add(notification);
+        persistenceHandler.storeNotification(notification);
+
         if (name != null) {
             p.setName(name);
         }
@@ -312,6 +327,12 @@ public class Facade {
     //Update the values of the selected episode
     public void updateEpisode(Program program, String name, String description, int duration, int seasonNo, int episodeNo, TVSeries tvSeries, String production) {
         Episode p = (Episode) program;
+
+        Notification notification = new Notification(String.format("%s updated an episode with the UUID %s and (new) name %s on %s",
+                LoginHandler.getInstance().getCurrentUser().getUsername(), program.getUuid().toString(), name, currentTime()));
+        notifications.add(notification);
+        persistenceHandler.storeNotification(notification);
+
         int oldSeasonNo = p.getSeasonNo();
         int oldEpisodeNo = p.getEpisodeNo(); //not used right now
         if (name != null) {
@@ -344,6 +365,11 @@ public class Facade {
 
     //Update the values of the selected tv-series
     public void updateTvSeries(TVSeries tvSeries, String name, String description) {
+        Notification notification = new Notification(String.format("%s updated a TV-series with the UUID %s and (new) name %s on %s",
+                LoginHandler.getInstance().getCurrentUser().getUsername(), tvSeries.getUuid().toString(), name, currentTime()));
+        notifications.add(notification);
+        persistenceHandler.storeNotification(notification);
+
         if (name != null) {
             tvSeries.setName(name);
         }
@@ -361,22 +387,45 @@ public class Facade {
         } else if (program instanceof Transmission) {
             persistenceHandler.updateTransmission((Transmission) program);
         }
+        Notification notification = new Notification(String.format("%s approved a program with the UUID %s and name %s on %s",
+                LoginHandler.getInstance().getCurrentUser().getUsername(), program.getUuid().toString(), program.getName(), currentTime()));
+        notifications.add(notification);
+        persistenceHandler.storeNotification(notification);
     }
 
     public void updateCredit(Credit credit, Credit.Function function) {
         String oldRole = credit.getFunction().role;
         credit.setFunction(function);
         persistenceHandler.updateCredit(getProgramFromCredit(credit), credit, oldRole);
+        Notification notification = new Notification(String.format("%s updated a credit for %s on %s from %s to now be %s on %s",
+                LoginHandler.getInstance().getCurrentUser().getUsername(), credit.getCreditedPerson().getName(),
+                getProgramFromCredit(credit).getName(), oldRole, function.role, currentTime()));
+        notifications.add(notification);
+        persistenceHandler.storeNotification(notification);
     }
 
     public void updatePerson(CreditedPerson creditedPerson, String name) {
         creditedPerson.setName(name);
         persistenceHandler.updateCreditedPerson(creditedPerson);
+        Notification notification = new Notification(String.format("%s updated a person with the UUID %s to now be named %s on %s",
+                LoginHandler.getInstance().getCurrentUser().getUsername(), creditedPerson.getUuid().toString(), name, currentTime()));
+        notifications.add(notification);
+        persistenceHandler.storeNotification(notification);
+    }
+
+    public void setNotificationAsSeen(Notification notification) {
+        notification.setSeen(true);
+        persistenceHandler.updateNotification(notification);
     }
 
     public void deleteCredit(Program program, Credit credit) {
         program.deleteCredit(credit);
         persistenceHandler.deleteCredit(program, credit);
+        Notification notification = new Notification(String.format("%s deleted a credit for %s on \"%s\" credited for %s on %s",
+                LoginHandler.getInstance().getCurrentUser().getUsername(), credit.getCreditedPerson().getName(),
+                getProgramFromCredit(credit).getName(), credit.getFunction().role, currentTime()));
+        notifications.add(notification);
+        persistenceHandler.storeNotification(notification);
     }
 
     public void deleteProgram(Program program) {
@@ -390,6 +439,18 @@ public class Facade {
         } else if (program instanceof Transmission) {
             persistenceHandler.deleteTransmission((Transmission) program);
         }
+        Notification notification = new Notification(String.format("%s deleted a program with the name %s and UUID %s on %s",
+                LoginHandler.getInstance().getCurrentUser().getUsername(), program.getName(),
+                program.getUuid().toString(), currentTime()));
+        notifications.add(notification);
+        persistenceHandler.storeNotification(notification);
+    }
+
+    //To get the current date + time formatted
+    public String currentTime() {
+        LocalDateTime myDateObj = LocalDateTime.now();
+        DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+        return myDateObj.format(myFormatObj);
     }
 
     public List<Credit.Function> getFunctions() {
@@ -406,5 +467,9 @@ public class Facade {
 
     public List<CreditedPerson> getCreditedPeople() {
         return creditedPeople;
+    }
+
+    public List<Notification> getNotifications() {
+        return notifications;
     }
 }

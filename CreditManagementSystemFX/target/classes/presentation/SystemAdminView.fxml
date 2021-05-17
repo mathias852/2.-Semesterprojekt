@@ -14,7 +14,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="presentation.SystemAdminController">
+<AnchorPane xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="presentation.SystemAdminController">
    <children>
       <TabPane fx:id="mainTabPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="531.0" prefWidth="653.0" tabClosingPolicy="UNAVAILABLE">
         <tabs>
@@ -76,7 +76,7 @@
                         <ComboBox fx:id="searchProgramCombo" layoutX="14.0" layoutY="21.0" onAction="#searchProgramComboAction" prefHeight="25.0" prefWidth="189.0" promptText="Choose program type" />
                         <ComboBox fx:id="searchSeriesCombo" disable="true" editable="true" layoutX="14.0" layoutY="67.0" onAction="#searchSeriesComboAction" prefHeight="25.0" prefWidth="189.0" promptText="Choose TV-series" />
                         <ComboBox fx:id="searchSeasonCombo" disable="true" editable="true" layoutX="14.0" layoutY="111.0" onAction="#searchSeasonComboAction" prefHeight="25.0" prefWidth="189.0" promptText="Choose season" />
-                        <Button fx:id="exportButton" layoutX="14.0" layoutY="458.0" mnemonicParsing="false" onAction="#exportButtonOnAction" text="Gem til .txt" />
+                        <Button fx:id="exportButton" layoutX="14.0" layoutY="458.0" mnemonicParsing="false" onAction="#exportButtonOnAction" text="Eksporter rapport" />
                         <ListView fx:id="searchListViewCredits" layoutX="215.0" layoutY="250.0" onMouseClicked="#selectCreditFromListView" prefHeight="233.0" prefWidth="300.0" />
                         <Button fx:id="updateProgramButton" layoutX="532.0" layoutY="21.0" mnemonicParsing="false" onAction="#updateUpdateTabProgramOnAction" text="Update program" />
                         <Button fx:id="updateCreditButton" layoutX="532.0" layoutY="251.0" mnemonicParsing="false" onAction="#updateUpdateTabCreditOnAction" text="Update credit" />
@@ -154,6 +154,20 @@
                      </children>
                   </AnchorPane>
                </content>
+            </Tab>
+            <Tab onSelectionChanged="#refreshSystemLogs" text="System logs">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <ListView fx:id="systemLogLV" layoutX="14.0" layoutY="65.0" onMouseClicked="#markNotificationsAsSeen" prefHeight="427.0" prefWidth="631.0" />
+                        <Label layoutX="14.0" layoutY="5.0" text="System logs">
+                           <font>
+                              <Font name="System Bold" size="13.0" />
+                           </font></Label>
+                        <Button layoutX="14.0" layoutY="29.0" mnemonicParsing="false" onMouseClicked="#markAllNotificationsAsSeen" text="Mark all as seen" />
+                     </children>
+                  </AnchorPane>
+              </content>
             </Tab>
            <Tab text="Settings">
               <content>

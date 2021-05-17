@@ -1,18 +1,8 @@
 package presentation;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.ResourceBundle;
-import java.util.UUID;
-
 import domain.Facade;
 import domain.LoginHandler;
-import domain.accesscontrol.Producer;
 import domain.credit.Credit;
-import domain.credit.CreditedPerson;
 import domain.program.Episode;
 import domain.program.Program;
 import domain.program.TVSeries;
@@ -20,11 +10,17 @@ import domain.program.Transmission;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
-import javafx.scene.control.*;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.ListView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.ResourceBundle;
+import java.util.UUID;
 
 public class GuestController implements Initializable {
 
@@ -96,14 +92,12 @@ public class GuestController implements Initializable {
         try {
             TVSeries series = Facade.getInstance().getTvSeriesList().get(searchSeriesCombo.getSelectionModel().getSelectedIndex());
             if (series.getSeasonMap() != null) {
-                System.out.println("Vi kom ind");
                 for (Integer i : series.getSeasonMap().keySet()) {
                     searchSeasonCombo.getItems().add(String.valueOf(i));
                 }
             }
         } catch (IndexOutOfBoundsException e){
-            System.out.println("Not yet implemented && Not sure why this is happening??? Yikes - " +
-                    "Think it has something to do with the change in combo-box you just made");
+
         }
     }
 
@@ -126,16 +120,13 @@ public class GuestController implements Initializable {
                 }
             }
         } catch (NumberFormatException e) {
-            System.out.println("This is just happening because we parse the value 'null' as an integer. And we do that because" +
-                    " we clear the season-combobox");
+
         }
     }
 
     @FXML
     void selectedProgramFromListView() {
         searchListViewCredits.getItems().clear();
-
-        //System.out.println(searchListView.getItem);
 
         Program selectedProgram = getSelectedProgramFromListView();
         if (selectedProgram.getProduction().equals(tv2Logo)){

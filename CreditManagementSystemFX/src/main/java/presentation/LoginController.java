@@ -54,11 +54,9 @@ public class LoginController implements Initializable {
         User user = LoginHandler.getInstance().verifyCredentials(username, password);
 
         if(user instanceof SystemAdmin){
-            System.out.println("Logged in as SysAdmin");
             App.setRoot("SystemAdminView");
             LoginHandler.getInstance().setCurrentUser(user);
         } else if(user instanceof Producer){
-            System.out.println("Logged in as Producer");
             App.setRoot("ProducerView");
             LoginHandler.getInstance().setCurrentUser(user);
         } else {
