@@ -224,6 +224,7 @@ public class ProducerController implements Initializable {
                 }
             }
         } else if (searchProgramCombo.getSelectionModel().getSelectedItem().equals(tvSeries)){
+            searchListView.getItems().clear();
             //Enables relevant nodes
             searchSeriesCombo.setDisable(false);
             searchSeasonCombo.setDisable(false);
@@ -283,24 +284,26 @@ public class ProducerController implements Initializable {
         //Changes visibility for above buttons.
         buttons.forEach(button -> button.setDisable(true));
 
-        searchListViewCredits.getItems().clear();
-        //If the user who created the program is the current user, the update-buttons are enables
-        if(getSelectedProgramFromListView().getCreatedBy().equals(LoginHandler.getInstance().getCurrentUser().getUuid())){
-            buttons.forEach(button -> button.setDisable(false));
-        }
+        if (searchListView.getItems().size() > 0) {
+            searchListViewCredits.getItems().clear();
+            //If the user who created the program is the current user, the update-buttons are enables
+            if(getSelectedProgramFromListView().getCreatedBy().equals(LoginHandler.getInstance().getCurrentUser().getUuid())){
+                buttons.forEach(button -> button.setDisable(false));
+            }
 
-        Program selectedProgram = getSelectedProgramFromListView();
-        if (selectedProgram.getProduction().equals(tv2Logo)){
-            creditedLogoImageView.setImage(tv2LogoImage);
-        } else if (selectedProgram.getProduction().equals(nordiskFilmLogo)){
-            creditedLogoImageView.setImage(nordiskFilmLogoImage);
-        }
+            Program selectedProgram = getSelectedProgramFromListView();
+            if (selectedProgram.getProduction().equals(tv2Logo)){
+                creditedLogoImageView.setImage(tv2LogoImage);
+            } else if (selectedProgram.getProduction().equals(nordiskFilmLogo)){
+                creditedLogoImageView.setImage(nordiskFilmLogoImage);
+            }
 
-        //Get the credits from the selected program IF the program contains credits
-        if(selectedProgram.getCredits() != null) {
-            ArrayList<Credit> credits = selectedProgram.getCredits();
-            for (Credit credit : credits) {
-                searchListViewCredits.getItems().add(credit.getCreditedPerson().getName() + ": " + credit.getFunction().role);
+            //Get the credits from the selected program IF the program contains credits
+            if(selectedProgram.getCredits() != null) {
+                ArrayList<Credit> credits = selectedProgram.getCredits();
+                for (Credit credit : credits) {
+                    searchListViewCredits.getItems().add(credit.getCreditedPerson().getName() + ": " + credit.getFunction().role);
+                }
             }
         }
     }
@@ -518,24 +521,26 @@ public class ProducerController implements Initializable {
                 myProgramTabUpdateProgramButton));
         buttons.forEach(node -> node.setDisable(true));
 
-        myProgramTabSearchListViewCredits.getItems().clear();
+        if (myProgramTabSearchListView.getItems().size() > 0) {
+            myProgramTabSearchListViewCredits.getItems().clear();
 
-        if(getSelectedProgramFromListView().getCreatedBy().equals(LoginHandler.getInstance().getCurrentUser().getUuid())){
-            buttons.forEach(node -> node.setDisable(false));
-        }
-        Program selectedProgram = getSelectedProgramFromListView();
+            if(getSelectedProgramFromListView().getCreatedBy().equals(LoginHandler.getInstance().getCurrentUser().getUuid())){
+                buttons.forEach(node -> node.setDisable(false));
+            }
+            Program selectedProgram = getSelectedProgramFromListView();
 
-        if (selectedProgram.getProduction().equals(tv2Logo)){
-            myProgramTabCreditedLogoImageView.setImage(tv2LogoImage);
-        } else if (selectedProgram.getProduction().equals(nordiskFilmLogo)){
-            myProgramTabCreditedLogoImageView.setImage(nordiskFilmLogoImage);
-        }
+            if (selectedProgram.getProduction().equals(tv2Logo)){
+                myProgramTabCreditedLogoImageView.setImage(tv2LogoImage);
+            } else if (selectedProgram.getProduction().equals(nordiskFilmLogo)){
+                myProgramTabCreditedLogoImageView.setImage(nordiskFilmLogoImage);
+            }
 
-        //Get the credits from the selected program IF the program contains credits
-        if(selectedProgram.getCredits() != null) {
-            ArrayList<Credit> credits = selectedProgram.getCredits();
-            for (Credit credit : credits) {
-                myProgramTabSearchListViewCredits.getItems().add(credit.getCreditedPerson().getName() + ": " + credit.getFunction().role);
+            //Get the credits from the selected program IF the program contains credits
+            if(selectedProgram.getCredits() != null) {
+                ArrayList<Credit> credits = selectedProgram.getCredits();
+                for (Credit credit : credits) {
+                    myProgramTabSearchListViewCredits.getItems().add(credit.getCreditedPerson().getName() + ": " + credit.getFunction().role);
+                }
             }
         }
     }

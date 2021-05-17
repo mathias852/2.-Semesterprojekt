@@ -76,6 +76,7 @@ public class GuestController implements Initializable {
             }
 
         } else if (searchProgramCombo.getSelectionModel().getSelectedItem().equals(tvSeries)){
+            searchListView.getItems().clear();
             searchSeriesCombo.setDisable(false);
             searchSeasonCombo.setDisable(false);
 
@@ -126,20 +127,22 @@ public class GuestController implements Initializable {
 
     @FXML
     void selectedProgramFromListView() {
-        searchListViewCredits.getItems().clear();
+        if (searchListView.getItems().size() > 0) {
+            searchListViewCredits.getItems().clear();
 
-        Program selectedProgram = getSelectedProgramFromListView();
-        if (selectedProgram.getProduction().equals(tv2Logo)){
-            creditedLogoImageView.setImage(tv2LogoImage);
-        } else if (selectedProgram.getProduction().equals(nordiskFilmLogo)){
-            creditedLogoImageView.setImage(nordiskFilmLogoImage);
-        }
+            Program selectedProgram = getSelectedProgramFromListView();
+            if (selectedProgram.getProduction().equals(tv2Logo)){
+                creditedLogoImageView.setImage(tv2LogoImage);
+            } else if (selectedProgram.getProduction().equals(nordiskFilmLogo)){
+                creditedLogoImageView.setImage(nordiskFilmLogoImage);
+            }
 
-        //Get the credits from the selected program IF the program contains credits
-        if(selectedProgram.getCredits() != null) {
-            ArrayList<Credit> credits = selectedProgram.getCredits();
-            for (Credit credit : credits) {
-                searchListViewCredits.getItems().add(credit.getCreditedPerson().getName() + ": " + credit.getFunction().role);
+            //Get the credits from the selected program IF the program contains credits
+            if(selectedProgram.getCredits() != null) {
+                ArrayList<Credit> credits = selectedProgram.getCredits();
+                for (Credit credit : credits) {
+                    searchListViewCredits.getItems().add(credit.getCreditedPerson().getName() + ": " + credit.getFunction().role);
+                }
             }
         }
     }

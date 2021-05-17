@@ -24,7 +24,6 @@ public class TVSeries {
             seasonMap.put(e.getSeasonNo(), new ArrayList<Episode>());
         }
         seasonMap.get(e.getSeasonNo()).add(e);
-        System.out.println("added episode: " + e.getEpisodeNo() + ", " + e.getName() + " to season: " + e.getSeasonNo());
     }
     public UUID getUuid() {
         return uuid;

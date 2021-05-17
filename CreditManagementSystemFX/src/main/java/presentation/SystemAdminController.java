@@ -267,6 +267,7 @@ public class SystemAdminController implements Initializable {
             }
 
         } else if (searchProgramCombo.getSelectionModel().getSelectedItem().equals(tvSeries)) {
+            searchListView.getItems().clear();
             searchSeriesCombo.setDisable(false);
             searchSeasonCombo.setDisable(false);
 
@@ -421,7 +422,6 @@ public class SystemAdminController implements Initializable {
         Credit credit = program.getCredits().get(searchListViewCredits.getSelectionModel().getSelectedIndex());
         creditedPersonUpdateLabel.setText(credit.getCreditedPerson().getName() + ": " + credit.getCreditedPerson().getUuid());
         programUpdateSelection.setText(program.getName());
-
         functionUpdateSelection.getSelectionModel().select(credit.getFunction().role);
         mainTabPane.getSelectionModel().select(updateTab);
     }

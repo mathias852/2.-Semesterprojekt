@@ -282,9 +282,11 @@ public class Facade {
 
     public Program getProgramFromCredit(Credit credit) {
         for (Program program : getPrograms()) {
-            for (Credit c : program.getCredits()) {
-                if (c.equals(credit)) {
-                    return program;
+            if (program.getCredits() != null) {
+                for (Credit c : program.getCredits()) {
+                    if (c.equals(credit)) {
+                        return program;
+                    }
                 }
             }
         }
