@@ -15,6 +15,7 @@ public class Episode extends Program {
         this.seasonNo = seasonNo;
         this.episodeNo = episodeNo;
     }
+
     public int getEpisodeNo() {
         return episodeNo;
     }

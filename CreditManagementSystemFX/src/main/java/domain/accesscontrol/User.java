@@ -23,10 +23,8 @@ public class User {
             users = new ArrayList<>();
         }
         if (user instanceof SystemAdmin && !users.contains(user)){
-            System.out.println("Added a new admin to the list: " + user.getUsername());
             users.add(user);
         } else if (user instanceof Producer && !users.contains(user)) {
-            System.out.println("Added a new producer to the list: " + user.getUsername());
             users.add(user);
         }
     }

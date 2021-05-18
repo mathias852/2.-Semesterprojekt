@@ -1,5 +1,7 @@
 package domain.credit;
 
+import java.util.UUID;
+
 public class Credit {
 
     private CreditedPerson creditedPerson;
@@ -10,7 +12,7 @@ public class Credit {
         this.function = function;
     }
 
-    //Enum that contains all of the "possible" functions/rolls for a credit
+    //Enum that contains all of the "possible" functions/roles for a credit
     public enum Function {
         VISUALARTIST("Billedkunstnere"),
         PICTUREANDSOUND("Billed- og lydredigering"),

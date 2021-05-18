@@ -19,8 +19,8 @@ public abstract class Program {
         this.uuid = UUID.randomUUID();
         this.name = name;
     }
-
-    public Program(UUID uuid, String name, String description, UUID createdBy, int duration,boolean approved, String production) { // createdBy tager userID fra creator
+    // createdBy tager userID fra creator
+    public Program(UUID uuid, String name, String description, UUID createdBy, int duration, boolean approved, String production) {
         this.uuid = uuid;
         this.name = name;
         this.description = description;

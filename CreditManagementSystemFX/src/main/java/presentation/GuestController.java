@@ -1,17 +1,8 @@
 package presentation;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.ResourceBundle;
-import java.util.UUID;
-
 import domain.Facade;
-import domain.accesscontrol.Producer;
+import domain.LoginHandler;
 import domain.credit.Credit;
-import domain.credit.CreditedPerson;
 import domain.program.Episode;
 import domain.program.Program;
 import domain.program.TVSeries;
@@ -19,13 +10,17 @@ import domain.program.Transmission;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
-import javafx.scene.control.*;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.ListView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 
-import static presentation.LoginController.loginHandler;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.ResourceBundle;
+import java.util.UUID;
 
 public class GuestController implements Initializable {
 
@@ -42,7 +37,7 @@ public class GuestController implements Initializable {
     private final String tvSeries = "TV-Series";
     private final String episode = "Episode";
 
-    private final String tv2Logo = "Tv2";
+    private final String tv2Logo = "TV2";
     private final String nordiskFilmLogo = "Nordisk Film";
 
     private final File nordiskFilmLogoFile = new File("src/main/resources/presentation/NF-Logo.png");
@@ -51,8 +46,6 @@ public class GuestController implements Initializable {
     private final Image nordiskFilmLogoImage = new Image(nordiskFilmLogoFile.toURI().toString());
     private final Image tv2LogoImage = new Image(tv2LogoFile.toURI().toString());
 
-    private final Facade facade = new Facade();
-
     @FXML
     void logOutAction(ActionEvent e) throws IOException{
         App.setRoot("logInPage");
@@ -60,7 +53,7 @@ public class GuestController implements Initializable {
 
     @FXML
     void exportButtonOnAction(ActionEvent event) throws IOException {
-        facade.exportToTxt();
+        //facade.exportToTxt();
     }
 
     @FXML
@@ -75,18 +68,19 @@ public class GuestController implements Initializable {
             searchSeasonCombo.setPromptText("Choose season");
 
             searchListView.getItems().clear();
-            for (Program program : facade.getPrograms()) {
+            for (Program program : Facade.getInstance().getPrograms()) {
                 if (program instanceof Transmission && program.isApproved()) {
-                    searchListView.getItems().add(program.getName() + ": Programansvarlig: " + loginHandler.getUserFromUuid(program.getCreatedBy()).getUsername());
+                    searchListView.getItems().add(program.getName() + ": Programansvarlig: " + LoginHandler.getInstance().getUserFromUuid(program.getCreatedBy()).getUsername());
 
                 }
             }
 
         } else if (searchProgramCombo.getSelectionModel().getSelectedItem().equals(tvSeries)){
+            searchListView.getItems().clear();
             searchSeriesCombo.setDisable(false);
             searchSeasonCombo.setDisable(false);
 
-            for (TVSeries tvSeries : facade.getTvSeriesList()) {
+            for (TVSeries tvSeries : Facade.getInstance().getTvSeriesList()) {
                 searchSeriesCombo.getItems().add(tvSeries.getName());
             }
         }
@@ -97,15 +91,14 @@ public class GuestController implements Initializable {
         searchSeasonCombo.getItems().clear();
         //To find the episodes based on a season from a TV-series
         try {
-            TVSeries series = facade.getTvSeriesList().get(searchSeriesCombo.getSelectionModel().getSelectedIndex());
+            TVSeries series = Facade.getInstance().getTvSeriesList().get(searchSeriesCombo.getSelectionModel().getSelectedIndex());
             if (series.getSeasonMap() != null) {
                 for (Integer i : series.getSeasonMap().keySet()) {
                     searchSeasonCombo.getItems().add(String.valueOf(i));
                 }
             }
         } catch (IndexOutOfBoundsException e){
-            System.out.println("Not yet implemented && Not sure why this is happening??? Yikes - " +
-                    "Think it has something to do with the change in combo-box you just made");
+
         }
     }
 
@@ -118,7 +111,7 @@ public class GuestController implements Initializable {
                 TVSeries series = getSelectedTvSeriesFromComboBox();
                 for (Episode episode : series.getSeasonMap().get(Integer.parseInt(searchSeasonCombo.getSelectionModel().getSelectedItem()))) {
                     if (episode.isApproved()) {
-                        searchListView.getItems().add(episode.getName() + ": Programansvarlig: " + loginHandler.getUserFromUuid(episode.getCreatedBy()).getUsername());
+                        searchListView.getItems().add(episode.getName() + ": Programansvarlig: " + LoginHandler.getInstance().getUserFromUuid(episode.getCreatedBy()).getUsername());
                         if (episode.getProduction().equals(tv2Logo)){
                             creditedLogoImageView.setImage(tv2LogoImage);
                         } else if (episode.getProduction().equals(nordiskFilmLogo)){
@@ -128,29 +121,28 @@ public class GuestController implements Initializable {
                 }
             }
         } catch (NumberFormatException e) {
-            System.out.println("This is just happening because we parse the value 'null' as an integer. And we do that because" +
-                    " we clear the season-combobox");
+
         }
     }
 
     @FXML
     void selectedProgramFromListView() {
-        searchListViewCredits.getItems().clear();
+        if (searchListView.getItems().size() > 0) {
+            searchListViewCredits.getItems().clear();
 
-        //System.out.println(searchListView.getItem);
+            Program selectedProgram = getSelectedProgramFromListView();
+            if (selectedProgram.getProduction().equals(tv2Logo)){
+                creditedLogoImageView.setImage(tv2LogoImage);
+            } else if (selectedProgram.getProduction().equals(nordiskFilmLogo)){
+                creditedLogoImageView.setImage(nordiskFilmLogoImage);
+            }
 
-        Program selectedProgram = getSelectedProgramFromListView();
-        if (selectedProgram.getProduction().equals(tv2Logo)){
-            creditedLogoImageView.setImage(tv2LogoImage);
-        } else if (selectedProgram.getProduction().equals(nordiskFilmLogo)){
-            creditedLogoImageView.setImage(nordiskFilmLogoImage);
-        }
-
-        //Get the credits from the selected program IF the program contains credits
-        if(selectedProgram.getCredits() != null) {
-            ArrayList<Credit> credits = selectedProgram.getCredits();
-            for (Credit credit : credits) {
-                searchListViewCredits.getItems().add(credit.getCreditedPerson().getName() + ": " + credit.getFunction().role);
+            //Get the credits from the selected program IF the program contains credits
+            if(selectedProgram.getCredits() != null) {
+                ArrayList<Credit> credits = selectedProgram.getCredits();
+                for (Credit credit : credits) {
+                    searchListViewCredits.getItems().add(credit.getCreditedPerson().getName() + ": " + credit.getFunction().role);
+                }
             }
         }
     }
@@ -162,7 +154,7 @@ public class GuestController implements Initializable {
         String input = searchSeriesCombo.getEditor().getText();
         searchForTVSLV.getItems().clear();
         if (input.length() >= 1) {
-            for (TVSeries tvSeries : facade.getTvSeriesList()) {
+            for (TVSeries tvSeries : Facade.getInstance().getTvSeriesList()) {
                 if (tvSeries.getName().length() >= input.length()
                         && !searchForTVSLV.getItems().contains(input)
                         && tvSeries.getName().substring(0,input.length()).equalsIgnoreCase(input)) {
@@ -203,7 +195,7 @@ public class GuestController implements Initializable {
             ArrayList<Program> programs = new ArrayList<>();
             for (String programText : searchListView.getItems()) {
                 String[] splitProgramText = programText.split(":");
-                Program program = facade.getProgramFromUuid(UUID.fromString(splitProgramText[1].trim()));
+                Program program = Facade.getInstance().getProgramFromUuid(UUID.fromString(splitProgramText[1].trim()));
                 programs.add(program);
             }
             for (Program program : programs) {
@@ -312,7 +304,7 @@ public class GuestController implements Initializable {
         String input = searchForFunctionCB.getEditor().getText();
         searchForFunctionLV.getItems().clear();
         if (input.length() >= 1) {
-            for (Credit.Function function : facade.getFunctions()) {
+            for (Credit.Function function : Facade.getInstance().getFunctions()) {
                 String functionName = function.role;
                 if (functionName.length() >= input.length()
                         && !searchForFunctionLV.getItems().contains(input)
@@ -353,7 +345,7 @@ public class GuestController implements Initializable {
     }
 
     private TVSeries getSelectedTvSeriesFromComboBox() {
-        return facade.getTvSeriesList().get(searchSeriesCombo.getSelectionModel().getSelectedIndex());
+        return Facade.getInstance().getTvSeriesList().get(searchSeriesCombo.getSelectionModel().getSelectedIndex());
     }
 
     private Program getSelectedProgramFromListView() {
@@ -363,7 +355,7 @@ public class GuestController implements Initializable {
         String[] viewStringArray = viewString.split(":");
 
         //Use the getProgramFromCreatedBy method from the facade to get the program from the UUID of the creator. The trim after the string is to get rid of whitespace
-        return facade.getProgramFromCreatedBy(viewStringArray[0], loginHandler.getUserFromUsername(viewStringArray[2].trim()).getUuid());
+        return Facade.getInstance().getProgramFromCreatedBy(viewStringArray[0], LoginHandler.getInstance().getUserFromUsername(viewStringArray[2].trim()).getUuid());
     }
 
     private Credit getSelectedCreditFromListView() {
@@ -372,11 +364,9 @@ public class GuestController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        facade.importFromTxt();
-
         searchProgramCombo.getItems().add(transmission);
         searchProgramCombo.getItems().add(tvSeries);
-        for (Credit.Function function : facade.getFunctions()) {
+        for (Credit.Function function : Facade.getInstance().getFunctions()) {
             searchForFunctionCB.getItems().add(function.role);
         }
     }

@@ -1,0 +1,40 @@
+Program ID: f85a5a3a-dd0e-4943-a54c-940eead342eb
+Name: Everything burns
+Season number: 2
+Episode number: 1
+Credits: 
+	Person ID: 6cd868ae-2666-408b-8d06-5945bf742d6c
+		Name: Nicklas Jensen
+		Credited role: Dronefører
+	Person ID: 1e3ccd36-f8d8-40fd-bd88-37b2843c8b72
+		Name: Kasper Stokholm
+		Credited role: Danske undertekster
+
+Program ID: 0ee8bea9-f0f6-41dc-8658-e0e8475553cc
+Name: De sprøjter alle sammen
+Season number: 3
+Episode number: 2
+Credits: 
+	<None>
+
+Program ID: 2a93e924-6638-465a-b5cd-cb8d16f00d69
+Name: Top Gun
+Credits: 
+	Person ID: 05a639ea-79a3-43b9-b0d7-079b6fce3e56
+		Name: Mathias Engmark
+		Credited role: Casting
+
+Program ID: ae880937-b2cd-4206-b8c8-35966165390a
+Name: Melodi Gran Prix
+Credits: 
+	Person ID: af8c0e36-3abf-4f97-99b6-3d7c6d94ce1b
+		Name: Anton Irvold
+		Credited role: Kor
+
+Program ID: 3129a54d-2d5f-4fbc-a39a-9c478905ff11
+Name: Flyvende Farmor
+Credits: 
+	Person ID: 2685807d-a300-46fa-b087-8abd995befa6
+		Name: Oliver Heine
+		Credited role: Efter ide af
+

@@ -4,6 +4,7 @@ import domain.accesscontrol.Producer;
 import domain.accesscontrol.SystemAdmin;
 import domain.accesscontrol.User;
 import persistence.ExportHandler;
+import persistence.PersistenceHandler;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -11,66 +12,68 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 public class LoginHandler {
-
+    private static LoginHandler instance;
     private ArrayList<User> users = new ArrayList<>();
     private User currentUser;
 
     ExportHandler exportHandler = new ExportHandler();
+    IPersistenceHandler persistenceHandler = PersistenceHandler.getInstance();
+
+    public static LoginHandler getInstance() {
+        if (instance == null) {
+            instance = new LoginHandler();
+        }
+        return instance;
+    }
 
 
     //Create method for producer when made in the application
-    public boolean createProducer(String userName, int password) {
-        User user = new Producer(UUID.randomUUID(), userName, password);
-        return addUser(user);
+    public boolean createProducer(String username, int password) {
+        return createProducer(UUID.randomUUID(), username, password);
     }
 
     //Create method for system Admin when made in the application
-    public boolean createSystemAdmin(String userName, int password) {
-        User user = new SystemAdmin(UUID.randomUUID(), userName, password);
-        return addUser(user);
+    public boolean createSystemAdmin(String username, int password) {
+        return createSystemAdmin(UUID.randomUUID(), username, password);
     }
 
     //Create method for producer when we have the UUID (Read from the DB)
-    public void createProducer(UUID uuid, String userName, int password) {
-        User user = new Producer(uuid, userName, password);
-        addUser(user);
+    public boolean createProducer(UUID uuid, String username, int password) {
+        User user = new Producer(uuid, username, password);
+        persistenceHandler.storeProducer((Producer) user);
+        return addUser(user);
     }
 
     //Create method for systemAdmin when we have the UUID (Read from the DB)
-    public void createSystemAdmin(UUID uuid, String userName, int password) {
-        User user = new SystemAdmin(uuid, userName, password);
-        addUser(user);
+    public boolean createSystemAdmin(UUID uuid, String username, int password) {
+        User user = new SystemAdmin(uuid, username, password);
+        persistenceHandler.storeSystemAdmin((SystemAdmin) user);
+        return addUser(user);
     }
 
+    /*
     public void exportUsersToTxt() throws IOException {
         String producer = "";
         String sysAdmin = "";
 
-        exportHandler.fileWriter = new FileWriter(exportHandler.getProducerFile());
-        exportHandler.fileWriter = new FileWriter(exportHandler.getSystemAdmin());
+        persistenceHandler.fileWriter = new FileWriter(persistenceHandler.getProducerFile());
+        persistenceHandler.fileWriter = new FileWriter(persistenceHandler.getSystemAdmin());
 
         for (User user : getUsers()) {
             if (user instanceof SystemAdmin) {
                 sysAdmin = user.getUuid() + ";" + user.getUsername() + ";" + user.getHashedPassword();
-                exportHandler.writeSystemAdmin(sysAdmin);
+                persistenceHandler.writeSystemAdmin(sysAdmin);
             } else if (user instanceof Producer) {
                 producer = user.getUuid() + ";" + user.getUsername() + ";" + user.getHashedPassword();
-                exportHandler.writeProducer(producer);
+                persistenceHandler.writeProducer(producer);
             }
         }
     }
-
+     */
 
     public void importLogins(){
-        ArrayList<String[]> producers = exportHandler.readProducer();
-        for(String[] s : producers){
-            createProducer(UUID.fromString(s[0]), s[1], Integer.parseInt(s[2]));
-        }
-
-        ArrayList<String[]> sysAdmin = exportHandler.readSystemAdmin();
-        for(String[] s : sysAdmin){
-            createSystemAdmin(UUID.fromString(s[0]), s[1], Integer.parseInt(s[2]));
-        }
+        users.addAll(persistenceHandler.getProducers());
+        users.addAll(persistenceHandler.getSystemAdmins());
     }
 
 
@@ -98,27 +101,29 @@ public class LoginHandler {
             users = new ArrayList<>();
         }
         if (user instanceof SystemAdmin && !users.contains(user)){
-            System.out.println("Added a new admin to the list: " + user.getUsername());
             users.add(user);
             return true;
         } else if (user instanceof Producer && !users.contains(user)) {
-            System.out.println("Added a new producer to the list: " + user.getUsername());
             users.add(user);
             return true;
         }
         return false;
     }
 
-    // Tjekker om userliste eksisterer, sletter givne user fra liste.
+    // Tjekker om user-listen eksisterer, sletter givne user fra liste.
     public void deleteUser(User user) {
         if(users != null){
             users.remove(user);
+            if (user instanceof SystemAdmin) {
+                persistenceHandler.deleteSystemAdmin((SystemAdmin) user);
+            } else if (user instanceof Producer) {
+                persistenceHandler.deleteProducer((Producer) user);
+            }
         }
     }
 
     public User verifyCredentials(String username, int password) {
         for (User p : users) {
-            System.out.println("WE ARE IN LOOP");
             if (p.getUsername().equalsIgnoreCase(username) && p.getHashedPassword() == password) {
                 this.currentUser = p;
                 return p;
