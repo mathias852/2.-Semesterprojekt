@@ -18,14 +18,12 @@ import domain.program.Episode;
 import domain.program.Program;
 import domain.program.TVSeries;
 import domain.program.Transmission;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 
 public class ProducerController implements Initializable {
     @FXML
@@ -76,14 +74,14 @@ public class ProducerController implements Initializable {
     private final Image tv2LogoImage = new Image(tv2LogoFile.toURI().toString());
 
     @FXML
-    void logOutAction(ActionEvent e) throws IOException{
+    void logOutAction() throws IOException{
         //facade.exportToTxt();
         App.setRoot("logInPage");
     }
 
     //Method for the createPerson-button
     @FXML
-    void createPerson(ActionEvent event) {
+    void createPerson() {
         //Uses the createPerson-method from the facade
         if (!creditedPersonNameText.getText().isEmpty()) {
             Facade.getInstance().createPerson(creditedPersonNameText.getText());
@@ -93,7 +91,7 @@ public class ProducerController implements Initializable {
     }
 
     @FXML
-    void createCredit(ActionEvent event) {
+    void createCredit() {
         try {
             //Programmet hentes igennem index for vores program drop-down menu
             Program program = Facade.getInstance().getPrograms().get(programSelection.getSelectionModel().getSelectedIndex());
@@ -125,7 +123,7 @@ public class ProducerController implements Initializable {
 
     //Below method creates a program with given/relevant input
     @FXML
-    void createProgram(ActionEvent event) {
+    void createProgram() {
 
         String name = nameText.getText();
         String description = descriptionText.getText();
@@ -165,7 +163,7 @@ public class ProducerController implements Initializable {
     }
 
     @FXML
-    void dropDownSelection(ActionEvent event) {
+    void dropDownSelection() {
         ArrayList<Node> durationNodes = new ArrayList<>(Arrays.asList(durationLabel, durationText));
         ArrayList<Node> episodeNodes = new ArrayList<>(Arrays.asList(tvSeriesSelection, seasonNumberText,
                 episodeNumberText, tvSLabel, seasonNoLabel, episodeNoLabel));
@@ -191,13 +189,13 @@ public class ProducerController implements Initializable {
     }
 
     @FXML
-    void exportButtonOnAction(ActionEvent event) throws IOException {
+    void exportButtonOnAction() throws IOException {
         //Export to txt
         //facade.exportToTxt();
     }
 
     @FXML
-    void searchProgramComboAction(ActionEvent event) {
+    void searchProgramComboAction() {
         searchSeriesCombo.getItems().clear();
         creditedLogoImageView.setImage(null);
 
@@ -237,7 +235,7 @@ public class ProducerController implements Initializable {
     }
 
     @FXML
-    void searchSeriesComboAction(ActionEvent event) {
+    void searchSeriesComboAction() {
         searchSeasonCombo.getItems().clear();
         //To find the episodes based on a season from a TV-series
         try {
@@ -253,7 +251,7 @@ public class ProducerController implements Initializable {
     }
 
     @FXML
-    void searchSeasonComboAction(ActionEvent event) {
+    void searchSeasonComboAction() {
         creditedLogoImageView.setImage(null);
         try {
             searchListView.getItems().clear();
@@ -278,9 +276,9 @@ public class ProducerController implements Initializable {
     }
 
     @FXML
-    void selectedProgramFromListView(MouseEvent event) {
+    void selectedProgramFromListView() {
         //List for related buttons.
-        ArrayList<Button> buttons = new ArrayList<>(Arrays.asList(updateCreditButton, updateProgramButton));
+        ArrayList<Button> buttons = new ArrayList<>(Arrays.asList(updateCreditButton, updatePersonButton, updateProgramButton));
         //Changes visibility for above buttons.
         buttons.forEach(button -> button.setDisable(true));
 
@@ -309,7 +307,7 @@ public class ProducerController implements Initializable {
     }
 
     @FXML
-    void updateUpdateTabProgramOnAction(ActionEvent event) {
+    void updateUpdateTabProgramOnAction() {
         if(LoginHandler.getInstance().getCurrentUser().getUuid().equals(getSelectedProgramFromListView().getCreatedBy())){
 
             //Insert related notes to an arrayList
@@ -370,7 +368,7 @@ public class ProducerController implements Initializable {
     }
 
     @FXML
-    void updateTabUpdateCredit(ActionEvent event) {
+    void updateTabUpdateCredit() {
         Program program = getSelectedProgramFromListView();
         Credit credit = null;
 
@@ -395,12 +393,12 @@ public class ProducerController implements Initializable {
     }
 
     @FXML
-    void updateUpdateTabPersonOnAction(ActionEvent event) {
+    void updateUpdateTabPersonOnAction() {
         System.out.println("Not yet implemented");
     }
 
     @FXML
-    void updateUpdateTabTVSeriesOnAction(ActionEvent event) {
+    void updateUpdateTabTVSeriesOnAction() {
         ArrayList<Node> tvSeriesNodes = new ArrayList<>(Arrays.asList(
                 nameUpdateLabel, nameUpdateText, descriptionUpdateText, descriptionUpdateLabel));
         ArrayList<Node> programNodes = new ArrayList<>(Arrays.asList(
@@ -428,7 +426,7 @@ public class ProducerController implements Initializable {
 
 
     @FXML
-    void myProgramTabSearchProgramCombo(ActionEvent event) {
+    void myProgramTabSearchProgramCombo() {
         myProgramTabSearchSeriesCombo.getItems().clear();
         myProgramTabCreditedLogoImageView.setImage(null);
         String approvedComboBox = myProgramTabApprovedComboBox.getSelectionModel().getSelectedItem();
@@ -470,7 +468,7 @@ public class ProducerController implements Initializable {
 
 
     @FXML
-    void myProgramTabSearchSeriesCombo(ActionEvent event) {
+    void myProgramTabSearchSeriesCombo() {
         myProgramTabSearchSeasonCombo.getItems().clear();
         //To find the episodes based on a season from a TV-series
         try {
@@ -486,7 +484,7 @@ public class ProducerController implements Initializable {
     }
 
     @FXML
-    void myProgramTabSearchSeasonCombo(ActionEvent event) {
+    void myProgramTabSearchSeasonCombo() {
         myProgramTabCreditedLogoImageView.setImage(null);
         String approvedComboBox = myProgramTabApprovedComboBox.getSelectionModel().getSelectedItem();
 
@@ -516,8 +514,8 @@ public class ProducerController implements Initializable {
     }
 
     @FXML
-    void myProgramTabSelectedProgramFromListView(MouseEvent event) {
-        ArrayList<Button> buttons = new ArrayList<>(Arrays.asList(myProgramTabUpdateCreditButton,
+    void myProgramTabSelectedProgramFromListView() {
+        ArrayList<Button> buttons = new ArrayList<>(Arrays.asList(myProgramTabUpdateCreditButton, myProgramTabUpdatePersonButton,
                 myProgramTabUpdateProgramButton));
         buttons.forEach(node -> node.setDisable(true));
 
@@ -546,7 +544,7 @@ public class ProducerController implements Initializable {
     }
 
     @FXML
-    void updateCredit(ActionEvent event) {
+    void updateCredit() {
         try {
             //Programmet hentes igennem index for vores program drop-down menu
             Credit credit = getSelectedCreditFromListView();
@@ -558,7 +556,7 @@ public class ProducerController implements Initializable {
     }
 
     @FXML
-    void updateProgram(ActionEvent event) {
+    void updateProgram() {
         Program program = Facade.getInstance().getProgramFromUuid(UUID.fromString(currentlyUpdatingUUID.getText()));
         String name = nameUpdateText.getText();
         String description = descriptionUpdateText.getText();
@@ -580,7 +578,7 @@ public class ProducerController implements Initializable {
     }
 
     @FXML
-    void updateTvSeries(ActionEvent event) {
+    void updateTvSeries() {
         TVSeries tvSeries = Facade.getInstance().getTvSeriesFromUuid(UUID.fromString(currentlyUpdatingUUID.getText()));
         String name = nameUpdateText.getText();
         String description = descriptionUpdateText.getText();
@@ -659,10 +657,12 @@ public class ProducerController implements Initializable {
         //If the method is called from the update-tab, the following if-statement's value is returned.
         if (mainTabPane.getSelectionModel().getSelectedItem().getText().equals("Update")){
             Program program = Facade.getInstance().getProgramFromUuid(UUID.fromString(programUuidUpdateSelection.getText()));
+            program.setApproved(false);
             return program.getCredits().get(Integer.parseInt(creditIndexUpdateSelection.getText()));
         }
 
         Program selectedProgram = getSelectedProgramFromListView();
+        selectedProgram.setApproved(false);
 
         if (mainTabPane.getSelectionModel().getSelectedItem().getText().equals("Search/view")) {
             //Choose the String-item from the listview instead of the index

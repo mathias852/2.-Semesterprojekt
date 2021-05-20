@@ -7,14 +7,12 @@ import domain.program.Episode;
 import domain.program.Program;
 import domain.program.TVSeries;
 import domain.program.Transmission;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -47,17 +45,17 @@ public class GuestController implements Initializable {
     private final Image tv2LogoImage = new Image(tv2LogoFile.toURI().toString());
 
     @FXML
-    void logOutAction(ActionEvent e) throws IOException{
+    void logOutAction() throws IOException{
         App.setRoot("logInPage");
     }
 
     @FXML
-    void exportButtonOnAction(ActionEvent event) throws IOException {
+    void exportButtonOnAction() throws IOException {
         //facade.exportToTxt();
     }
 
     @FXML
-    void searchProgramComboAction(ActionEvent event) {
+    void searchProgramComboAction() {
         searchSeriesCombo.getItems().clear();
         if (searchProgramCombo.getSelectionModel().getSelectedItem().equals(transmission)){
             searchSeriesCombo.setDisable(true);
@@ -87,7 +85,7 @@ public class GuestController implements Initializable {
     }
 
     @FXML
-    void searchSeriesComboAction(ActionEvent event) {
+    void searchSeriesComboAction() {
         searchSeasonCombo.getItems().clear();
         //To find the episodes based on a season from a TV-series
         try {
@@ -103,7 +101,7 @@ public class GuestController implements Initializable {
     }
 
     @FXML
-    void searchSeasonComboAction(ActionEvent event) {
+    void searchSeasonComboAction() {
         try {
             searchListView.getItems().clear();
 
