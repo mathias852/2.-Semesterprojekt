@@ -156,8 +156,10 @@ public class GuestController implements Initializable {
     @FXML
     void selectAndHideMatchingTVS() {
         searchSeasonCombo.getItems().clear();
-        String[] tvSeries = searchForTVSLV.getSelectionModel().getSelectedItem().split(";");
-        searchSeriesCombo.setValue(tvSeries[0]);
+        if (searchForTVSLV.getSelectionModel().getSelectedItem() != null) {
+            String[] tvSeries = searchForTVSLV.getSelectionModel().getSelectedItem().split(";");
+            searchSeriesCombo.setValue(tvSeries[0]);
+        }
         searchForTVSLV.setVisible(false);
     }
 
@@ -201,36 +203,8 @@ public class GuestController implements Initializable {
      */
     @FXML
     void showMatchingFunctions() {
-        searchForFunctionLV.setVisible(true);
-        String input = searchForFunctionCB.getEditor().getText();
-        searchForFunctionLV.getItems().clear();
-        if (input.length() >= 1) {
-            for (Credit.Function function : Facade.getInstance().getFunctions()) {
-                String functionName = function.role;
-                if (functionName.length() >= input.length()
-                        && !searchForFunctionLV.getItems().contains(input)
-                        && functionName.substring(0,input.length()).equalsIgnoreCase(input)) {
-                    searchForFunctionLV.getItems().add(functionName);
-                } else if (functionName.contains(" ")) {
-                    String[] splitName = functionName.split(" ");
-                    StringBuilder combinedName;
-                    for (int i = 1; i < splitName.length; i++) {
-                        combinedName = new StringBuilder(splitName[i]);
-                        if (i != splitName.length-1) {
-                            for (int j = i+1; j < splitName.length; j++) {
-                                combinedName.append(" ").append(splitName[j]);
-                            }
-                        }
-                        if (combinedName.length() >= input.length()
-                                && combinedName.substring(0,input.length()).equalsIgnoreCase(input)) {
-                            searchForFunctionLV.getItems().add(functionName);
-                        }
-                    }
-                }
-            }
-        }
+        searchFunctionality.searchForFunctions(searchForFunctionLV, searchForFunctionCB);
     }
-
     /**
      * Selects the clicked functions and hides the search results
      */
