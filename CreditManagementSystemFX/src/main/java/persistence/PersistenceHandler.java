@@ -555,7 +555,13 @@ public class PersistenceHandler implements IPersistenceHandler {
             stmt.setObject(3, program.getUuid());
             stmt.setString(4, oldRole);
 
-            return stmt.execute();
+            PreparedStatement stmt1 = connection.prepareStatement(
+                    "UPDATE programs SET approved = false WHERE id = ?");
+            stmt1.setObject(1, program.getUuid());
+
+            stmt.execute();
+            stmt1.execute();
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;

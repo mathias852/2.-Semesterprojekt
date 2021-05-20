@@ -280,7 +280,7 @@ public class ProducerController implements Initializable {
     @FXML
     void selectedProgramFromListView(MouseEvent event) {
         //List for related buttons.
-        ArrayList<Button> buttons = new ArrayList<>(Arrays.asList(updateCreditButton, updatePersonButton, updateProgramButton));
+        ArrayList<Button> buttons = new ArrayList<>(Arrays.asList(updateCreditButton, updateProgramButton));
         //Changes visibility for above buttons.
         buttons.forEach(button -> button.setDisable(true));
 
@@ -517,7 +517,7 @@ public class ProducerController implements Initializable {
 
     @FXML
     void myProgramTabSelectedProgramFromListView(MouseEvent event) {
-        ArrayList<Button> buttons = new ArrayList<>(Arrays.asList(myProgramTabUpdateCreditButton, myProgramTabUpdatePersonButton,
+        ArrayList<Button> buttons = new ArrayList<>(Arrays.asList(myProgramTabUpdateCreditButton,
                 myProgramTabUpdateProgramButton));
         buttons.forEach(node -> node.setDisable(true));
 
@@ -659,12 +659,10 @@ public class ProducerController implements Initializable {
         //If the method is called from the update-tab, the following if-statement's value is returned.
         if (mainTabPane.getSelectionModel().getSelectedItem().getText().equals("Update")){
             Program program = Facade.getInstance().getProgramFromUuid(UUID.fromString(programUuidUpdateSelection.getText()));
-            program.setApproved(false);
             return program.getCredits().get(Integer.parseInt(creditIndexUpdateSelection.getText()));
         }
 
         Program selectedProgram = getSelectedProgramFromListView();
-        selectedProgram.setApproved(false);
 
         if (mainTabPane.getSelectionModel().getSelectedItem().getText().equals("Search/view")) {
             //Choose the String-item from the listview instead of the index

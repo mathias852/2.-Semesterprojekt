@@ -398,6 +398,8 @@ public class Facade {
     public void updateCredit(Credit credit, Credit.Function function) {
         String oldRole = credit.getFunction().role;
         credit.setFunction(function);
+        Program program = getProgramFromCredit(credit);
+        program.setApproved(false);
         persistenceHandler.updateCredit(getProgramFromCredit(credit), credit, oldRole);
         Notification notification = new Notification(String.format("%s updated a credit for %s on %s from %s to now be %s on %s",
                 LoginHandler.getInstance().getCurrentUser().getUsername(), credit.getCreditedPerson().getName(),
