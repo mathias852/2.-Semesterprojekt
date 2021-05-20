@@ -23,7 +23,7 @@ CREATE TABLE productions(
 
 CREATE TABLE users(
 	id UUID PRIMARY KEY,
-	username VARCHAR(20) NOT NULL,
+	username VARCHAR(20) UNIQUE NOT NULL,
 	password INTEGER NOT NULL,
 		type VARCHAR(128) NOT NULL
 );
@@ -42,26 +42,27 @@ CREATE TABLE transmissions(
     programsId UUID PRIMARY KEY REFERENCES programs(id)
 );
 
-CREATE TABLE episodes(
-	programsId UUID PRIMARY KEY REFERENCES programs(id),
-	tvSeriesId UUID NOT NULL,
-	episodeNo INTEGER NOT NULL,
-	seasonNo INTEGER NOT NULL
-);
-
-CREATE TABLE credits(
-	creditedPersonId UUID NOT NULL REFERENCES creditedPeople(id),
-	role VARCHAR(128) NOT NULL,
-	programId UUID NOT NULL,
-	PRIMARY KEY (creditedPersonId, role, programId)
-);
-
 CREATE TABLE tv_series(
 	id UUID PRIMARY KEY,
 	name VARCHAR(128) NOT NULL,
 	description VARCHAR(1024),
 	createdById UUID NOT NULL REFERENCES users(id)
 );
+
+CREATE TABLE episodes(
+	programsId UUID PRIMARY KEY REFERENCES programs(id),
+        tvSeriesId UUID NOT NULL REFERENCES tv_series,
+	episodeNo INTEGER NOT NULL,
+	seasonNo INTEGER NOT NULL
+);
+
+CREATE TABLE credits(
+        creditedPersonId UUID NOT NULL REFERENCES creditedPeople(id),
+        role VARCHAR(128),
+        programId UUID REFERENCES programs,
+        PRIMARY KEY (creditedPersonId, role, programId)
+);
+
 
 CREATE TABLE notifications(
 	id SERIAL PRIMARY KEY,

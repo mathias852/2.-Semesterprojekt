@@ -95,8 +95,8 @@
                         <Label fx:id="seasonNoUpdateLabel" layoutX="26.0" layoutY="274.0" text="Season" />
                         <Label fx:id="episodeNoUpdateLabel" layoutX="26.0" layoutY="313.0" text="Episode" />
                         <Label fx:id="durationUpdateLabel" layoutX="26.0" layoutY="197.0" text="Duration" />
-                        <ComboBox fx:id="tvSeriesUpdateSelection" layoutX="96.0" layoutY="356.0" prefWidth="150.0" />
-                        <Label fx:id="tvSUpdateLabel" layoutX="26.0" layoutY="359.0" text="TV-Series" />
+                        <ComboBox fx:id="tvSeriesUpdateSelection" layoutX="96.0" layoutY="356.0" prefWidth="150.0" visible="false" />
+                        <Label fx:id="tvSUpdateLabel" layoutX="26.0" layoutY="359.0" text="TV-Series" visible="false" />
                         <Button fx:id="updateProgramBtn" layoutX="26.0" layoutY="395.0" mnemonicParsing="false" onAction="#updateProgram" prefHeight="25.0" prefWidth="224.0" text="Update program" visible="false" />
                         <ComboBox fx:id="functionUpdateSelection" layoutX="458.0" layoutY="327.0" prefHeight="25.0" prefWidth="139.0" promptText="Function" />
                         <Label layoutX="364.0" layoutY="285.0" text="Credited person" />

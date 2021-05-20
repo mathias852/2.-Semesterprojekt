@@ -9,25 +9,24 @@ import domain.program.TVSeries;
 import domain.program.Transmission;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.ResourceBundle;
-import java.util.UUID;
 
 public class GuestController implements Initializable {
-
     @FXML
     private ComboBox<String> searchSeriesCombo, searchProgramCombo, searchSeasonCombo, searchForProgramCB, searchForCreditCB, searchForFunctionCB;
-
     @FXML
     private ListView<String> searchListView, searchListViewCredits, searchForTVSLV, searchForProgramLV, searchForCreditLV, searchForFunctionLV;
-
     @FXML
     private ImageView creditedLogoImageView;
 
@@ -44,14 +43,11 @@ public class GuestController implements Initializable {
     private final Image nordiskFilmLogoImage = new Image(nordiskFilmLogoFile.toURI().toString());
     private final Image tv2LogoImage = new Image(tv2LogoFile.toURI().toString());
 
+    SearchFunctionality searchFunctionality = new SearchFunctionality();
+
     @FXML
     void logOutAction() throws IOException{
         App.setRoot("logInPage");
-    }
-
-    @FXML
-    void exportButtonOnAction() throws IOException {
-        //facade.exportToTxt();
     }
 
     @FXML
@@ -95,9 +91,7 @@ public class GuestController implements Initializable {
                     searchSeasonCombo.getItems().add(String.valueOf(i));
                 }
             }
-        } catch (IndexOutOfBoundsException e){
-
-        }
+        } catch (IndexOutOfBoundsException ignored){}
     }
 
     @FXML
@@ -118,9 +112,7 @@ public class GuestController implements Initializable {
                     }
                 }
             }
-        } catch (NumberFormatException e) {
-
-        }
+        } catch (NumberFormatException ignored) {}
     }
 
     @FXML
@@ -129,53 +121,38 @@ public class GuestController implements Initializable {
             searchListViewCredits.getItems().clear();
 
             Program selectedProgram = getSelectedProgramFromListView();
-            if (selectedProgram.getProduction().equals(tv2Logo)){
-                creditedLogoImageView.setImage(tv2LogoImage);
-            } else if (selectedProgram.getProduction().equals(nordiskFilmLogo)){
-                creditedLogoImageView.setImage(nordiskFilmLogoImage);
-            }
 
-            //Get the credits from the selected program IF the program contains credits
-            if(selectedProgram.getCredits() != null) {
-                ArrayList<Credit> credits = selectedProgram.getCredits();
-                for (Credit credit : credits) {
-                    searchListViewCredits.getItems().add(credit.getCreditedPerson().getName() + ": " + credit.getFunction().role);
+            //Checks if program has been selected
+            if (selectedProgram != null) {
+
+                if (selectedProgram.getProduction().equals(tv2Logo)){
+                    creditedLogoImageView.setImage(tv2LogoImage);
+                } else if (selectedProgram.getProduction().equals(nordiskFilmLogo)){
+                    creditedLogoImageView.setImage(nordiskFilmLogoImage);
                 }
-            }
-        }
-    }
 
-
-    @FXML
-    void showMatchingTVS() {
-        searchForTVSLV.setVisible(true);
-        String input = searchSeriesCombo.getEditor().getText();
-        searchForTVSLV.getItems().clear();
-        if (input.length() >= 1) {
-            for (TVSeries tvSeries : Facade.getInstance().getTvSeriesList()) {
-                if (tvSeries.getName().length() >= input.length()
-                        && !searchForTVSLV.getItems().contains(input)
-                        && tvSeries.getName().substring(0,input.length()).equalsIgnoreCase(input)) {
-                    searchForTVSLV.getItems().add(tvSeries.getName());
-                } else if (tvSeries.getName().contains(" ")) {
-                    String[] splitName = tvSeries.getName().split(" ");
-                    StringBuilder combinedName;
-                    for (int i = 1; i < splitName.length; i++) {
-                        combinedName = new StringBuilder(splitName[i]);
-                        if (i != splitName.length-1) {
-                            for (int j = i+1; j < splitName.length; j++) {
-                                combinedName.append(" ").append(splitName[j]);
-                            }
-                        }
-                        if (combinedName.length() >= input.length()
-                                && combinedName.substring(0,input.length()).equalsIgnoreCase(input)) {
-                            searchForTVSLV.getItems().add(tvSeries.getName());
-                        }
+                //Get the credits from the selected program IF the program contains credits
+                if(selectedProgram.getCredits() != null) {
+                    ArrayList<Credit> credits = selectedProgram.getCredits();
+                    for (Credit credit : credits) {
+                        searchListViewCredits.getItems().add(credit.getCreditedPerson().getName() + ": " + credit.getFunction().role);
                     }
                 }
             }
         }
     }
+
+
+    /**
+     * Searches for TVSeries based on user-input
+     */
+    @FXML
+    void showMatchingTVS() {
+        searchFunctionality.searchForTVSeries(searchForTVSLV, searchSeriesCombo);
+    }
+    /**
+     * Selects the clicked TVSeries and hides the search results
+     */
     @FXML
     void selectAndHideMatchingTVS() {
         searchSeasonCombo.getItems().clear();
@@ -184,42 +161,16 @@ public class GuestController implements Initializable {
         searchForTVSLV.setVisible(false);
     }
 
+    /**
+     * Searches for programs based on user-input.
+     */
     @FXML
     void showMatchingPrograms() {
-        searchForProgramLV.setVisible(true);
-        String input = searchForProgramCB.getEditor().getText();
-        searchForProgramLV.getItems().clear();
-        if (input.length() >= 1) {
-            ArrayList<Program> programs = new ArrayList<>();
-            for (String programText : searchListView.getItems()) {
-                String[] splitProgramText = programText.split(":");
-                Program program = Facade.getInstance().getProgramFromUuid(UUID.fromString(splitProgramText[1].trim()));
-                programs.add(program);
-            }
-            for (Program program : programs) {
-                if (program.getName().length() >= input.length()
-                        && !searchForProgramLV.getItems().contains(input)
-                        && program.getName().substring(0,input.length()).equalsIgnoreCase(input)) {
-                    searchForProgramLV.getItems().add(program.getName() + ": " + program.getUuid());
-                } else if (program.getName().contains(" ")) {
-                    String[] splitName = program.getName().split(" ");
-                    StringBuilder combinedName;
-                    for (int i = 1; i < splitName.length; i++) {
-                        combinedName = new StringBuilder(splitName[i]);
-                        if (i != splitName.length-1) {
-                            for (int j = i+1; j < splitName.length; j++) {
-                                combinedName.append(" ").append(splitName[j]);
-                            }
-                        }
-                        if (combinedName.length() >= input.length()
-                                && combinedName.substring(0,input.length()).equalsIgnoreCase(input)) {
-                            searchForProgramLV.getItems().add(program.getName() + ": " + program.getUuid());
-                        }
-                    }
-                }
-            }
-        }
+        searchFunctionality.searchForProgramAsGuest(searchForProgramLV, searchForProgramCB,  searchListView);
     }
+    /**
+     * Selects the clicked program and hides the search results
+     */
     @FXML
     void selectAndHideMatchingProgram() {
         searchListView.getSelectionModel().select(searchForProgramLV.getSelectionModel().getSelectedItem());
@@ -228,67 +179,16 @@ public class GuestController implements Initializable {
         searchForProgramLV.setVisible(false);
     }
 
+    /**
+     * Searches for credits matching the given user-input
+     */
     @FXML
     void showMatchingCredits() {
-        searchForCreditLV.setVisible(true);
-        String input = searchForCreditCB.getEditor().getText();
-        searchForCreditLV.getItems().clear();
-        if (input.length() >= 1 && searchForFunctionCB.getEditor().getText().equals("")) {
-            for (String creditText : searchListViewCredits.getItems()) {
-                String[] splitCreditText = creditText.split(":");
-                String creditName = splitCreditText[0];
-                String creditFunction = splitCreditText[1].trim();
-                if (creditName.length() >= input.length()
-                        && !searchForCreditLV.getItems().contains(input)
-                        && creditName.substring(0,input.length()).equalsIgnoreCase(input)) {
-                    searchForCreditLV.getItems().add(creditName + ": " + creditFunction);
-                } else if (creditName.contains(" ")) {
-                    String[] splitName = creditName.split(" ");
-                    StringBuilder combinedName;
-                    for (int i = 1; i < splitName.length; i++) {
-                        combinedName = new StringBuilder(splitName[i]);
-                        if (i != splitName.length-1) {
-                            for (int j = i+1; j < splitName.length; j++) {
-                                combinedName.append(" ").append(splitName[j]);
-                            }
-                        }
-                        if (combinedName.length() >= input.length()
-                                && combinedName.substring(0,input.length()).equalsIgnoreCase(input)) {
-                            searchForCreditLV.getItems().add(creditName + ": " + creditFunction);
-                        }
-                    }
-                }
-            }
-        } else if (input.length() >= 1){
-            for (String creditText : searchListViewCredits.getItems()) {
-                String[] splitCreditText = creditText.split(":");
-                String creditName = splitCreditText[0];
-                String creditFunction = splitCreditText[1].trim();
-                if (creditName.length() >= input.length()
-                        && !searchForCreditLV.getItems().contains(input)
-                        && creditName.substring(0,input.length()).equalsIgnoreCase(input)
-                        && creditFunction.equals(searchForFunctionCB.getEditor().getText().trim())) {
-                    searchForCreditLV.getItems().add(creditName + ": " + creditFunction);
-                } else if (creditName.contains(" ")) {
-                    String[] splitName = creditName.split(" ");
-                    StringBuilder combinedName;
-                    for (int i = 1; i < splitName.length; i++) {
-                        combinedName = new StringBuilder(splitName[i]);
-                        if (i != splitName.length-1) {
-                            for (int j = i+1; j < splitName.length; j++) {
-                                combinedName.append(" ").append(splitName[j]);
-                            }
-                        }
-                        if (combinedName.length() >= input.length()
-                                && combinedName.substring(0,input.length()).equalsIgnoreCase(input)
-                                && creditFunction.equals(searchForFunctionCB.getEditor().getText().trim())) {
-                            searchForCreditLV.getItems().add(creditName + ": " + creditFunction);
-                        }
-                    }
-                }
-            }
-        }
+        searchFunctionality.searchForCredits(searchForCreditLV, searchForCreditCB, searchForFunctionCB, searchListViewCredits);
     }
+    /**
+     * Selects the clicked credit and hides search results
+     */
     @FXML
     void selectAndHideMatchingCredit() {
         searchListViewCredits.getSelectionModel().select(searchForCreditLV.getSelectionModel().getSelectedItem());
@@ -296,6 +196,9 @@ public class GuestController implements Initializable {
         searchForCreditLV.setVisible(false);
     }
 
+    /**
+     * Searches for functions matching the user-input
+     */
     @FXML
     void showMatchingFunctions() {
         searchForFunctionLV.setVisible(true);
@@ -327,19 +230,23 @@ public class GuestController implements Initializable {
             }
         }
     }
+
+    /**
+     * Selects the clicked functions and hides the search results
+     */
     @FXML
     void selectAndHideMatchingFunction() {
         searchForFunctionCB.setValue(searchForFunctionLV.getSelectionModel().getSelectedItem());
-
         searchForFunctionLV.setVisible(false);
     }
 
+    /**
+     * Hides all listviews displaying search results
+     */
     @FXML
     void hideMatchingSearchResults() {
-        searchForTVSLV.setVisible(false);
-        searchForProgramLV.setVisible(false);
-        searchForCreditLV.setVisible(false);
-        searchForFunctionLV.setVisible(false);
+        ArrayList<Node> searchResults = new ArrayList<>(Arrays.asList(searchForTVSLV, searchForProgramLV, searchForCreditLV, searchForFunctionLV));
+        searchResults.forEach(node -> node.setVisible(false));
     }
 
     private TVSeries getSelectedTvSeriesFromComboBox() {
@@ -347,10 +254,16 @@ public class GuestController implements Initializable {
     }
 
     private Program getSelectedProgramFromListView() {
-        //Choose the String-item from the listview instead of the index
-        String viewString = searchListView.getSelectionModel().getSelectedItem();
-        //Split the string to get the UUID
-        String[] viewStringArray = viewString.split(":");
+        String viewString;
+        String[] viewStringArray;
+        try {
+            //Choose the String-item from the listview instead of the index
+            viewString = searchListView.getSelectionModel().getSelectedItem();
+            //Split the string to get the UUID
+            viewStringArray = viewString.split(":");
+        } catch (NullPointerException e) {
+            return null;
+        }
 
         //Use the getProgramFromCreatedBy method from the facade to get the program from the UUID of the creator. The trim after the string is to get rid of whitespace
         return Facade.getInstance().getProgramFromCreatedBy(viewStringArray[0], LoginHandler.getInstance().getUserFromUsername(viewStringArray[2].trim()).getUuid());

@@ -1,17 +1,7 @@
 package presentation;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.ResourceBundle;
-import java.util.UUID;
-
 import domain.Facade;
 import domain.LoginHandler;
-import domain.accesscontrol.Producer;
-import domain.accesscontrol.User;
 import domain.credit.Credit;
 import domain.credit.CreditedPerson;
 import domain.program.Episode;
@@ -25,6 +15,14 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.ResourceBundle;
+import java.util.UUID;
+
 public class ProducerController implements Initializable {
     @FXML
     private TextField durationText, descriptionText, seasonNumberText, episodeNumberText, nameText,
@@ -36,7 +34,6 @@ public class ProducerController implements Initializable {
             searchSeasonCombo, creditedPersonSelection, programSelection, programTypeSelection, tvSeriesUpdateSelection,
             functionUpdateSelection, productionSelectionCombo, myProgramTabApprovedComboBox, myProgramTabSearchProgramCombo,
             myProgramTabSearchSeriesCombo, myProgramTabSearchSeasonCombo, productionSelectionUpdateCombo;
-    ;
 
     @FXML
     private Label creditedPersonLabel, tvSLabel, durationLabel, nameLabel, seasonNoLabel, messageLabel,
@@ -45,7 +42,7 @@ public class ProducerController implements Initializable {
             programUpdateSelection, creditedPersonUpdateLabel, productionLabel, programUuidUpdateSelection, creditIndexUpdateSelection;
 
     @FXML
-    private Button createProgramBtn, createCreditBtn, createPersonBtn, exportButton, updateProgramButton, updateCreditButton,
+    private Button createProgramBtn, createCreditBtn, createPersonBtn, updateProgramButton, updateCreditButton,
             updateProgramBtn, updatePersonButton, updateTvSeriesButton, updateTvSeriesBtn, myProgramTabUpdateTvSeriesButton,
             myProgramTabUpdateProgramButton, myProgramTabUpdateCreditButton, myProgramTabUpdatePersonButton, updateCreditBtnForMyProgramTab;
 
@@ -75,7 +72,6 @@ public class ProducerController implements Initializable {
 
     @FXML
     void logOutAction() throws IOException{
-        //facade.exportToTxt();
         App.setRoot("logInPage");
     }
 
@@ -117,8 +113,7 @@ public class ProducerController implements Initializable {
             }
 
 
-        } catch (IndexOutOfBoundsException e) {
-        }
+        } catch (IndexOutOfBoundsException ignored) {}
     }
 
     //Below method creates a program with given/relevant input
@@ -189,12 +184,6 @@ public class ProducerController implements Initializable {
     }
 
     @FXML
-    void exportButtonOnAction() throws IOException {
-        //Export to txt
-        //facade.exportToTxt();
-    }
-
-    @FXML
     void searchProgramComboAction() {
         searchSeriesCombo.getItems().clear();
         creditedLogoImageView.setImage(null);
@@ -246,8 +235,7 @@ public class ProducerController implements Initializable {
                 }
             }
             updateTvSeriesButton.setDisable(false);
-        } catch (IndexOutOfBoundsException e){
-        }
+        } catch (IndexOutOfBoundsException ignored){}
     }
 
     @FXML
@@ -271,7 +259,7 @@ public class ProducerController implements Initializable {
                     }
                 }
             }
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException ignored) {
         }
     }
 
@@ -363,7 +351,6 @@ public class ProducerController implements Initializable {
                 mainTabPane.getSelectionModel().select(updateTab);
 
             }
-        } else {
         }
     }
 
@@ -479,7 +466,7 @@ public class ProducerController implements Initializable {
                 }
             }
             myProgramTabUpdateTvSeriesButton.setDisable(false);
-        } catch (IndexOutOfBoundsException e){
+        } catch (IndexOutOfBoundsException ignored){
         }
     }
 
@@ -508,7 +495,7 @@ public class ProducerController implements Initializable {
                     }
                 }
             }
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException ignored) {
 
         }
     }
@@ -547,11 +534,13 @@ public class ProducerController implements Initializable {
     void updateCredit() {
         try {
             //Programmet hentes igennem index for vores program drop-down menu
-            Credit credit = getSelectedCreditFromListView();
-            Credit.Function function = Facade.getInstance().getFunctions().get(functionUpdateSelection.getSelectionModel().getSelectedIndex());
+            if (getSelectedCreditFromListView() != null) {
+                Credit credit = getSelectedCreditFromListView();
+                Credit.Function function = Facade.getInstance().getFunctions().get(functionUpdateSelection.getSelectionModel().getSelectedIndex());
 
-            Facade.getInstance().updateCredit(credit, function);
-        } catch (IndexOutOfBoundsException e) {
+                Facade.getInstance().updateCredit(credit, function);
+            }
+        } catch (IndexOutOfBoundsException ignored) {
         }
     }
 
@@ -656,9 +645,15 @@ public class ProducerController implements Initializable {
 
         //If the method is called from the update-tab, the following if-statement's value is returned.
         if (mainTabPane.getSelectionModel().getSelectedItem().getText().equals("Update")){
-            Program program = Facade.getInstance().getProgramFromUuid(UUID.fromString(programUuidUpdateSelection.getText()));
-            program.setApproved(false);
-            return program.getCredits().get(Integer.parseInt(creditIndexUpdateSelection.getText()));
+
+            try {
+                Program program = Facade.getInstance().getProgramFromUuid(UUID.fromString(programUuidUpdateSelection.getText()));
+                program.setApproved(false);
+                return program.getCredits().get(Integer.parseInt(creditIndexUpdateSelection.getText()));
+            } catch (IllegalArgumentException e) {
+                System.out.println("Invalid credit information given...");
+                return null;
+            }
         }
 
         Program selectedProgram = getSelectedProgramFromListView();
