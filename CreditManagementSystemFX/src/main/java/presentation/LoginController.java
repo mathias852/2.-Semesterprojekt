@@ -47,7 +47,7 @@ public class LoginController implements Initializable {
 
     //Verifies credentials entered by the user
     @FXML
-    private void verifyCredentials(ActionEvent e) throws IOException{
+    private void verifyCredentials() throws IOException{
         String username = usernameText.getText();
         int password = passwordText.getText().hashCode();
 
@@ -65,7 +65,7 @@ public class LoginController implements Initializable {
     }
 
     @FXML
-    private void goToGuest(ActionEvent e) throws IOException{
+    private void goToGuest() throws IOException{
         App.setRoot("GuestView");
     }
 }

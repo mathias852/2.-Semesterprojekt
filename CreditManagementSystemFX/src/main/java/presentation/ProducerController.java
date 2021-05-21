@@ -33,7 +33,8 @@ public class ProducerController implements Initializable {
     private ComboBox<String> tvSeriesSelection, searchSeriesCombo, functionSelection, searchProgramCombo,
             searchSeasonCombo, creditedPersonSelection, programSelection, programTypeSelection, tvSeriesUpdateSelection,
             functionUpdateSelection, productionSelectionCombo, myProgramTabApprovedComboBox, myProgramTabSearchProgramCombo,
-            myProgramTabSearchSeriesCombo, myProgramTabSearchSeasonCombo, productionSelectionUpdateCombo;
+            myProgramTabSearchSeriesCombo, myProgramTabSearchSeasonCombo, productionSelectionUpdateCombo, searchForProgramCB,
+            searchForCreditCB, searchForFunctionCB;
 
     @FXML
     private Label creditedPersonLabel, tvSLabel, durationLabel, nameLabel, seasonNoLabel, messageLabel,
@@ -47,7 +48,8 @@ public class ProducerController implements Initializable {
             myProgramTabUpdateProgramButton, myProgramTabUpdateCreditButton, myProgramTabUpdatePersonButton, updateCreditBtnForMyProgramTab;
 
     @FXML
-    private ListView<String> searchListView, searchListViewCredits, myProgramTabSearchListView, myProgramTabSearchListViewCredits;
+    private ListView<String> searchListView, searchListViewCredits, myProgramTabSearchListView, myProgramTabSearchListViewCredits,
+            searchForTVSLV, searchForProgramLV, searchForCreditLV, searchForFunctionLV;
 
     @FXML
     private TabPane mainTabPane;
@@ -69,6 +71,8 @@ public class ProducerController implements Initializable {
 
     private final Image nordiskFilmLogoImage = new Image(nordiskFilmLogoFile.toURI().toString());
     private final Image tv2LogoImage = new Image(tv2LogoFile.toURI().toString());
+
+    SearchFunctionality searchFunctionality = new SearchFunctionality();
 
     @FXML
     void logOutAction() throws IOException{
@@ -207,7 +211,8 @@ public class ProducerController implements Initializable {
             //Gets all approved transmissions and add them to the listview
             for (Program program : Facade.getInstance().getPrograms()) {
                 if (program instanceof Transmission && program.isApproved()) {
-                    searchListView.getItems().add(program.getName() +  ": " + program.getUuid() + ": " + LoginHandler.getInstance().getUserFromUuid(program.getCreatedBy()).getUsername());
+                    searchListView.getItems().add(program.getName() +  "\nID: " + program.getUuid() + "\nCreated by: "
+                            + LoginHandler.getInstance().getUserFromUuid(program.getCreatedBy()).getUsername());
                 }
             }
         } else if (searchProgramCombo.getSelectionModel().getSelectedItem().equals(tvSeries)){
@@ -249,7 +254,7 @@ public class ProducerController implements Initializable {
                 TVSeries series = getSelectedTvSeriesFromComboBox();
                 for (Episode episode : series.getSeasonMap().get(Integer.parseInt(searchSeasonCombo.getSelectionModel().getSelectedItem()))) {
                     if(episode.isApproved()) {
-                        searchListView.getItems().add(episode.getName() + ": " + episode.getUuid() + ": " +
+                        searchListView.getItems().add(episode.getName() + "\nID: " + episode.getUuid() + "\nEpisode: " + episode.getEpisodeNo() + "\nCreated by: " +
                                 LoginHandler.getInstance().getUserFromUuid(episode.getCreatedBy()).getUsername());
                         if (episode.getProduction().equals(tv2Logo)){
                             creditedLogoImageView.setImage(tv2LogoImage);
@@ -637,7 +642,7 @@ public class ProducerController implements Initializable {
         String[] viewStringArray = viewString.split(":");
 
         //Use the getProgramFromUuid method from the facade to get the program from the string. The trim after the string is to get rid of whitespace
-        return Facade.getInstance().getProgramFromUuid(UUID.fromString(viewStringArray[1].trim()));
+        return Facade.getInstance().getProgramFromUuid(UUID.fromString(viewStringArray[1].substring(1,37)));
     }
 
     private Credit getSelectedCreditFromListView() {
@@ -668,6 +673,60 @@ public class ProducerController implements Initializable {
         }
 
         return credit;
+    }
+
+
+    //Searches for TVSeries based on user-input
+    @FXML
+    void showMatchingTVS() {
+        searchFunctionality.searchForTVSeries(searchForTVSLV, searchSeriesCombo);
+    }
+    //Selects the clicked TVSeries and hides the search results
+    @FXML
+    void selectAndHideMatchingTVS() {
+        searchFunctionality.selectAndHideTVSeries(searchSeasonCombo, searchForTVSLV, searchSeriesCombo);
+    }
+
+    //Searches for programs based on user-input.
+    @FXML
+    void showMatchingPrograms() {
+        searchFunctionality.searchForProgram(searchForProgramLV, searchForProgramCB,  searchListView);
+    }
+    //Selects the clicked program and hides the search results
+    @FXML
+    void selectAndHideMatchingProgram() {
+        searchListView.getSelectionModel().select(searchForProgramLV.getSelectionModel().getSelectedItem());
+        selectedProgramFromListView();
+        searchForProgramCB.getEditor().clear();
+        searchForProgramLV.setVisible(false);
+    }
+
+    //Searches for credits matching the given user-input
+    @FXML
+    void showMatchingCredits() {
+        searchFunctionality.searchForCredits(searchForCreditLV, searchForCreditCB, searchForFunctionCB, searchListViewCredits);
+    }
+    //Selects the clicked credit and hides search results
+    @FXML
+    void selectAndHideMatchingCredit() {
+        searchFunctionality.selectAndHideCredits(searchListViewCredits, searchForCreditLV, searchForCreditCB);
+    }
+
+    //Searches for functions matching the user-input
+    @FXML
+    void showMatchingFunctions() {
+        searchFunctionality.searchForFunctions(searchForFunctionLV, searchForFunctionCB);
+    }
+    //Selects the clicked functions and hides the search results
+    @FXML
+    void selectAndHideMatchingFunction() {
+        searchFunctionality.selectAndHideFunctions(searchForFunctionLV, searchForFunctionCB);
+    }
+
+    //Hides all listviews displaying search results
+    @FXML
+    void hideMatchingSearchResults() {
+        searchFunctionality.hideSearchResults(searchForTVSLV, searchForProgramLV, searchForCreditLV, searchForFunctionLV);
     }
 
     @Override

@@ -64,8 +64,8 @@ public class GuestController implements Initializable {
             searchListView.getItems().clear();
             for (Program program : Facade.getInstance().getPrograms()) {
                 if (program instanceof Transmission && program.isApproved()) {
-                    searchListView.getItems().add(program.getName() + ": Programansvarlig: " + LoginHandler.getInstance().getUserFromUuid(program.getCreatedBy()).getUsername());
-
+                    searchListView.getItems().add(program.getName() + "\nProgramansvarlig: "
+                            + LoginHandler.getInstance().getUserFromUuid(program.getCreatedBy()).getUsername());
                 }
             }
 
@@ -103,7 +103,9 @@ public class GuestController implements Initializable {
                 TVSeries series = getSelectedTvSeriesFromComboBox();
                 for (Episode episode : series.getSeasonMap().get(Integer.parseInt(searchSeasonCombo.getSelectionModel().getSelectedItem()))) {
                     if (episode.isApproved()) {
-                        searchListView.getItems().add(episode.getName() + ": Programansvarlig: " + LoginHandler.getInstance().getUserFromUuid(episode.getCreatedBy()).getUsername());
+                        searchListView.getItems().add(episode.getName() + "\nProgramansvarlig: "
+                                + LoginHandler.getInstance().getUserFromUuid(episode.getCreatedBy()).getUsername()
+                                + "\nEpisode: " + episode.getEpisodeNo());
                         if (episode.getProduction().equals(tv2Logo)){
                             creditedLogoImageView.setImage(tv2LogoImage);
                         } else if (episode.getProduction().equals(nordiskFilmLogo)){
@@ -143,36 +145,24 @@ public class GuestController implements Initializable {
     }
 
 
-    /**
-     * Searches for TVSeries based on user-input
-     */
+    //Searches for TVSeries based on user-input
     @FXML
     void showMatchingTVS() {
         searchFunctionality.searchForTVSeries(searchForTVSLV, searchSeriesCombo);
     }
-    /**
-     * Selects the clicked TVSeries and hides the search results
-     */
+    //Selects the clicked TVSeries and hides the search results
     @FXML
     void selectAndHideMatchingTVS() {
-        searchSeasonCombo.getItems().clear();
-        if (searchForTVSLV.getSelectionModel().getSelectedItem() != null) {
-            String[] tvSeries = searchForTVSLV.getSelectionModel().getSelectedItem().split(";");
-            searchSeriesCombo.setValue(tvSeries[0]);
-        }
-        searchForTVSLV.setVisible(false);
+        searchFunctionality.selectAndHideTVSeries(searchSeasonCombo, searchForTVSLV, searchSeriesCombo);
     }
 
-    /**
-     * Searches for programs based on user-input.
-     */
+    //Searches for programs based on user-input.
     @FXML
     void showMatchingPrograms() {
         searchFunctionality.searchForProgramAsGuest(searchForProgramLV, searchForProgramCB,  searchListView);
     }
-    /**
-     * Selects the clicked program and hides the search results
-     */
+
+    //Selects the clicked program and hides the search results
     @FXML
     void selectAndHideMatchingProgram() {
         searchListView.getSelectionModel().select(searchForProgramLV.getSelectionModel().getSelectedItem());
@@ -181,16 +171,13 @@ public class GuestController implements Initializable {
         searchForProgramLV.setVisible(false);
     }
 
-    /**
-     * Searches for credits matching the given user-input
-     */
+    //Searches for credits matching the given user-input
     @FXML
     void showMatchingCredits() {
         searchFunctionality.searchForCredits(searchForCreditLV, searchForCreditCB, searchForFunctionCB, searchListViewCredits);
     }
-    /**
-     * Selects the clicked credit and hides search results
-     */
+
+    //Selects the clicked credit and hides search results
     @FXML
     void selectAndHideMatchingCredit() {
         searchListViewCredits.getSelectionModel().select(searchForCreditLV.getSelectionModel().getSelectedItem());
@@ -198,25 +185,20 @@ public class GuestController implements Initializable {
         searchForCreditLV.setVisible(false);
     }
 
-    /**
-     * Searches for functions matching the user-input
-     */
+    //Searches for functions matching the user-input
     @FXML
     void showMatchingFunctions() {
         searchFunctionality.searchForFunctions(searchForFunctionLV, searchForFunctionCB);
     }
-    /**
-     * Selects the clicked functions and hides the search results
-     */
+
+    //Selects the clicked functions and hides the search results
     @FXML
     void selectAndHideMatchingFunction() {
         searchForFunctionCB.setValue(searchForFunctionLV.getSelectionModel().getSelectedItem());
         searchForFunctionLV.setVisible(false);
     }
 
-    /**
-     * Hides all listviews displaying search results
-     */
+    //Hides all listviews displaying search results
     @FXML
     void hideMatchingSearchResults() {
         ArrayList<Node> searchResults = new ArrayList<>(Arrays.asList(searchForTVSLV, searchForProgramLV, searchForCreditLV, searchForFunctionLV));
@@ -230,17 +212,20 @@ public class GuestController implements Initializable {
     private Program getSelectedProgramFromListView() {
         String viewString;
         String[] viewStringArray;
+        String[] createdBy;
         try {
             //Choose the String-item from the listview instead of the index
             viewString = searchListView.getSelectionModel().getSelectedItem();
             //Split the string to get the UUID
-            viewStringArray = viewString.split(":");
+            viewStringArray = viewString.split("\n");
+            createdBy = viewStringArray[1].split(":");
+
         } catch (NullPointerException e) {
             return null;
         }
 
         //Use the getProgramFromCreatedBy method from the facade to get the program from the UUID of the creator. The trim after the string is to get rid of whitespace
-        return Facade.getInstance().getProgramFromCreatedBy(viewStringArray[0], LoginHandler.getInstance().getUserFromUsername(viewStringArray[2].trim()).getUuid());
+        return Facade.getInstance().getProgramFromCreatedBy(viewStringArray[0], LoginHandler.getInstance().getUserFromUsername(createdBy[1].trim()).getUuid());
     }
 
     private Credit getSelectedCreditFromListView() {
