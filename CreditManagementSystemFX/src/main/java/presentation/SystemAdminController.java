@@ -9,14 +9,12 @@ import domain.program.Episode;
 import domain.program.Program;
 import domain.program.TVSeries;
 import domain.program.Transmission;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 
 import java.io.File;
@@ -48,7 +46,7 @@ public class SystemAdminController implements Initializable {
     private ComboBox<String> tvSeriesSelection, searchSeriesCombo, functionSelection, searchProgramCombo,
             searchSeasonCombo, creditedPersonSelection, programSelection, programTypeSelection, tvSeriesUpdateSelection,
             functionUpdateSelection, usertypeCombo, searchApprovedProgramCombo, searchApprovedSeriesCombo, searchApprovedSeasonCombo,
-            productionSelectionCombo, productionSelectionUpdateCombo;
+            productionSelectionCombo, productionSelectionUpdateCombo, searchForProgramCB, searchForCreditCB, searchForFunctionCB;
 
     @FXML
     private Label creditedPersonLabel, tvSLabel, durationLabel, nameLabel, seasonNoLabel, messageLabel,
@@ -62,7 +60,8 @@ public class SystemAdminController implements Initializable {
             createUserButton, confirmDeleteButton, declineDeleteButton, approveSelectedButton;
 
     @FXML
-    private ListView<String> searchListView, searchListViewCredits,searchApprovedListView, searchApprovedListViewCredits, systemLogLV;
+    private ListView<String> searchListView, searchListViewCredits,searchApprovedListView, searchApprovedListViewCredits,
+            systemLogLV, searchForTVSLV, searchForProgramLV, searchForFunctionLV, searchForCreditLV;
 
     @FXML
     private TableView<String> searchTableView;
@@ -87,10 +86,10 @@ public class SystemAdminController implements Initializable {
     private final Image nordiskFilmLogoImage = new Image(nordiskFilmLogoFile.toURI().toString());
     private final Image tv2LogoImage = new Image(tv2LogoFile.toURI().toString());
 
-
+    SearchFunctionality searchFunctionality = new SearchFunctionality();
 
     @FXML
-    private void createUserAction(ActionEvent e) {
+    private void createUserAction() {
 
         //Create a pattern that the username must obey
         Pattern pattern = Pattern.compile("^(?=.{2,20}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$");
@@ -129,7 +128,7 @@ public class SystemAdminController implements Initializable {
     }
 
     @FXML
-    void logOutAction(ActionEvent e) throws IOException {
+    void logOutAction() throws IOException {
         //loginHandler.exportUsersToTxt();
         //facade.exportToTxt();
         App.setRoot("logInPage");
@@ -137,7 +136,7 @@ public class SystemAdminController implements Initializable {
 
     //Method for the createPerson-button
     @FXML
-    void createPerson(ActionEvent event) {
+    void createPerson() {
         //Uses the createPerson-method from the facade
         if (!creditedPersonNameText.getText().isEmpty()) {
             Facade.getInstance().createPerson(creditedPersonNameText.getText());
@@ -147,7 +146,7 @@ public class SystemAdminController implements Initializable {
     }
 
     @FXML
-    void createCredit(ActionEvent event) {
+    void createCredit() {
         try {
             //Programmet hentes igennem index for vores program drop-down menu
             Program program = Facade.getInstance().getPrograms().get(programSelection.getSelectionModel().getSelectedIndex());
@@ -174,7 +173,7 @@ public class SystemAdminController implements Initializable {
     }
 
     @FXML
-    void createProgram(ActionEvent event) {
+    void createProgram() {
 
         String name = nameText.getText();
         String description = descriptionText.getText();
@@ -215,7 +214,7 @@ public class SystemAdminController implements Initializable {
     }
 
     @FXML
-    void dropDownSelection(ActionEvent event) {
+    void dropDownSelection() {
         ArrayList<Node> durationNodes = new ArrayList<>(Arrays.asList(durationLabel, durationText));
         ArrayList<Node> episodeNodes = new ArrayList<>(Arrays.asList(tvSeriesSelection, seasonNumberText,
                 episodeNumberText, tvSLabel, seasonNoLabel, episodeNoLabel));
@@ -241,12 +240,12 @@ public class SystemAdminController implements Initializable {
     }
 
     @FXML
-    void exportButtonOnAction(ActionEvent event) throws IOException {
+    void exportButtonOnAction() throws IOException {
         Facade.getInstance().exportToTxt();
     }
 
     @FXML
-    void searchProgramComboAction(ActionEvent event) {
+    void searchProgramComboAction() {
         searchSeriesCombo.getItems().clear();
         if (searchProgramCombo.getSelectionModel().getSelectedItem().equals(transmission)) {
             searchSeriesCombo.setDisable(true);
@@ -261,8 +260,8 @@ public class SystemAdminController implements Initializable {
             searchListView.getItems().clear();
             for (Program program : Facade.getInstance().getPrograms()) {
                 if (program instanceof Transmission && program.isApproved()) {
-                    searchListView.getItems().add(program.getName() + ": " + program.getUuid() + ": " +
-                            LoginHandler.getInstance().getUserFromUuid(program.getCreatedBy()).getUsername());
+                    searchListView.getItems().add(program.getName() +  "\nID: " + program.getUuid() + "\nCreated by: "
+                            + LoginHandler.getInstance().getUserFromUuid(program.getCreatedBy()).getUsername());
                 }
             }
 
@@ -278,7 +277,7 @@ public class SystemAdminController implements Initializable {
     }
 
     @FXML
-    void searchSeriesComboAction(ActionEvent event) {
+    void searchSeriesComboAction() {
 
         searchSeasonCombo.getItems().clear();
         //To find the episodes based on a season from a TV-series
@@ -300,7 +299,7 @@ public class SystemAdminController implements Initializable {
     }
 
     @FXML
-    void searchSeasonComboAction(ActionEvent event) {
+    void searchSeasonComboAction() {
         try {
             searchListView.getItems().clear();
 
@@ -311,7 +310,7 @@ public class SystemAdminController implements Initializable {
                 deleteSelectedButton.setDisable(true);
                 for (Episode episode : series.getSeasonMap().get(Integer.parseInt(searchSeasonCombo.getSelectionModel().getSelectedItem()))) {
                     if (episode.isApproved()) {
-                        searchListView.getItems().add(episode.getName() + ": " + episode.getUuid() + ": " +
+                        searchListView.getItems().add(episode.getName() + "\nID: " + episode.getUuid() + "\nEpisode: " + episode.getEpisodeNo() + "\nCreated by: " +
                                 LoginHandler.getInstance().getUserFromUuid(episode.getCreatedBy()).getUsername());
                         if (episode.getProduction().equals(tv2Logo)) {
                             creditedLogoImageView.setImage(tv2LogoImage);
@@ -326,41 +325,44 @@ public class SystemAdminController implements Initializable {
     }
 
     @FXML
-    void selectedProgramFromListView(MouseEvent event) {
+    void selectedProgramFromListView() {
         searchListViewCredits.getItems().clear();
         updateProgramButton.setDisable(false);
         deleteSelectedButton.setDisable(false);
 
-        if (getSelectedProgramFromListView() instanceof Transmission) {
-            deleteSelectedButton.setText("Delete transmission");
-        } else if (getSelectedProgramFromListView() instanceof Episode) {
-            deleteSelectedButton.setText("Delete Episode");
-        }
-        Program selectedProgram = getSelectedProgramFromListView();
-        if (selectedProgram.getProduction().equals(tv2Logo)){
-            creditedLogoImageView.setImage(tv2LogoImage);
-        } else if (selectedProgram.getProduction().equals(nordiskFilmLogo)){
-            creditedLogoImageView.setImage(nordiskFilmLogoImage);
-        }
+        if (getSelectedProgramFromListView() != null) {
+            if (getSelectedProgramFromListView() instanceof Transmission) {
+                deleteSelectedButton.setText("Delete transmission");
+            } else if (getSelectedProgramFromListView() instanceof Episode) {
+                deleteSelectedButton.setText("Delete Episode");
+            }
 
-        //Get the credits from the selected program IF the program contains credits
-        if (selectedProgram.getCredits() != null) {
-            ArrayList<Credit> credits = selectedProgram.getCredits();
-            for (Credit credit : credits) {
-                searchListViewCredits.getItems().add(credit.getCreditedPerson().getName() + ": " + credit.getFunction().role);
+            Program selectedProgram = getSelectedProgramFromListView();
+            if (selectedProgram.getProduction().equals(tv2Logo)){
+                creditedLogoImageView.setImage(tv2LogoImage);
+            } else if (selectedProgram.getProduction().equals(nordiskFilmLogo)){
+                creditedLogoImageView.setImage(nordiskFilmLogoImage);
+            }
+
+            //Get the credits from the selected program IF the program contains credits
+            if (selectedProgram.getCredits() != null) {
+                ArrayList<Credit> credits = selectedProgram.getCredits();
+                for (Credit credit : credits) {
+                    searchListViewCredits.getItems().add(credit.getCreditedPerson().getName() + ": " + credit.getFunction().role);
+                }
             }
         }
     }
 
     @FXML
-    void selectCreditFromListView(MouseEvent event) {
+    void selectCreditFromListView() {
         if (!searchListViewCredits.getSelectionModel().isEmpty() && !searchListViewCredits.getSelectionModel().getSelectedItem().isEmpty()) {
             deleteSelectedButton.setText("Delete credit");
         }
     }
 
     @FXML
-    void updateUpdateTabProgramOnAction(ActionEvent event) {
+    void updateUpdateTabProgramOnAction() {
 
         //Insert related notes to an arrayList
         ArrayList<Node> updateNodes = new ArrayList<>(Arrays.asList(
@@ -417,7 +419,7 @@ public class SystemAdminController implements Initializable {
     }
 
     @FXML
-    void updateUpdateTabCreditOnAction(ActionEvent event) {
+    void updateUpdateTabCreditOnAction() {
         Program program = getSelectedProgramFromListView();
         Credit credit = program.getCredits().get(searchListViewCredits.getSelectionModel().getSelectedIndex());
         creditedPersonUpdateLabel.setText(credit.getCreditedPerson().getName() + ": " + credit.getCreditedPerson().getUuid());
@@ -427,12 +429,12 @@ public class SystemAdminController implements Initializable {
     }
 
     @FXML
-    void updateUpdateTabPersonOnAction(ActionEvent event) {
+    void updateUpdateTabPersonOnAction() {
 
     }
 
     @FXML
-    void updateUpdateTabTVSeriesOnAction(ActionEvent event) {
+    void updateUpdateTabTVSeriesOnAction() {
         ArrayList<Node> tvSeriesNodes = new ArrayList<>(Arrays.asList(
                 nameUpdateLabel, nameUpdateText, descriptionUpdateText, descriptionUpdateLabel));
         ArrayList<Node> programNodes = new ArrayList<>(Arrays.asList(
@@ -459,7 +461,7 @@ public class SystemAdminController implements Initializable {
 
 
     @FXML
-    void updateCredit(ActionEvent event) {
+    void updateCredit() {
         try {
             //Programmet hentes igennem index for vores program drop-down menu
             Credit credit = getSelectedCreditFromListView();
@@ -471,7 +473,7 @@ public class SystemAdminController implements Initializable {
     }
 
     @FXML
-    void updateProgram(ActionEvent event) {
+    void updateProgram() {
         Program program = Facade.getInstance().getProgramFromUuid(UUID.fromString(currentlyUpdatingUUID.getText()));
         String name = nameUpdateText.getText();
         String description = descriptionUpdateText.getText();
@@ -492,7 +494,7 @@ public class SystemAdminController implements Initializable {
     }
 
     @FXML
-    void updateTvSeries(ActionEvent event) {
+    void updateTvSeries() {
         TVSeries tvSeries = Facade.getInstance().getTvSeriesFromUuid(UUID.fromString(currentlyUpdatingUUID.getText()));
         String name = nameUpdateText.getText();
         String description = descriptionUpdateText.getText();
@@ -536,7 +538,7 @@ public class SystemAdminController implements Initializable {
     }
 
     @FXML
-    void openConfirmBox(MouseEvent event) {
+    void openConfirmBox() {
         confirmAnchorPane.setVisible(true);
         //If-statement for bedre bruger-oplevelse ved sletning af forskellige typer programmer/krediteringer
         if (!searchListViewCredits.getSelectionModel().isEmpty() && !searchListViewCredits.getSelectionModel().getSelectedItem().isEmpty()) {
@@ -559,12 +561,12 @@ public class SystemAdminController implements Initializable {
     }
 
     @FXML
-    void declineDeleteSelected(ActionEvent event) {
+    void declineDeleteSelected() {
         confirmAnchorPane.setVisible(false);
     }
 
     @FXML
-    void deleteSelected(ActionEvent event) {
+    void deleteSelected() {
         // Deletes selected program
         if (!searchSeriesCombo.getSelectionModel().isEmpty() && searchSeasonCombo.getSelectionModel().isEmpty()) {
         } else if (!searchListViewCredits.getSelectionModel().isEmpty() && !searchListViewCredits.getSelectionModel().getSelectedItem().isEmpty()) {
@@ -577,7 +579,7 @@ public class SystemAdminController implements Initializable {
     }
 
     @FXML
-    void searchApprovedProgramComboAction (ActionEvent event){
+    void searchApprovedProgramComboAction (){
         searchApprovedSeriesCombo.getItems().clear();
         if (searchApprovedProgramCombo.getSelectionModel().getSelectedItem().equals(transmission)){
             searchApprovedSeriesCombo.setDisable(true);
@@ -605,7 +607,7 @@ public class SystemAdminController implements Initializable {
     }
 
     @FXML
-    void searchApprovedSeriesComboAction (ActionEvent event){
+    void searchApprovedSeriesComboAction (){
         searchApprovedSeasonCombo.getItems().clear();
         //To find the episodes based on a season from a TV-series
         try {
@@ -626,7 +628,7 @@ public class SystemAdminController implements Initializable {
     }
 
     @FXML
-    void searchApprovedSeasonComboAction (ActionEvent event){
+    void searchApprovedSeasonComboAction (){
         try {
             searchApprovedListView.getItems().clear();
 
@@ -643,7 +645,7 @@ public class SystemAdminController implements Initializable {
     }
 
     @FXML
-    void selectedApprovedProgramFromListView(MouseEvent event) {
+    void selectedApprovedProgramFromListView() {
         searchApprovedListViewCredits.getItems().clear();
 
         Program selectedProgram = getSelectedProgramFromApprovedListView();
@@ -659,12 +661,12 @@ public class SystemAdminController implements Initializable {
     }
 
     @FXML
-    void approveSelectedProgram(ActionEvent event){
+    void approveSelectedProgram(){
         Facade.getInstance().approveProgram(getSelectedProgramFromApprovedListView());
     }
 
     @FXML
-    void markNotificationsAsSeen(MouseEvent event) {
+    void markNotificationsAsSeen() {
         String title = systemLogLV.getSelectionModel().getSelectedItem();
         Facade.getInstance().setNotificationAsSeen(Facade.getInstance().getNotificationFromTitle(title.substring(5)));
         refreshSystemLogs();
@@ -724,12 +726,15 @@ public class SystemAdminController implements Initializable {
     } */
 
     private Program getSelectedProgramFromListView() {
-        //Choose the String-item from the listview instead of the index
-        String viewString = searchListView.getSelectionModel().getSelectedItem();
-        //Split the string to get the UUID
-        String[] viewStringArray = viewString.split(":");
-        //Use the getProgramFromUuid method from the facade to get the program from the string. The trim after the string is to get rid of whitespace
-        return Facade.getInstance().getProgramFromUuid(UUID.fromString(viewStringArray[1].trim()));
+        if (searchListView.getSelectionModel().getSelectedItem() != null) {
+            //Choose the String-item from the listview instead of the index
+            String viewString = searchListView.getSelectionModel().getSelectedItem();
+            //Split the string to get the UUID
+            String[] viewStringArray = viewString.split(":");
+            //Use the getProgramFromUuid method from the facade to get the program from the string. The trim after the string is to get rid of whitespace
+            return Facade.getInstance().getProgramFromUuid(UUID.fromString(viewStringArray[1].substring(1,37)));
+        }
+        return null;
     }
 
     private Program getSelectedProgramFromApprovedListView() {
@@ -746,6 +751,60 @@ public class SystemAdminController implements Initializable {
     }
 
 
+    //Searches for TVSeries based on user-input
+    @FXML
+    void showMatchingTVS() {
+        searchFunctionality.searchForTVSeries(searchForTVSLV, searchSeriesCombo);
+    }
+    //Selects the clicked TVSeries and hides the search results
+    @FXML
+    void selectAndHideMatchingTVS() {
+        searchFunctionality.selectAndHideTVSeries(searchSeasonCombo, searchForTVSLV, searchSeriesCombo);
+    }
+
+    //Searches for programs based on user-input.
+    @FXML
+    void showMatchingPrograms() {
+        searchFunctionality.searchForProgram(searchForProgramLV, searchForProgramCB,  searchListView);
+    }
+    //Selects the clicked program and hides the search results
+    @FXML
+    void selectAndHideMatchingProgram() {
+        searchListView.getSelectionModel().select(searchForProgramLV.getSelectionModel().getSelectedItem());
+        if (searchForProgramLV.getSelectionModel().getSelectedItem() != null) {
+            selectedProgramFromListView();
+        }
+        searchForProgramCB.getEditor().clear();
+        searchForProgramLV.setVisible(false);
+    }
+
+    //Searches for credits matching the given user-input
+    @FXML
+    void showMatchingCredits() {
+        searchFunctionality.searchForCredits(searchForCreditLV, searchForCreditCB, searchForFunctionCB, searchListViewCredits);
+    }
+    //Selects the clicked credit and hides search results
+    @FXML
+    void selectAndHideMatchingCredit() {
+        searchFunctionality.selectAndHideCredits(searchListViewCredits, searchForCreditLV, searchForCreditCB);
+    }
+
+    //Searches for functions matching the user-input
+    @FXML
+    void showMatchingFunctions() {
+        searchFunctionality.searchForFunctions(searchForFunctionLV, searchForFunctionCB);
+    }
+    //Selects the clicked functions and hides the search results
+    @FXML
+    void selectAndHideMatchingFunction() {
+        searchFunctionality.selectAndHideFunctions(searchForFunctionLV, searchForFunctionCB);
+    }
+
+    //Hides all listviews displaying search results
+    @FXML
+    void hideMatchingSearchResults() {
+        searchFunctionality.hideSearchResults(searchForTVSLV, searchForProgramLV, searchForCreditLV, searchForFunctionLV);
+    }
 
 
     @Override
