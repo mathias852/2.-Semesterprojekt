@@ -161,7 +161,6 @@ public class GuestController implements Initializable {
     void showMatchingPrograms() {
         searchFunctionality.searchForProgramAsGuest(searchForProgramLV, searchForProgramCB,  searchListView);
     }
-
     //Selects the clicked program and hides the search results
     @FXML
     void selectAndHideMatchingProgram() {
@@ -176,13 +175,10 @@ public class GuestController implements Initializable {
     void showMatchingCredits() {
         searchFunctionality.searchForCredits(searchForCreditLV, searchForCreditCB, searchForFunctionCB, searchListViewCredits);
     }
-
     //Selects the clicked credit and hides search results
     @FXML
     void selectAndHideMatchingCredit() {
-        searchListViewCredits.getSelectionModel().select(searchForCreditLV.getSelectionModel().getSelectedItem());
-        searchForCreditCB.getEditor().clear();
-        searchForCreditLV.setVisible(false);
+        searchFunctionality.selectAndHideCredits(searchListViewCredits, searchForCreditLV, searchForCreditCB);
     }
 
     //Searches for functions matching the user-input
@@ -190,20 +186,19 @@ public class GuestController implements Initializable {
     void showMatchingFunctions() {
         searchFunctionality.searchForFunctions(searchForFunctionLV, searchForFunctionCB);
     }
-
     //Selects the clicked functions and hides the search results
     @FXML
     void selectAndHideMatchingFunction() {
-        searchForFunctionCB.setValue(searchForFunctionLV.getSelectionModel().getSelectedItem());
-        searchForFunctionLV.setVisible(false);
+        searchFunctionality.selectAndHideFunctions(searchForFunctionLV, searchForFunctionCB);
     }
 
     //Hides all listviews displaying search results
     @FXML
     void hideMatchingSearchResults() {
-        ArrayList<Node> searchResults = new ArrayList<>(Arrays.asList(searchForTVSLV, searchForProgramLV, searchForCreditLV, searchForFunctionLV));
-        searchResults.forEach(node -> node.setVisible(false));
+        searchFunctionality.hideSearchResults(searchForTVSLV, searchForProgramLV, searchForCreditLV, searchForFunctionLV);
     }
+
+
 
     private TVSeries getSelectedTvSeriesFromComboBox() {
         return Facade.getInstance().getTvSeriesList().get(searchSeriesCombo.getSelectionModel().getSelectedIndex());
