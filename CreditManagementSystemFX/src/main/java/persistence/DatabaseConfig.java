@@ -1,7 +1,7 @@
 package persistence;
 
 public class DatabaseConfig {
-    static String databaseName = "CreditManagementSystem";
+    static String databaseName = "CreditsManagementDatabase";
     static String username = "postgres";
     static String password = "";
     public static String getDatabaseName() {
