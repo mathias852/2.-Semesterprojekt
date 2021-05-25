@@ -1,5 +1,20 @@
 package presentation;
 
+import domain.Facade;
+import domain.LoginHandler;
+import domain.credit.Credit;
+import domain.credit.CreditedPerson;
+import domain.program.Episode;
+import domain.program.Program;
+import domain.program.TVSeries;
+import domain.program.Transmission;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.Node;
+import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -7,25 +22,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.ResourceBundle;
 import java.util.UUID;
-
-import domain.Facade;
-import domain.LoginHandler;
-import domain.accesscontrol.Producer;
-import domain.accesscontrol.User;
-import domain.credit.Credit;
-import domain.credit.CreditedPerson;
-import domain.program.Episode;
-import domain.program.Program;
-import domain.program.TVSeries;
-import domain.program.Transmission;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.scene.Node;
-import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 
 public class ProducerController implements Initializable {
     @FXML
@@ -37,8 +33,8 @@ public class ProducerController implements Initializable {
     private ComboBox<String> tvSeriesSelection, searchSeriesCombo, functionSelection, searchProgramCombo,
             searchSeasonCombo, creditedPersonSelection, programSelection, programTypeSelection, tvSeriesUpdateSelection,
             functionUpdateSelection, productionSelectionCombo, myProgramTabApprovedComboBox, myProgramTabSearchProgramCombo,
-            myProgramTabSearchSeriesCombo, myProgramTabSearchSeasonCombo, productionSelectionUpdateCombo;
-    ;
+            myProgramTabSearchSeriesCombo, myProgramTabSearchSeasonCombo, productionSelectionUpdateCombo, searchForProgramCB,
+            searchForCreditCB, searchForFunctionCB;
 
     @FXML
     private Label creditedPersonLabel, tvSLabel, durationLabel, nameLabel, seasonNoLabel, messageLabel,
@@ -47,12 +43,13 @@ public class ProducerController implements Initializable {
             programUpdateSelection, creditedPersonUpdateLabel, productionLabel, programUuidUpdateSelection, creditIndexUpdateSelection;
 
     @FXML
-    private Button createProgramBtn, createCreditBtn, createPersonBtn, exportButton, updateProgramButton, updateCreditButton,
+    private Button createProgramBtn, createCreditBtn, createPersonBtn, updateProgramButton, updateCreditButton,
             updateProgramBtn, updatePersonButton, updateTvSeriesButton, updateTvSeriesBtn, myProgramTabUpdateTvSeriesButton,
             myProgramTabUpdateProgramButton, myProgramTabUpdateCreditButton, myProgramTabUpdatePersonButton, updateCreditBtnForMyProgramTab;
 
     @FXML
-    private ListView<String> searchListView, searchListViewCredits, myProgramTabSearchListView, myProgramTabSearchListViewCredits;
+    private ListView<String> searchListView, searchListViewCredits, myProgramTabSearchListView, myProgramTabSearchListViewCredits,
+            searchForTVSLV, searchForProgramLV, searchForCreditLV, searchForFunctionLV;
 
     @FXML
     private TabPane mainTabPane;
@@ -75,15 +72,16 @@ public class ProducerController implements Initializable {
     private final Image nordiskFilmLogoImage = new Image(nordiskFilmLogoFile.toURI().toString());
     private final Image tv2LogoImage = new Image(tv2LogoFile.toURI().toString());
 
+    SearchFunctionality searchFunctionality = new SearchFunctionality();
+
     @FXML
-    void logOutAction(ActionEvent e) throws IOException{
-        //facade.exportToTxt();
+    void logOutAction() throws IOException{
         App.setRoot("logInPage");
     }
 
     //Method for the createPerson-button
     @FXML
-    void createPerson(ActionEvent event) {
+    void createPerson() {
         //Uses the createPerson-method from the facade
         if (!creditedPersonNameText.getText().isEmpty()) {
             Facade.getInstance().createPerson(creditedPersonNameText.getText());
@@ -93,7 +91,7 @@ public class ProducerController implements Initializable {
     }
 
     @FXML
-    void createCredit(ActionEvent event) {
+    void createCredit() {
         try {
             //Programmet hentes igennem index for vores program drop-down menu
             Program program = Facade.getInstance().getPrograms().get(programSelection.getSelectionModel().getSelectedIndex());
@@ -119,13 +117,12 @@ public class ProducerController implements Initializable {
             }
 
 
-        } catch (IndexOutOfBoundsException e) {
-        }
+        } catch (IndexOutOfBoundsException ignored) {}
     }
 
     //Below method creates a program with given/relevant input
     @FXML
-    void createProgram(ActionEvent event) {
+    void createProgram() {
 
         String name = nameText.getText();
         String description = descriptionText.getText();
@@ -165,7 +162,7 @@ public class ProducerController implements Initializable {
     }
 
     @FXML
-    void dropDownSelection(ActionEvent event) {
+    void dropDownSelection() {
         ArrayList<Node> durationNodes = new ArrayList<>(Arrays.asList(durationLabel, durationText));
         ArrayList<Node> episodeNodes = new ArrayList<>(Arrays.asList(tvSeriesSelection, seasonNumberText,
                 episodeNumberText, tvSLabel, seasonNoLabel, episodeNoLabel));
@@ -191,13 +188,7 @@ public class ProducerController implements Initializable {
     }
 
     @FXML
-    void exportButtonOnAction(ActionEvent event) throws IOException {
-        //Export to txt
-        //facade.exportToTxt();
-    }
-
-    @FXML
-    void searchProgramComboAction(ActionEvent event) {
+    void searchProgramComboAction() {
         searchSeriesCombo.getItems().clear();
         creditedLogoImageView.setImage(null);
 
@@ -220,7 +211,8 @@ public class ProducerController implements Initializable {
             //Gets all approved transmissions and add them to the listview
             for (Program program : Facade.getInstance().getPrograms()) {
                 if (program instanceof Transmission && program.isApproved()) {
-                    searchListView.getItems().add(program.getName() +  ": " + program.getUuid() + ": " + LoginHandler.getInstance().getUserFromUuid(program.getCreatedBy()).getUsername());
+                    searchListView.getItems().add(program.getName() +  "\nID: " + program.getUuid() + "\nCreated by: "
+                            + LoginHandler.getInstance().getUserFromUuid(program.getCreatedBy()).getUsername());
                 }
             }
         } else if (searchProgramCombo.getSelectionModel().getSelectedItem().equals(tvSeries)){
@@ -237,7 +229,7 @@ public class ProducerController implements Initializable {
     }
 
     @FXML
-    void searchSeriesComboAction(ActionEvent event) {
+    void searchSeriesComboAction() {
         searchSeasonCombo.getItems().clear();
         //To find the episodes based on a season from a TV-series
         try {
@@ -248,12 +240,11 @@ public class ProducerController implements Initializable {
                 }
             }
             updateTvSeriesButton.setDisable(false);
-        } catch (IndexOutOfBoundsException e){
-        }
+        } catch (IndexOutOfBoundsException ignored){}
     }
 
     @FXML
-    void searchSeasonComboAction(ActionEvent event) {
+    void searchSeasonComboAction() {
         creditedLogoImageView.setImage(null);
         try {
             searchListView.getItems().clear();
@@ -263,7 +254,7 @@ public class ProducerController implements Initializable {
                 TVSeries series = getSelectedTvSeriesFromComboBox();
                 for (Episode episode : series.getSeasonMap().get(Integer.parseInt(searchSeasonCombo.getSelectionModel().getSelectedItem()))) {
                     if(episode.isApproved()) {
-                        searchListView.getItems().add(episode.getName() + ": " + episode.getUuid() + ": " +
+                        searchListView.getItems().add(episode.getName() + "\nID: " + episode.getUuid() + "\nEpisode: " + episode.getEpisodeNo() + "\nCreated by: " +
                                 LoginHandler.getInstance().getUserFromUuid(episode.getCreatedBy()).getUsername());
                         if (episode.getProduction().equals(tv2Logo)){
                             creditedLogoImageView.setImage(tv2LogoImage);
@@ -273,14 +264,14 @@ public class ProducerController implements Initializable {
                     }
                 }
             }
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException ignored) {
         }
     }
 
     @FXML
-    void selectedProgramFromListView(MouseEvent event) {
+    void selectedProgramFromListView() {
         //List for related buttons.
-        ArrayList<Button> buttons = new ArrayList<>(Arrays.asList(updateCreditButton, updateProgramButton));
+        ArrayList<Button> buttons = new ArrayList<>(Arrays.asList(updateCreditButton, updatePersonButton, updateProgramButton));
         //Changes visibility for above buttons.
         buttons.forEach(button -> button.setDisable(true));
 
@@ -309,7 +300,7 @@ public class ProducerController implements Initializable {
     }
 
     @FXML
-    void updateUpdateTabProgramOnAction(ActionEvent event) {
+    void updateUpdateTabProgramOnAction() {
         if(LoginHandler.getInstance().getCurrentUser().getUuid().equals(getSelectedProgramFromListView().getCreatedBy())){
 
             //Insert related notes to an arrayList
@@ -365,12 +356,11 @@ public class ProducerController implements Initializable {
                 mainTabPane.getSelectionModel().select(updateTab);
 
             }
-        } else {
         }
     }
 
     @FXML
-    void updateTabUpdateCredit(ActionEvent event) {
+    void updateTabUpdateCredit() {
         Program program = getSelectedProgramFromListView();
         Credit credit = null;
 
@@ -395,12 +385,12 @@ public class ProducerController implements Initializable {
     }
 
     @FXML
-    void updateUpdateTabPersonOnAction(ActionEvent event) {
+    void updateUpdateTabPersonOnAction() {
         System.out.println("Not yet implemented");
     }
 
     @FXML
-    void updateUpdateTabTVSeriesOnAction(ActionEvent event) {
+    void updateUpdateTabTVSeriesOnAction() {
         ArrayList<Node> tvSeriesNodes = new ArrayList<>(Arrays.asList(
                 nameUpdateLabel, nameUpdateText, descriptionUpdateText, descriptionUpdateLabel));
         ArrayList<Node> programNodes = new ArrayList<>(Arrays.asList(
@@ -428,7 +418,7 @@ public class ProducerController implements Initializable {
 
 
     @FXML
-    void myProgramTabSearchProgramCombo(ActionEvent event) {
+    void myProgramTabSearchProgramCombo() {
         myProgramTabSearchSeriesCombo.getItems().clear();
         myProgramTabCreditedLogoImageView.setImage(null);
         String approvedComboBox = myProgramTabApprovedComboBox.getSelectionModel().getSelectedItem();
@@ -470,7 +460,7 @@ public class ProducerController implements Initializable {
 
 
     @FXML
-    void myProgramTabSearchSeriesCombo(ActionEvent event) {
+    void myProgramTabSearchSeriesCombo() {
         myProgramTabSearchSeasonCombo.getItems().clear();
         //To find the episodes based on a season from a TV-series
         try {
@@ -481,12 +471,12 @@ public class ProducerController implements Initializable {
                 }
             }
             myProgramTabUpdateTvSeriesButton.setDisable(false);
-        } catch (IndexOutOfBoundsException e){
+        } catch (IndexOutOfBoundsException ignored){
         }
     }
 
     @FXML
-    void myProgramTabSearchSeasonCombo(ActionEvent event) {
+    void myProgramTabSearchSeasonCombo() {
         myProgramTabCreditedLogoImageView.setImage(null);
         String approvedComboBox = myProgramTabApprovedComboBox.getSelectionModel().getSelectedItem();
 
@@ -510,14 +500,14 @@ public class ProducerController implements Initializable {
                     }
                 }
             }
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException ignored) {
 
         }
     }
 
     @FXML
-    void myProgramTabSelectedProgramFromListView(MouseEvent event) {
-        ArrayList<Button> buttons = new ArrayList<>(Arrays.asList(myProgramTabUpdateCreditButton,
+    void myProgramTabSelectedProgramFromListView() {
+        ArrayList<Button> buttons = new ArrayList<>(Arrays.asList(myProgramTabUpdateCreditButton, myProgramTabUpdatePersonButton,
                 myProgramTabUpdateProgramButton));
         buttons.forEach(node -> node.setDisable(true));
 
@@ -546,19 +536,21 @@ public class ProducerController implements Initializable {
     }
 
     @FXML
-    void updateCredit(ActionEvent event) {
+    void updateCredit() {
         try {
             //Programmet hentes igennem index for vores program drop-down menu
-            Credit credit = getSelectedCreditFromListView();
-            Credit.Function function = Facade.getInstance().getFunctions().get(functionUpdateSelection.getSelectionModel().getSelectedIndex());
+            if (getSelectedCreditFromListView() != null) {
+                Credit credit = getSelectedCreditFromListView();
+                Credit.Function function = Facade.getInstance().getFunctions().get(functionUpdateSelection.getSelectionModel().getSelectedIndex());
 
-            Facade.getInstance().updateCredit(credit, function);
-        } catch (IndexOutOfBoundsException e) {
+                Facade.getInstance().updateCredit(credit, function);
+            }
+        } catch (IndexOutOfBoundsException ignored) {
         }
     }
 
     @FXML
-    void updateProgram(ActionEvent event) {
+    void updateProgram() {
         Program program = Facade.getInstance().getProgramFromUuid(UUID.fromString(currentlyUpdatingUUID.getText()));
         String name = nameUpdateText.getText();
         String description = descriptionUpdateText.getText();
@@ -580,7 +572,7 @@ public class ProducerController implements Initializable {
     }
 
     @FXML
-    void updateTvSeries(ActionEvent event) {
+    void updateTvSeries() {
         TVSeries tvSeries = Facade.getInstance().getTvSeriesFromUuid(UUID.fromString(currentlyUpdatingUUID.getText()));
         String name = nameUpdateText.getText();
         String description = descriptionUpdateText.getText();
@@ -650,7 +642,7 @@ public class ProducerController implements Initializable {
         String[] viewStringArray = viewString.split(":");
 
         //Use the getProgramFromUuid method from the facade to get the program from the string. The trim after the string is to get rid of whitespace
-        return Facade.getInstance().getProgramFromUuid(UUID.fromString(viewStringArray[1].trim()));
+        return Facade.getInstance().getProgramFromUuid(UUID.fromString(viewStringArray[1].substring(1,37)));
     }
 
     private Credit getSelectedCreditFromListView() {
@@ -658,11 +650,19 @@ public class ProducerController implements Initializable {
 
         //If the method is called from the update-tab, the following if-statement's value is returned.
         if (mainTabPane.getSelectionModel().getSelectedItem().getText().equals("Update")){
-            Program program = Facade.getInstance().getProgramFromUuid(UUID.fromString(programUuidUpdateSelection.getText()));
-            return program.getCredits().get(Integer.parseInt(creditIndexUpdateSelection.getText()));
+
+            try {
+                Program program = Facade.getInstance().getProgramFromUuid(UUID.fromString(programUuidUpdateSelection.getText()));
+                program.setApproved(false);
+                return program.getCredits().get(Integer.parseInt(creditIndexUpdateSelection.getText()));
+            } catch (IllegalArgumentException e) {
+                System.out.println("Invalid credit information given...");
+                return null;
+            }
         }
 
         Program selectedProgram = getSelectedProgramFromListView();
+        selectedProgram.setApproved(false);
 
         if (mainTabPane.getSelectionModel().getSelectedItem().getText().equals("Search/view")) {
             //Choose the String-item from the listview instead of the index
@@ -673,6 +673,60 @@ public class ProducerController implements Initializable {
         }
 
         return credit;
+    }
+
+
+    //Searches for TVSeries based on user-input
+    @FXML
+    void showMatchingTVS() {
+        searchFunctionality.searchForTVSeries(searchForTVSLV, searchSeriesCombo);
+    }
+    //Selects the clicked TVSeries and hides the search results
+    @FXML
+    void selectAndHideMatchingTVS() {
+        searchFunctionality.selectAndHideTVSeries(searchSeasonCombo, searchForTVSLV, searchSeriesCombo);
+    }
+
+    //Searches for programs based on user-input.
+    @FXML
+    void showMatchingPrograms() {
+        searchFunctionality.searchForProgram(searchForProgramLV, searchForProgramCB,  searchListView);
+    }
+    //Selects the clicked program and hides the search results
+    @FXML
+    void selectAndHideMatchingProgram() {
+        searchListView.getSelectionModel().select(searchForProgramLV.getSelectionModel().getSelectedItem());
+        selectedProgramFromListView();
+        searchForProgramCB.getEditor().clear();
+        searchForProgramLV.setVisible(false);
+    }
+
+    //Searches for credits matching the given user-input
+    @FXML
+    void showMatchingCredits() {
+        searchFunctionality.searchForCredits(searchForCreditLV, searchForCreditCB, searchForFunctionCB, searchListViewCredits);
+    }
+    //Selects the clicked credit and hides search results
+    @FXML
+    void selectAndHideMatchingCredit() {
+        searchFunctionality.selectAndHideCredits(searchListViewCredits, searchForCreditLV, searchForCreditCB);
+    }
+
+    //Searches for functions matching the user-input
+    @FXML
+    void showMatchingFunctions() {
+        searchFunctionality.searchForFunctions(searchForFunctionLV, searchForFunctionCB);
+    }
+    //Selects the clicked functions and hides the search results
+    @FXML
+    void selectAndHideMatchingFunction() {
+        searchFunctionality.selectAndHideFunctions(searchForFunctionLV, searchForFunctionCB);
+    }
+
+    //Hides all listviews displaying search results
+    @FXML
+    void hideMatchingSearchResults() {
+        searchFunctionality.hideSearchResults(searchForTVSLV, searchForProgramLV, searchForCreditLV, searchForFunctionLV);
     }
 
     @Override
