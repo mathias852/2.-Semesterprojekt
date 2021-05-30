@@ -80,6 +80,7 @@ CREATE VIEW episodesView AS
 SELECT id, tvSeriesId,  name, description, createdById, episodeNo, seasonNo, duration, approved, production FROM programs, episodes
 WHERE programs.id = episodes.programsId;
 
+BEGIN;
 --
 INSERT INTO creditedPeople (id, name) VALUES
 ('05a639ea-79a3-43b9-b0d7-079b6fce3e56', 'Mathias Engmark'),
@@ -157,3 +158,4 @@ INSERT INTO notifications (title, seen) VALUES
 ('Admin approved a program with the UUID f85a5a3a-dd0e-4943-a54c-940eead342eb and name Everything burns on 20-04-2021 12:34:21', false),
 ('Admin approved a program with the UUID 2a93e924-6638-465a-b5cd-cb8d16f00d69 and name Top Gun on 20-04-2021 12:34:21', false),
 ('Admin approved a program with the UUID 3129a54d-2d5f-4fbc-a39a-9c478905ff11 and name Flyvende Farmor on 20-04-2021 12:34:21', false);
+COMMIT;
